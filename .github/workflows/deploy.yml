@@ -1,0 +1,86 @@
+name: Update Data & Deploy Dashboard
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Every Monday at 6:00 AM UTC
+  workflow_dispatch:        # Allow manual runs from GitHub UI
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DATA_DIR: ${{ github.workspace }}/data
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Python: SkillCorner data via Jupyter notebooks ──────────────────────
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run physical.ipynb (physical metrics)
+        run: |
+          jupyter nbconvert --to notebook --execute --inplace \
+            --ExecutePreprocessor.timeout=600 \
+            notebooks/physical.ipynb
+        env:
+          SC_USERNAME: ${{ secrets.SC_USERNAME }}
+          SC_PASSWORD: ${{ secrets.SC_PASSWORD }}
+
+      - name: Run data_scout_dashboard.ipynb (passes, off-ball runs, pressures)
+        run: |
+          jupyter nbconvert --to notebook --execute --inplace \
+            --ExecutePreprocessor.timeout=600 \
+            notebooks/data_scout_dashboard.ipynb
+        env:
+          SC_USERNAME: ${{ secrets.SC_USERNAME }}
+          SC_PASSWORD: ${{ secrets.SC_PASSWORD }}
+
+      # ── R: StatsBomb fetch → SkillCorner processing → join → deploy ─────────
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4.2'
+          use-public-rspm: true   # use pre-built CRAN binaries (faster)
+
+      - name: Restore R packages via renv
+        uses: r-lib/actions/setup-renv@v2
+
+      - name: Fetch StatsBomb data
+        run: Rscript dashboard_scout.R
+        env:
+          SB_USERNAME: ${{ secrets.SB_USERNAME }}
+          SB_PASSWORD: ${{ secrets.SB_PASSWORD }}
+
+      - name: Process SkillCorner data
+        run: Rscript sc_data.R
+
+      - name: Join StatsBomb + SkillCorner datasets
+        run: Rscript join_scout_data.R
+
+      - name: Deploy to ShinyApps.io
+        run: |
+          Rscript -e "
+            rsconnect::setAccountInfo(
+              name   = 'mateo-rodriguez-23',
+              token  = Sys.getenv('SHINYAPPS_TOKEN'),
+              secret = Sys.getenv('SHINYAPPS_SECRET')
+            )
+            rsconnect::deployApp(
+              appFiles    = c('app.R', 'radars.R', 'data/scout_joined.rds'),
+              forceUpdate = TRUE
+            )
+          "
+        env:
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}

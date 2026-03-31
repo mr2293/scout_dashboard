@@ -1,0 +1,37 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Secrets / credentials
+.env
+secrets.R
+
+# renv cache (sources restored from lock file)
+renv/library/
+renv/staging/
+renv/sandbox/
+
+# Large generated data files — reproduced by the pipeline
+data/scout_data.rds
+data/scout_joined.rds
+data/scout_skill_corner.rds
+
+# SkillCorner CSV outputs — written by notebooks during the pipeline
+data/passes/
+data/physical/
+data/pressures/
+data/off_ball_runs/
+data/debug/
+data/final/
+data/SB_names_by_list.csv
+data/SC_names_by_list.csv
+data/ALL_statsbomb_names_teams.csv
+data/ALL_skillcorner_names_teams.csv
+data/ALL_combined_name_team_universe.csv
+
+# Keep crosswalk_final.rds — manually curated player-matching file
+!data/crosswalk_final.rds
+
+# ShinyApps.io deployment metadata (no secrets, but not needed in repo)
+rsconnect/
