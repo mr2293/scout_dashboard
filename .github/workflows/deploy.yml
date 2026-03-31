@@ -2,7 +2,7 @@ name: Update Data & Deploy Dashboard
 
 on:
   schedule:
-    - cron: '0 6 * * 1'   # Every Monday at 6:00 AM UTC
+    - cron: '0 12 * * 2'   # Every Tuesday at 6:00 AM Mexico City time (UTC-6)
   workflow_dispatch:        # Allow manual runs from GitHub UI
 
 jobs:
