@@ -131,9 +131,10 @@ liga_mx_mitad_1 <- liga_mx_mitad_1 |>
     .groups = "drop"
   )
 
-ligamx_fisico <- ligamx_fisico |>
-  rename(short_name = player_short_name) |>
-  select(-competition_name)
+if ("player_short_name" %in% names(ligamx_fisico)) {
+  ligamx_fisico <- ligamx_fisico |> rename(short_name = player_short_name)
+}
+ligamx_fisico <- ligamx_fisico |> select(-any_of("competition_name"))
 
 ligamx_des <- ligamx_des |>
   select(-competition_name)
