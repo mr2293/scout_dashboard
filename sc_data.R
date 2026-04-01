@@ -137,7 +137,7 @@ if ("player_short_name" %in% names(ligamx_fisico)) {
 ligamx_fisico <- ligamx_fisico |> select(-any_of("competition_name"))
 
 ligamx_des <- ligamx_des |>
-  select(-competition_name)
+  select(-any_of("competition_name"))
 
 liga_mx_mitad_2 <- ligamx_fisico |>
   full_join(ligamx_des, by = c("player_id", "player_name", "short_name", "player_birthdate", "team_id", "team_name", 
