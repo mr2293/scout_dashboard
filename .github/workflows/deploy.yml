@@ -77,7 +77,7 @@ jobs:
               secret = Sys.getenv('SHINYAPPS_SECRET')
             )
             rsconnect::deployApp(
-              appName     = 'scout_dashboard',
+              appName     = 'club-america-scouting_dashboard',
               appFiles    = c('app.R', 'radars.R', 'data/scout_joined.rds'),
               forceUpdate = TRUE
             )
