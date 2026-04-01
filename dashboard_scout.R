@@ -23,7 +23,7 @@ password = Sys.getenv("SB_PASSWORD")
 # comps <- competitions(username,password)
 
 ligamx <- matchesvector(username, password, season_id = 318, competition_id = 73)
-ccl <- matchesvector(username, password, season_id = 315, competition_id = 101)
+ccl <- matchesvector(username, password, season_id = 316, competition_id = 101)
 # arg <- matchesvector(username, password, season_id = 316, competition_id = 81)
 arg <- matchesvector(username, password, season_id = 315, competition_id = 81)
 brasil <- matchesvector(username, password, season_id = 315, competition_id = 71)
@@ -134,7 +134,7 @@ europa_league <- matchesvector(username, password, season_id = 318, competition_
 # libertadores_lineups <- cleanlineups(libertadores_lineups)
 
 jugs_ligamx <- player_season(username, password, season_id = 318, competition_id = 73)
-jugs_ccl <- player_season(username, password, season_id = 315, competition_id = 101)
+jugs_ccl <- player_season(username, password, season_id = 316, competition_id = 101)
 arg <- player_season(username, password, season_id = 316, competition_id = 81)
 jugs_arg <- player_season(username, password, season_id = 315, competition_id = 81)
 jugs_brasil <- player_season(username, password, season_id = 315, competition_id = 71)
