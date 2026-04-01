@@ -1,0 +1,247 @@
+league,sc_player_id,player_name_sc,team_name_sc,best_sb_name,best_sb_team,best_sb_id,best_dist,same_team,common_tokens,sc_in_sb,sb_in_sc,sc_tokens,sb_tokens
+Liga MX,5078,João Pedro Geraldino dos Santos Galvão,Atlético de San Luis,João Pedro,Atlético San Luis,8283,0.24561403508771937,TRUE,2,FALSE,TRUE,joao|pedro|geraldino|santos|galvao,joao|pedro
+Liga MX,8496,João Paulo Dias Fernandes,Deportivo Toluca Fútbol Club,João Pedro,Atlético San Luis,8283,0.25000000000000006,FALSE,1,FALSE,FALSE,joao|paulo|dias|fernandes,joao|pedro
+Liga MX,9686,Sébastien Salles-Lamonge,Atlético de San Luis,Sebastián Vegas,León,28434,0.20027605244996557,FALSE,0,FALSE,FALSE,sebastien|salleslamonge,sebastian|vegas
+Liga MX,11482,Juan Pedro Ramírez López,Atlético de San Luis,Juanpe,Atlético San Luis,6572,0.25000000000000006,TRUE,0,FALSE,FALSE,juan|pedro|ramirez|lopez,juanpe
+Liga MX,13957,Roberto Suárez Pier,Club de Fútbol Atlas,Roberto Meraz,Mazatlán,37359,0.17622582096266315,FALSE,1,FALSE,FALSE,roberto|suarez|pier,roberto|meraz
+Liga MX,24584,Francisco José Villalba Rodrigo,Club Santos Laguna,Fran Villalba,Santos Laguna,23849,0.23200992555831268,TRUE,1,FALSE,FALSE,francisco|jose|villalba|rodrigo,fran|villalba
+Liga MX,25260,Nathanael Ananias da Silva,Club Universidad Nacional,Jonathan Yael Padilla Sandoval,Guadalajara,390511,0.23865578865578863,FALSE,0,FALSE,FALSE,nathanael|ananias|silva,jonathan|yael|padilla|sandoval
+Liga MX,25644,Mourad Daoudi El Ghezouani,Xoloitcuintles Club Tijuana,Morad,Tijuana,33360,0.2692307692307692,TRUE,0,FALSE,FALSE,mourad|daoudi|ghezouani,morad
+Liga MX,28353,Helio Júnio Nunes de Castro,Deportivo Toluca Fútbol Club,Luis Fernando Puente Prado,Pachuca,359970,0.31131603938621494,FALSE,0,FALSE,FALSE,helio|junio|nunes|castro,luis|fernando|puente|prado
+Liga MX,30948,Robson Alves de Barros,Atlético de San Luis,Roberto de la Rosa,Monterrey,30943,0.2529461279461281,FALSE,0,FALSE,FALSE,robson|alves|barros,roberto|rosa
+Liga MX,36149,Erick Antonio Lira Méndez,Cruz Azul Fútbol Club,Erick Gutiérrez,Guadalajara,15872,0.2677777777777778,FALSE,1,FALSE,FALSE,erick|antonio|lira|mendez,erick|gutierrez
+Liga MX,36467,Antonio Jermiah Leone Larios,Club de Fútbol Monterrey,Antonio Sánchez Montes De Oca,Atlas,52243,0.24671592775041062,FALSE,1,FALSE,FALSE,antonio|jermiah|leone|larios,antonio|sanchez|montes|oca
+Liga MX,43279,Luiz Eduardo Teodora da Silva,Mazatlán FC,Luis Ronaldo Nájera Reyna,Atlético San Luis,131320,0.30342123056119,FALSE,0,FALSE,FALSE,luiz|eduardo|teodora|silva,luis|ronaldo|najera|reyna
+Liga MX,49308,Vitor Samuel Ferreira Arantes,Xoloitcuintles Club Tijuana,Valentín Gauthier Pereira Brasil,León,365870,0.29315029985007496,FALSE,0,FALSE,FALSE,vitor|samuel|ferreira|arantes,valentin|gauthier|pereira|brasil
+Liga MX,61691,Ricardo Jorge Oliveira António,FC Juárez,Ricardo Monreal,Necaxa,37877,0.24761904761904768,FALSE,1,FALSE,FALSE,ricardo|jorge|oliveira|antonio,ricardo|monreal
+Liga MX,142458,Alexandre Zurawski,Club de Fútbol Pachuca,Alejandro Organista,Puebla,37640,0.2616959064327486,FALSE,0,FALSE,FALSE,alexandre|zurawski,alejandro|organista
+Liga MX,187165,Olávio Vieira dos Santos Júnior,Club Universidad Nacional,Jonathan dos Santos,América,6357,0.34221844934917944,FALSE,1,FALSE,FALSE,olavio|vieira|santos|junior,jonathan|santos
+Liga MX,1018042,Jafet Alejandro Cortés Cibrián,Club de Fútbol Puebla de la Franja,Cristobal Basilio Hernández Alcantara,Pachuca,540500,0.28456918456918456,FALSE,0,FALSE,FALSE,jafet|alejandro|cortes|cibrian,cristobal|basilio|hernandez|alcantara
+Liga MX,1018043,Luis Blanco  Elie Pérez,Club de Fútbol Atlas,Luan,Toluca,25135,0.2727272727272728,FALSE,0,FALSE,FALSE,luis|blanco|elie|perez,luan
+Liga MX,1018105,Ivan Mauricio González Cataño,Mazatlán FC,Iván Moreno,León,43554,0.2675026123301985,FALSE,1,FALSE,FALSE,ivan|mauricio|gonzalez|catano,ivan|moreno
+Liga MX,1018107,Dennis Yael Ramírez Castillo,Club Universidad Nacional,D.Ramírez Castillo,Pumas UNAM,482805,0.26820728291316526,TRUE,1,FALSE,FALSE,dennis|yael|ramirez|castillo,dramirez|castillo
+Liga MX,1018109,Misael Gerardo Torres Berlanga,Club Universidad Nacional,Israel Tello Robles,Necaxa,540502,0.2971792225662196,FALSE,0,FALSE,FALSE,misael|gerardo|torres|berlanga,israel|tello|robles
+Liga MX,1018138,Andres Pereira,Deportivo Toluca Fútbol Club,André-Pierre Gignac,Tigres UANL,20041,0.1805046805046805,FALSE,0,FALSE,FALSE,andres|pereira,andrepierre|gignac
+Liga MX,1018143,Sebastian Aceves,Deportivo Toluca Fútbol Club,Sebastián Cáceres,América,35690,0.08227124183006548,FALSE,1,FALSE,FALSE,sebastian|aceves,sebastian|caceres
+Liga MX,1018358,Santiago  Sandoval Gonzales,Club Deportivo Guadalajara,Santiago Muñoz,Atlético San Luis,37879,0.22710622710622724,FALSE,1,FALSE,FALSE,santiago|sandoval|gonzales,santiago|munoz
+Liga MX,1020069,Jose Miguel Arroyo Godínez,Deportivo Toluca Fútbol Club,Miguel Alejandro Gómez Ortiz,Guadalajara,206302,0.2501592610288263,FALSE,1,FALSE,FALSE,jose|miguel|arroyo|godinez,miguel|alejandro|gomez|ortiz
+Liga MX,1028129,Edgar  Ivan Lopez Rodriguez,Club de Fútbol Tigres de la UNAL,Edgar López,Tigres UANL,43478,0.19230769230769226,TRUE,2,FALSE,TRUE,edgar|ivan|lopez|rodriguez,edgar|lopez
+Liga MX,1028613,Carlos Alberto Rodríguez Santos,Club de Fútbol Tigres de la UNAL,Carlos Alberto Rodríguez,Cruz Azul,26297,0.07526881720430106,FALSE,3,FALSE,TRUE,carlos|alberto|rodriguez|santos,carlos|alberto|rodriguez
+Liga MX,1039676,José Luis Ruíz López,FC Juárez,José Luis Caicedo,Pumas UNAM,29078,0.22073906485671208,FALSE,2,FALSE,FALSE,jose|luis|ruiz|lopez,jose|luis|caicedo
+Argentina,774110,Giovanni Chiaverano Meroi,Club Atlético Newell's Old Boys,Giovani Chiaverano,Newell's Old Boys,410965,0.19518518518518524,FALSE,1,FALSE,FALSE,giovanni|chiaverano|meroi,giovani|chiaverano
+Argentina,809462,Marco Osvaldo Iacobellis Nahara,CA San Martín de San Juan,Marcos Iacobellis,San Martín San Juan,423921,0.22896900695762185,FALSE,1,FALSE,FALSE,marco|osvaldo|iacobellis|nahara,marcos|iacobellis
+Argentina,827049,Giovanni Lautaro Millán,CA Independiente,Giovanni Cantizano,Rosario Central,472811,0.2159420289855073,FALSE,1,FALSE,FALSE,giovanni|lautaro|millan,giovanni|cantizano
+Argentina,827248,Diego Rodrigo Porcel,Asociación Atlética Argentinos Juniors,Diego Rodríguez,Argentinos Juniors,28882,0.16111111111111118,FALSE,1,FALSE,FALSE,diego|rodrigo|porcel,diego|rodriguez
+Argentina,843649,Santiago López Garcia,CA Banfield,Santiago López Grobin,Rosario Central,397048,0.09523809523809525,FALSE,2,FALSE,FALSE,santiago|lopez|garcia,santiago|lopez|grobin
+Argentina,920248,Santino Andino Valencia,Club Deportivo Godoy Cruz Antonio Tomba,Santiago Lencinas,River Plate,439275,0.24404660414890605,FALSE,0,FALSE,FALSE,santino|andino|valencia,santiago|lencinas
+Argentina,930787,Mauricio Cardillo,CS Independiente Rivadavia,Mauricio Roldán,Banfield,390867,0.1405695611577966,FALSE,1,FALSE,FALSE,mauricio|cardillo,mauricio|roldan
+Argentina,999751,Alejo Osella,CS Independiente Rivadavia,Alejo Véliz,Rosario Central,112971,0.20202020202020204,FALSE,1,FALSE,FALSE,alejo|osella,alejo|veliz
+Argentina,1016081,Facundo Gulli,Club Atlético San Lorenzo de Almagro,Facundo Guch,Newell's Old Boys,464406,0.1324786324786325,FALSE,1,FALSE,FALSE,facundo|gulli,facundo|guch
+Brasil – Série A,3921,Carlos Gilberto Nascimento Silva,Santos Futebol Clube,Franco Sebastián Cristaldo,Grêmio,27908,0.2698926978818284,FALSE,0,FALSE,FALSE,carlos|gilberto|nascimento|silva,franco|sebastian|cristaldo
+Brasil – Série A,5365,Jorge Luiz Frello Filho,CR Flamengo,Jorginho,Flamengo,7024,0.3297101449275362,FALSE,0,FALSE,FALSE,jorge|luiz|frello|filho,jorginho
+Brasil – Série A,7148,Matheus Fellipe Costa Pereira,Cruzeiro EC,Matheus Alves,São Paulo,437146,0.262709991158267,FALSE,1,FALSE,FALSE,matheus|fellipe|costa|pereira,matheus|alves
+Brasil – Série A,12397,Danilo das Neves Pinheiro,CR Vasco da Gama,Danilo,Botafogo,46451,0.2533333333333333,FALSE,1,FALSE,TRUE,danilo|neves|pinheiro,danilo
+Brasil – Série A,13475,João Pedro Maturano dos Santos,Grêmio FB Porto Alegrense,João Pedro,Grêmio,32589,0.22222222222222238,FALSE,2,FALSE,TRUE,joao|pedro|maturano|santos,joao|pedro
+Brasil – Série A,13476,Francisco das Chagas Soares dos Santos,Santos Futebol Clube,Francisco da Costa,Mirassol Futebol Clube,44894,0.25174865267744523,FALSE,1,FALSE,FALSE,francisco|chagas|soares|santos,francisco|costa
+Brasil – Série A,13863,Lucas Pacheco Affini,Fortaleza EC,Lucas Piton,Vasco da Gama,33258,0.24393939393939387,FALSE,1,FALSE,FALSE,lucas|pacheco|affini,lucas|piton
+Brasil – Série A,13942,Christopher Ramos De la Flor,Botafogo de Futebol e Regatas,Chris Ramos,Botafogo,11299,0.262987012987013,TRUE,1,FALSE,FALSE,christopher|ramos|flor,chris|ramos
+Brasil – Série A,16209,Bruno Vinícius Souza Ramos,SC Internacional,Kauê Vinicius de Souza Camargo,Corinthians,271904,0.26727716727716727,FALSE,2,FALSE,FALSE,bruno|vinicius|souza|ramos,kaue|vinicius|souza|camargo
+Brasil – Série A,22159,Emerson Aparecido Leite de Souza Júnior,CR Flamengo,Jefferson Ruan Pereira dos Santos,Botafogo,267605,0.29079254079254085,FALSE,0,FALSE,FALSE,emerson|aparecido|leite|souza|junior,jefferson|ruan|pereira|santos
+Brasil – Série A,23980,Eric dos Santos Rodrigues,Red Bull Bragantino,Santiago Rodríguez,Botafogo,36701,0.3,FALSE,0,FALSE,FALSE,eric|santos|rodrigues,santiago|rodriguez
+Brasil – Série A,24829,Eduardo Colcenti Antunes,Red Bull Bragantino,Eduardo Santos,Red Bull Bragantino,36258,0.2022283272283273,TRUE,1,FALSE,FALSE,eduardo|colcenti|antunes,eduardo|santos
+Brasil – Série A,24843,Leonardo Rech Ortiz,CR Flamengo,Leonardo Jaco,Vasco da Gama,447441,0.19163292847503374,FALSE,1,FALSE,FALSE,leonardo|rech|ortiz,leonardo|jaco
+Brasil – Série A,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,Eduardo Santos,Red Bull Bragantino,36258,0.25809523809523804,FALSE,1,FALSE,FALSE,eduardo|pereira|rodrigues,eduardo|santos
+Brasil – Série A,25174,Vitor Hugo Naum dos Santos,SC Internacional,Vitor Hugo,Atlético Mineiro,8092,0.20512820512820518,FALSE,2,FALSE,TRUE,vitor|hugo|naum|santos,vitor|hugo
+Brasil – Série A,25176,Erick Luis Conrado Carvalho,Esporte Clube Bahia,Patrick Roberto da Silva Campos,Atlético Mineiro,435466,0.256987437094964,FALSE,0,FALSE,FALSE,erick|luis|conrado|carvalho,patrick|roberto|silva|campos
+Brasil – Série A,25184,Glaybson Yago Souza Lisboa,Fortaleza EC,Clayson,Mirassol Futebol Clube,25355,0.30402930402930417,FALSE,0,FALSE,FALSE,glaybson|yago|souza|lisboa,clayson
+Brasil – Série A,25203,Ronielson Da Silva Barbosa,Clube Atlético Mineiro,Roni,Mirassol Futebol Clube,44724,0.2820512820512821,FALSE,0,FALSE,FALSE,ronielson|silva|barbosa,roni
+Brasil – Série A,25233,Vinícius Moreira de Lima,Fluminense FC,Vinicius Zanocelo,Ceará,126242,0.26967068878833594,FALSE,1,FALSE,FALSE,vinicius|moreira|lima,vinicius|zanocelo
+Brasil – Série A,28253,Fernando Pereira do Nascimento,Ceará Sporting Club,Fernando Reges,Internacional,16003,0.23833943833943844,FALSE,1,FALSE,FALSE,fernando|pereira|nascimento,fernando|reges
+Brasil – Série A,28283,José Romário Silva de Souza,SC do Recife,José Luis Rodríguez,Vasco da Gama,33099,0.26638764667660436,FALSE,1,FALSE,FALSE,jose|romario|silva|souza,jose|luis|rodriguez
+Brasil – Série A,28315,Aldemir dos Santos Ferreira,São Paulo FC,Ademir,Bahia,122929,0.25925925925925924,FALSE,0,FALSE,FALSE,aldemir|santos|ferreira,ademir
+Brasil – Série A,28336,Bruno Henrique Corsini,SC Internacional,Bruno Henrique,Flamengo,25152,0.1212121212121213,FALSE,2,FALSE,TRUE,bruno|henrique|corsini,bruno|henrique
+Brasil – Série A,28342,Mário Sérgio Santos Costa,Fortaleza EC,Franco Sebastián Cristaldo,Grêmio,27908,0.28377867746288804,FALSE,0,FALSE,FALSE,mario|sergio|santos|costa,franco|sebastian|cristaldo
+Brasil – Série A,29737,Fabrizio Germán Angileri,Sport Club Corinthians Paulista,Fabricio Angileri,Corinthians,31013,0.2036356209150327,TRUE,1,FALSE,FALSE,fabrizio|german|angileri,fabricio|angileri
+Brasil – Série A,29932,Victor Alexander da Silva,Botafogo de Futebol e Regatas,Caio Alexandre,Bahia,44472,0.21809523809523818,FALSE,0,FALSE,FALSE,victor|alexander|silva,caio|alexandre
+Brasil – Série A,30705,Vitor Eduardo da Silva Matos,SC Internacional,Patrick Roberto da Silva Campos,Atlético Mineiro,435466,0.24094342037890432,FALSE,1,FALSE,FALSE,vitor|eduardo|silva|matos,patrick|roberto|silva|campos
+Brasil – Série A,31535,Anderson Luis de Carvalho,Juventude RS,Wanderson Junior,Flamengo,459196,0.24814102564102575,FALSE,0,FALSE,FALSE,anderson|luis|carvalho,wanderson|junior
+Brasil – Série A,31591,Carlos de Menezes Júnior,Sport Club Corinthians Paulista,Robson Junior,Santos,470630,0.26214063714063723,FALSE,1,FALSE,FALSE,carlos|menezes|junior,robson|junior
+Brasil – Série A,31634,Claudio Rodrigues Gomes,Fluminense FC,Luciano Rodríguez Rosales,Bahia,79833,0.2184782608695653,FALSE,0,FALSE,FALSE,claudio|rodrigues|gomes,luciano|rodriguez|rosales
+Brasil – Série A,31644,Felipe Costa,Mirassol Futebol Clube,Felipe Cardoso,EC Vitória,459604,0.14466089466089477,FALSE,1,FALSE,FALSE,felipe|costa,felipe|cardoso
+Brasil – Série A,31657,Luis Antonio da Rocha Júnior,Red Bull Bragantino,Luisão,Santos,395268,0.2619047619047619,FALSE,0,FALSE,FALSE,luis|antonio|rocha|junior,luisao
+Brasil – Série A,31671,Caio Fernando de Oliveira,Clube Atlético Mineiro,Lucas Fernandes,EC Juventude,17621,0.2755555555555556,FALSE,0,FALSE,FALSE,caio|fernando|oliveira,lucas|fernandes
+Brasil – Série A,31683,José Marcos Alves Luis,EC Vitória,José,Cruzeiro,436001,0.2727272727272728,FALSE,1,FALSE,TRUE,jose|marcos|alves|luis,jose
+Brasil – Série A,31704,Douglas Moreira Fagundes,Grêmio FB Porto Alegrense,Jackson Diego Ibraim Fagundes,Ceará,232029,0.2288587848932677,FALSE,1,FALSE,FALSE,douglas|moreira|fagundes,jackson|diego|ibraim|fagundes
+Brasil – Série A,31745,Leonardo Augusto dos Santos Pereira,SC do Recife,Renato Augusto,Fluminense,5553,0.24761904761904768,FALSE,1,FALSE,FALSE,leonardo|augusto|santos|pereira,renato|augusto
+Brasil – Série A,31777,Lucas Eduardo Ribeiro de Souza,EC Vitória,Lucas Ferreira,São Paulo,452011,0.263980463980464,FALSE,1,FALSE,FALSE,lucas|eduardo|ribeiro|souza,lucas|ferreira
+Brasil – Série A,31798,João Victor da Silva Marcelino,CR Vasco da Gama,João Victor,Ceará,122981,0.21111111111111114,FALSE,2,FALSE,TRUE,joao|victor|silva|marcelino,joao|victor
+Brasil – Série A,32838,Marcos da Silva França,Fluminense FC,Marcos Paulo,EC Juventude,251725,0.28030303030303033,FALSE,1,FALSE,FALSE,marcos|silva|franca,marcos|paulo
+Brasil – Série A,32843,Francisco Alves da Silva Neto,SC do Recife,Franco Sebastián Cristaldo,Grêmio,27908,0.20887633106523668,FALSE,0,FALSE,FALSE,francisco|alves|silva|neto,franco|sebastian|cristaldo
+Brasil – Série A,32891,Gustavo Henric da Silva,EC Vitória,Gustavo Mancha,Fortaleza,436677,0.19437808568243342,FALSE,1,FALSE,FALSE,gustavo|henric|silva,gustavo|mancha
+Brasil – Série A,43781,Givanildo Vieira de Souza,Clube Atlético Mineiro,Ivan,Internacional,235451,0.27999999999999997,FALSE,0,FALSE,FALSE,givanildo|vieira|souza,ivan
+Brasil – Série A,46856,Luis Gustavo Da Silva Machado Duarte,Juventude RS,Luisão,Santos,395268,0.27777777777777773,FALSE,0,FALSE,FALSE,luis|gustavo|silva|machado|duarte,luisao
+Brasil – Série A,82406,Wesley Vinícius França Lima,CR Flamengo,Wesley,Internacional,44456,0.25925925925925924,FALSE,1,FALSE,TRUE,wesley|vinicius|franca|lima,wesley
+Brasil – Série A,122012,Matheus Leonardo Sales Cardoso,SC do Recife,Matheus Alexandre,Sc Do Recife,129800,0.22724673202614382,TRUE,1,FALSE,FALSE,matheus|leonardo|sales|cardoso,matheus|alexandre
+Brasil – Série A,142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,Nata,EC Juventude,211447,0.27777777777777773,FALSE,0,FALSE,FALSE,jhonatan|santos|rosa,nata
+Brasil – Série A,172955,Claudio Coelho Salvático,EC Vitória,Cauê,Red Bull Bragantino,430051,0.27777777777777773,FALSE,0,FALSE,FALSE,claudio|coelho|salvatico,caue
+Brasil – Série A,172964,Daniel de Oliveira Sertanejo,Mirassol Futebol Clube,Danilo,Botafogo,46451,0.2619047619047619,FALSE,0,FALSE,FALSE,daniel|oliveira|sertanejo,danilo
+Brasil – Série A,181600,Mateus Carvalho dos Santos,CR Vasco da Gama,Mateus Cocão,Vasco da Gama,395580,0.2503885003885005,FALSE,1,FALSE,FALSE,mateus|carvalho|santos,mateus|cocao
+Brasil – Série A,301488,Luis Eduardo Soares da Silva,Botafogo de Futebol e Regatas,Luisão,Santos,395268,0.2619047619047619,FALSE,0,FALSE,FALSE,luis|eduardo|soares|silva,luisao
+Brasil – Série A,632559,Luiz Henrique Soares Firmino,Mirassol Futebol Clube,Léo,Sc Do Recife,112986,0.2976190476190476,FALSE,0,FALSE,FALSE,luiz|henrique|soares|firmino,leo
+Brasil – Série A,633600,André Henrique da Silva Martins,Grêmio FB Porto Alegrense,André Luiz Santos Dias,Corinthians,439651,0.2709780315892371,FALSE,1,FALSE,FALSE,andre|henrique|silva|martins,andre|luiz|santos|dias
+Brasil – Série A,633848,Matheus Martins Fogaça de Paula,EC Vitória,Matheus Martins,Botafogo,123741,0.1720430107526882,FALSE,2,FALSE,TRUE,matheus|martins|fogaca|paula,matheus|martins
+Brasil – Série A,748003,Vinicius Mendonça Pereira,Red Bull Bragantino,Vinicius Zanocelo,Ceará,126242,0.22929971988795522,FALSE,1,FALSE,FALSE,vinicius|mendonca|pereira,vinicius|zanocelo
+Brasil – Série A,828621,Guilherme William Silva Inacio,Sport Club Corinthians Paulista,Guilherme Arana,Atlético Mineiro,6919,0.20000000000000007,FALSE,1,FALSE,FALSE,guilherme|william|silva|inacio,guilherme|arana
+Brasil – Série A,833936,Igor Eduardo Schlemper,Grêmio FB Porto Alegrense,Igor Cariús,Sc Do Recife,113297,0.26212121212121225,FALSE,1,FALSE,FALSE,igor|eduardo|schlemper,igor|carius
+Brasil – Série A,978489,Gustavo Teixeira Lopes da Conceição,Fortaleza EC,Gustavo,EC Juventude,126461,0.26666666666666666,FALSE,1,FALSE,TRUE,gustavo|teixeira|lopes|conceicao,gustavo
+Brasil – Série A,1005311,José Lucas Gomes da Silva,SC do Recife,José,Cruzeiro,436001,0.27999999999999997,FALSE,1,FALSE,TRUE,jose|lucas|gomes|silva,jose
+Colombia,3675,Freddy Hinestroza Arias,CA Bucaramanga,Fredy Hinestroza,Atlético Bucaramanga,27179,0.1014492753623189,FALSE,1,FALSE,FALSE,freddy|hinestroza|arias,fredy|hinestroza
+Colombia,13888,Daniel Alejandro Torres Rojas,Independiente Santa Fe,Daniel Alejandro Mera,Unión Magdalena,461803,0.13598795840175157,FALSE,2,FALSE,FALSE,daniel|alejandro|torres|rojas,daniel|alejandro|mera
+Colombia,35743,Yílmar Andrés Velásquez Palacios,Independiente Santa Fe,Yilmar Velázquez,Santa Fe,32434,0.2534722222222222,TRUE,1,FALSE,FALSE,yilmar|andres|velasquez|palacios,yilmar|velazquez
+Colombia,37054,Jhair Andrés Castillo León,CD Alianza Petrolera,Juan Andrés Castilla Lozano,La Equidad,150496,0.17361650694984038,FALSE,1,FALSE,FALSE,jhair|andres|castillo|leon,juan|andres|castilla|lozano
+Colombia,525235,Geindry Steven Cuervo Holguín,Envigado FC,Gendry Cuervo,Envigado,364863,0.24801061007957564,TRUE,1,FALSE,FALSE,geindry|steven|cuervo|holguin,gendry|cuervo
+Colombia,813243,Fabian Andres Chaverra Rivas,CD La Equidad,Fabián Alexis Suárez Chalare,Rionegro,365336,0.21861471861471868,FALSE,1,FALSE,FALSE,fabian|andres|chaverra|rivas,fabian|alexis|suarez|chalare
+Colombia,817905,John Quinones,Deportes Tolima,Julián Quiñónes,Deportivo Cali,28296,0.215928515928516,FALSE,1,FALSE,FALSE,john|quinones,julian|quinones
+Colombia,987102,Jhojan Camilo Torres Guazá,Independiente Santa Fe,Joan Castro,Atlético Nacional,29506,0.22261072261072268,FALSE,0,FALSE,FALSE,jhojan|camilo|torres|guaza,joan|castro
+Colombia,998322,Frey David Berrio Roqueme,Envigado FC,F.Berrio Roqueme,Envigado,460960,0.2555555555555556,TRUE,1,FALSE,FALSE,frey|david|berrio|roqueme,fberrio|roqueme
+Colombia,998681,Eyder Andrés Restrepo Castro,Club Llaneros SA,E.Restrepo Castro,Llaneros,461806,0.26785714285714296,FALSE,1,FALSE,FALSE,eyder|andres|restrepo|castro,erestrepo|castro
+Colombia,998685,Jan Carlos Angulo Rosales,Club Llaneros SA,Jean Carlos Colorado Sánchez,La Equidad,212253,0.20809523809523822,FALSE,1,FALSE,FALSE,jan|carlos|angulo|rosales,jean|carlos|colorado|sanchez
+Colombia,999132,Cristian Enrique Uribe Caro,Club Atlético Nacional,Cristian Arrieta,Deportes Tolima,27502,0.2259700176366844,FALSE,1,FALSE,FALSE,cristian|enrique|uribe|caro,cristian|arrieta
+Colombia,1001834,Neiser Villarreal,Millonarios FC,Leyser Chaverra,Independiente Medellín,130629,0.2671420083184789,FALSE,0,FALSE,FALSE,neiser|villarreal,leyser|chaverra
+Colombia,1018293,Juan David Valencia Longa,CD La Equidad,Juan David Arizala,Independiente Medellín,386970,0.18828703703703706,FALSE,2,FALSE,FALSE,juan|david|valencia|longa,juan|david|arizala
+Colombia,1022305,Samuel Martín Díaz,Millonarios FC,Misael Martínez,Unión Magdalena,32498,0.1754985754985755,FALSE,0,FALSE,FALSE,samuel|martin|diaz,misael|martinez
+Chile,28428,Dilan Patricio Zúñiga Espinoza Valenzuela,Club Deportivo Palestino,Dylan Patricio Zúñiga Valenzuela,Palestino,35737,0.2315024259113559,TRUE,3,FALSE,FALSE,dilan|patricio|zuniga|espinoza|valenzuela,dylan|patricio|zuniga|valenzuela
+Chile,43535,cc León Muñoz,Club Deportivo Huachipato,Maicol Andrés León Muñoz,Huachipato,102512,0.31730769230769224,TRUE,2,FALSE,FALSE,cc|leon|munoz,maicol|andres|leon|munoz
+Chile,741346,Lucas Molina,Nublense,Lucas Marcotti,Deportes Iquique,475703,0.20079365079365086,FALSE,1,FALSE,FALSE,lucas|molina,lucas|marcotti
+Chile,922030,Felipe Faúndez,Club Deportivo O'Higgins,Felipe Ogaz,O'Higgins,194422,0.17965367965367968,FALSE,1,FALSE,FALSE,felipe|faundez,felipe|ogaz
+Chile,1000788,Martín Ignacio Guzmán Carreño,Everton de Viña del Mar,Martín Ignacio Espinoza Alfaro,O'Higgins,474896,0.19746793270031665,FALSE,2,FALSE,FALSE,martin|ignacio|guzman|carreno,martin|ignacio|espinoza|alfaro
+Chile,1008824,Yair Franco Ratotti,Club de Deportes Unión Española,Juan Ignacio Figueroa,Huachipato,463008,0.3219908746224536,FALSE,0,FALSE,FALSE,yair|franco|ratotti,juan|ignacio|figueroa
+MLS,7157,Mathias Jattah-Njie Jørgensen,LA Galaxy,Mathías Laborda,Vancouver Whitecaps,36703,0.2988095238095238,FALSE,1,FALSE,FALSE,mathias|jattahnjie|jorgensen,mathias|laborda
+MLS,10373,Timothy Michael Ream,Charlotte FC,Timothy Tillman,LAFC,24153,0.2555555555555556,FALSE,1,FALSE,FALSE,timothy|michael|ream,timothy|tillman
+MLS,15869,Magomed-Shapi Suleymanov,Sporting Kansas City,Shapi Suleymanov,Sporting Kansas City,18920,0.23686594202898556,TRUE,1,FALSE,FALSE,magomedshapi|suleymanov,shapi|suleymanov
+MLS,17974,Kellyn  Acosta,Chicago Fire,Kellyn Kai Perry-Acosta,Chicago Fire,13035,0.20046620046620062,TRUE,1,FALSE,FALSE,kellyn|acosta,kellyn|kai|perryacosta
+MLS,25015,Matt Polster,New England Revolution,Matti Peltola,DC United,111936,0.16581196581196586,FALSE,0,FALSE,FALSE,matt|polster,matti|peltola
+MLS,25193,Gabriel Fortes Chaves,LA Galaxy,Gabriel Pec,LA Galaxy,32247,0.2049062049062049,TRUE,1,FALSE,FALSE,gabriel|fortes|chaves,gabriel|pec
+MLS,25477,Kee-Hee Kim,Seattle Sounders,Emeka Eneli,Real Salt Lake,389330,0.3164502164502164,FALSE,0,FALSE,FALSE,keehee|kim,emeka|eneli
+MLS,31134,José Guillermo Rodríguez,Sporting Kansas City,Tomas Ángel Gutiérrez,San Diego FC,82606,0.29464285714285726,FALSE,0,FALSE,FALSE,jose|guillermo|rodriguez,tomas|angel|gutierrez
+MLS,31171,Alexander Roldán Leon,Seattle Sounders,Alexander Freeman,Orlando City,224439,0.20564892623716158,FALSE,1,FALSE,FALSE,alexander|roldan|leon,alexander|freeman
+MLS,31520,Ocimar de Almeida Júnior,Houston Dynamo,Yeimar Gómez Andrade,Seattle Sounders,28114,0.28194444444444444,FALSE,0,FALSE,FALSE,ocimar|almeida|junior,yeimar|gomez|andrade
+MLS,32940,Guilherme da Trindade Dubas,Austin,Guilherme Biro,Austin FC,47159,0.26058201058201075,TRUE,1,FALSE,FALSE,guilherme|trindade|dubas,guilherme|biro
+MLS,36476,Ralph-William Johnson Priso-Mbongue,Vancouver Whitecaps FC,Alonso,Toronto FC,229444,0.2727272727272728,FALSE,0,FALSE,FALSE,ralphwilliam|johnson|prisombongue,alonso
+MLS,39455,Willy Agada,Real Salt Lake,Liel Abada,Charlotte,38776,0.19924242424242428,FALSE,0,FALSE,FALSE,willy|agada,liel|abada
+MLS,141706,Rwan Philipe Rodrigues de Souza Cruz,Real Salt Lake,Omir Guadalupe Fernandez Mosso,Portland Timbers,23859,0.3236111111111111,FALSE,0,FALSE,FALSE,rwan|philipe|rodrigues|souza|cruz,omir|guadalupe|fernandez|mosso
+MLS,166528,Alex Freeman,Orlando City,Alex Roldán,Seattle Sounders,16761,0.20202020202020204,FALSE,1,FALSE,FALSE,alex|freeman,alex|roldan
+MLS,171787,Pedro Henrique Fonseca de Araújo Martins,FC Dallas,Pedro De la Vega,Seattle Sounders,29558,0.3131410256410257,FALSE,1,FALSE,FALSE,pedro|henrique|fonseca|araujo|martins,pedro|vega
+MLS,817415,Harbor Michael  Miller,LA Galaxy,Harbor Tarczynski-Miller,LA Galaxy,429014,0.25373102139406495,TRUE,1,FALSE,FALSE,harbor|michael|miller,harbor|tarczynskimiller
+Premier League,44869,Valentino Francisco  Livramento,Newcastle United,Valentín Castellanos,West Ham United,15473,0.27287581699346414,FALSE,0,FALSE,FALSE,valentino|francisco|livramento,valentin|castellanos
+LaLiga,2190,Daniel Ceballos Fernández,Real Madrid CF,Dani Ceballos,Real Madrid,6697,0.236923076923077,TRUE,1,FALSE,FALSE,daniel|ceballos|fernandez,dani|ceballos
+LaLiga,2236,Daniel Parejo Muñoz,Villarreal CF,Daniel Olmo,Barcelona,16532,0.18819776714513564,FALSE,1,FALSE,FALSE,daniel|parejo|munoz,daniel|olmo
+LaLiga,5942,Jorge Resurrección Merodio,Atlético Madrid,Javier Guerra Moreno,Valencia,183761,0.2732277526395173,FALSE,0,FALSE,FALSE,jorge|resurreccion|merodio,javier|guerra|moreno
+LaLiga,7748,Moisés Gómez Bordonado,CA Osasuna,Oso,Sevilla,419557,0.28787878787878796,FALSE,0,FALSE,FALSE,moises|gomez|bordonado,oso
+LaLiga,12242,Jonathan Castro Otto,Deportivo Alavés,Natan,Real Betis,49048,0.25000000000000006,FALSE,0,FALSE,FALSE,jonathan|castro|otto,natan
+LaLiga,12456,Francisco Femenía Far,Getafe CF,Francisco Gracia,Levante UD,434033,0.1884920634920636,FALSE,1,FALSE,FALSE,francisco|femenia|far,francisco|gracia
+LaLiga,13418,Roberto Navarro Muñoz,Athletic Club de Bilbao,Robert Navarro,Athletic Club,47375,0.19444444444444453,FALSE,1,FALSE,FALSE,roberto|navarro|munoz,robert|navarro
+LaLiga,13877,Manuel Morlanes Ariño,RCD Mallorca,Manu Morlanes,Mallorca,11384,0.22954822954822968,FALSE,1,FALSE,FALSE,manuel|morlanes|arino,manu|morlanes
+LaLiga,13881,Santiago Comesaña Veiga,Villarreal CF,Santi Comesaña,Villarreal,12194,0.23757763975155274,TRUE,1,FALSE,FALSE,santiago|comesana|veiga,santi|comesana
+LaLiga,13885,Javier López Carballo,Real Oviedo,Javier Llabrés,Mallorca,161585,0.23214285714285726,FALSE,1,FALSE,FALSE,javier|lopez|carballo,javier|llabres
+LaLiga,13903,Daniel Vivian Moreno,Athletic Club de Bilbao,Dani Vivian,Athletic Club,41542,0.1500000000000001,FALSE,1,FALSE,FALSE,daniel|vivian|moreno,dani|vivian
+LaLiga,13922,Francisco José Beltrán Peinado,RC Celta de Vigo,Francisco Gracia,Levante UD,434033,0.21944444444444444,FALSE,1,FALSE,FALSE,francisco|jose|beltran|peinado,francisco|gracia
+LaLiga,13932,Javier Puado Díaz,RCD Espanyol,Javi Puado,Espanyol,11390,0.13725490196078433,FALSE,1,FALSE,FALSE,javier|puado|diaz,javi|puado
+LaLiga,13977,Enrique García Martínez,RCD Espanyol,Raúl García,Osasuna,32050,0.2520421607378129,FALSE,1,FALSE,FALSE,enrique|garcia|martinez,raul|garcia
+LaLiga,14002,Juan Camilo Hernández Suárez,Real Betis Balompié,Juanmi,Getafe,6695,0.2619047619047619,FALSE,0,FALSE,FALSE,juan|camilo|hernandez|suarez,juanmi
+LaLiga,14102,Alejandro Berenguer Remiro,Athletic Club de Bilbao,Alejandro Rego,Athletic Club,315468,0.17765567765567766,FALSE,1,FALSE,FALSE,alejandro|berenguer|remiro,alejandro|rego
+LaLiga,16062,Raphael Dias Belloli,FC Barcelona,Lander Pinillos,Deportivo Alavés,477326,0.23803418803418813,FALSE,0,FALSE,FALSE,raphael|dias|belloli,lander|pinillos
+LaLiga,16261,Marcos do Nascimento Teixeira,Sevilla FC,Marcos Alonso,Celta Vigo,3964,0.262709991158267,FALSE,1,FALSE,FALSE,marcos|nascimento|teixeira,marcos|alonso
+LaLiga,22883,Rafael Mir Vicente,Elche CF,Rafa Mir,Elche,23812,0.18518518518518517,FALSE,1,FALSE,FALSE,rafael|mir|vicente,rafa|mir
+LaLiga,23778,Ignacio Vidal Miralles,Real Oviedo,Iñaki Williams,Athletic Club,6393,0.2546897546897547,FALSE,0,FALSE,FALSE,ignacio|vidal|miralles,inaki|williams
+LaLiga,24078,Eduardo Expósito Jaén,RCD Espanyol,Edu Expósito,Espanyol,6910,0.26785714285714296,FALSE,1,FALSE,FALSE,eduardo|exposito|jaen,edu|exposito
+LaLiga,24084,Mateu Jaume Morey Bauzà,RCD Mallorca,Mate Morey,Mallorca,36728,0.23840579710144938,FALSE,1,FALSE,FALSE,mateu|jaume|morey|bauza,mate|morey
+LaLiga,24453,Manuel Sánchez De La Peña,Levante UD,Manuel Fernández,Celta Vigo,407243,0.23595238095238097,FALSE,1,FALSE,FALSE,manuel|sanchez|pena,manuel|fernandez
+LaLiga,25639,Daniel Pedro Calvo San Román,Real Oviedo,Daniel Olmo,Barcelona,16532,0.24458874458874474,FALSE,1,FALSE,FALSE,daniel|pedro|calvo|san|roman,daniel|olmo
+LaLiga,25697,Alejandro Baena Rodríguez,Atlético Madrid,Alejandro Catena,Osasuna,24978,0.18833333333333335,FALSE,1,FALSE,FALSE,alejandro|baena|rodriguez,alejandro|catena
+LaLiga,25738,Pedro González López,FC Barcelona,Urko González,Real Sociedad,48647,0.20128205128205134,FALSE,1,FALSE,FALSE,pedro|gonzalez|lopez,urko|gonzalez
+LaLiga,25892,Isaac Palazón Camacho,Rayo Vallecano,Isco,Real Betis,4926,0.2698412698412698,FALSE,0,FALSE,FALSE,isaac|palazon|camacho,isco
+LaLiga,27263,Antonio Martínez López,Deportivo Alavés,Antonio Raillo,Mallorca,24086,0.1858141858141857,FALSE,1,FALSE,FALSE,antonio|martinez|lopez,antonio|raillo
+LaLiga,29176,José Luis García Vayá,Valencia CF,José Gayá,Valencia,6596,0.24338624338624346,TRUE,1,FALSE,FALSE,jose|luis|garcia|vaya,jose|gaya
+LaLiga,32127,Josep María Chavarría Pérez,Rayo Vallecano,Sergio Carreira,Celta Vigo,49531,0.31366843033509706,FALSE,0,FALSE,FALSE,josep|maria|chavarria|perez,sergio|carreira
+LaLiga,35342,Nicholas Williams Arthuer,Athletic Club de Bilbao,Nico Williams,Athletic Club,68574,0.2625641025641027,FALSE,1,FALSE,FALSE,nicholas|williams|arthuer,nico|williams
+LaLiga,35630,Moriba Kourouma Kourouma,RC Celta de Vigo,Lancinet Kourouma Kourouma,Girona,432491,0.2741452991452992,FALSE,1,FALSE,FALSE,moriba|kourouma|kourouma,lancinet|kourouma|kourouma
+LaLiga,53346,Gerard Fernández Castellano,Sevilla FC,Aarón Escandell,Real Oviedo,25704,0.3017636684303352,FALSE,0,FALSE,FALSE,gerard|fernandez|castellano,aaron|escandell
+LaLiga,62275,Roger Brugué Ayguadé,Levante UD,Gorka Guruzeta,Athletic Club,12553,0.32748917748917755,FALSE,0,FALSE,FALSE,roger|brugue|ayguade,gorka|guruzeta
+LaLiga,69308,Juan Luis Sánchez Velasco,Sevilla FC,Juanlu,Sevilla,41084,0.2533333333333333,TRUE,0,FALSE,FALSE,juan|luis|sanchez|velasco,juanlu
+LaLiga,69391,Enrique Jesús Salas Valiente,Sevilla FC,Nelson Alexander Deossa Suárez,Real Betis,130953,0.31825396825396834,FALSE,0,FALSE,FALSE,enrique|jesus|salas|valiente,nelson|alexander|deossa|suarez
+LaLiga,117268,Andrés  López Gallo,Sevilla FC,Fer López,Celta Vigo,346691,0.263888888888889,FALSE,1,FALSE,FALSE,andres|lopez|gallo,fer|lopez
+LaLiga,120550,Youssef Enriquez Lekhedim,Deportivo Alavés,Yusi,Deportivo Alavés,255811,0.27999999999999997,TRUE,0,FALSE,FALSE,youssef|enriquez|lekhedim,yusi
+LaLiga,142458,Alexandre Zurawski,Rayo Vallecano,Alexander Freeman,Villarreal,224439,0.2369281045751635,FALSE,0,FALSE,FALSE,alexandre|zurawski,alexander|freeman
+LaLiga,531625,Alejandro  San Cristóbal Sánchez,Getafe CF,Alejandro Francés,Girona,34830,0.21214816571790018,FALSE,1,FALSE,FALSE,alejandro|san|cristobal|sanchez,alejandro|frances
+LaLiga,892503,Joaquin Martínez Gauna,Sevilla FC,Toni Martínez,Deportivo Alavés,24257,0.2327117327117328,FALSE,1,FALSE,FALSE,joaquin|martinez|gauna,toni|martinez
+LaLiga 2,246,Adrián Embarba Blázquez,UD Almería,Arana,Racing Santander,185955,0.2608695652173913,FALSE,0,FALSE,FALSE,adrian|embarba|blazquez,arana
+LaLiga 2,2083,Francisco José Sánchez Rodríguez,Burgos CF,Francisco Montero,Málaga,21207,0.23852124183006548,FALSE,1,FALSE,FALSE,francisco|jose|sanchez|rodriguez,francisco|montero
+LaLiga 2,6140,Leonardo Carrilho Baptistão,UD Almería,Leonardo Buta,Eibar,178618,0.2524928774928775,FALSE,1,FALSE,FALSE,leonardo|carrilho|baptistao,leonardo|buta
+LaLiga 2,9733,Sergio Enrich Ametller,Sociedad Deportiva Huesca,Sergi Enrich,Huesca,6700,0.15151515151515157,FALSE,1,FALSE,FALSE,sergio|enrich|ametller,sergi|enrich
+LaLiga 2,10938,Joaquín Navarro Jiménez,RC Deportivo de La Coruña,Joaquín Muñoz,Málaga,23214,0.22672798216276485,FALSE,1,FALSE,FALSE,joaquin|navarro|jimenez,joaquin|munoz
+LaLiga 2,11612,Gregorio Sierra Pérez,Burgos CF,Grego Sierra,Burgos,25830,0.21230158730158732,TRUE,1,FALSE,FALSE,gregorio|sierra|perez,grego|sierra
+LaLiga 2,13411,Antonio Moya Vega,Real Zaragoza,Antonino,FC Andorra,408856,0.23774509803921579,FALSE,0,FALSE,FALSE,antonio|moya|vega,antonino
+LaLiga 2,13424,Alberto Rodríguez Baró,Real Zaragoza,Álvaro Rodríguez,Eibar,76445,0.16287878787878796,FALSE,1,FALSE,FALSE,alberto|rodriguez|baro,alvaro|rodriguez
+LaLiga 2,13970,Sergio Guardiola Navarro,Cordoba CF,Sergi Guardiola,Córdoba CF,17027,0.2138888888888889,TRUE,1,FALSE,FALSE,sergio|guardiola|navarro,sergi|guardiola
+LaLiga 2,13992,Daniel Ojeda Saranova,Sociedad Deportiva Huesca,Dani Ojeda,Huesca,11747,0.24126984126984136,FALSE,1,FALSE,FALSE,daniel|ojeda|saranova,dani|ojeda
+LaLiga 2,22137,Alejandro Centelles Plaza,UD Almería,Alejandro Lizancos,Burgos,407000,0.21953703703703706,FALSE,1,FALSE,FALSE,alejandro|centelles|plaza,alejandro|lizancos
+LaLiga 2,23204,Javier Ontiveros Parra,Cadiz CF,Javi Ontiveros,Cádiz,20063,0.2164502164502165,TRUE,1,FALSE,FALSE,javier|ontiveros|parra,javi|ontiveros
+LaLiga 2,23767,José Antonio Rodríguez Díaz,Albacete Balompie,José Antonio Caro,Las Palmas,24920,0.18666031227305735,FALSE,2,FALSE,FALSE,jose|antonio|rodriguez|diaz,jose|antonio|caro
+LaLiga 2,24628,José Sánchez Martínez,Albacete Balompie,José Arnáiz,Granada,6810,0.21933621933621936,FALSE,1,FALSE,FALSE,jose|sanchez|martinez,jose|arnaiz
+LaLiga 2,25594,Alejandro José Muñoz Miguel,UD Almería,Alejandro Lizancos,Burgos,407000,0.2481481481481482,FALSE,1,FALSE,FALSE,alejandro|jose|munoz|miguel,alejandro|lizancos
+LaLiga 2,25636,Daniel Escriche Romero,Albacete Balompie,Daniel Esmorís Tasende,Real Zaragoza,299061,0.24431818181818185,FALSE,1,FALSE,FALSE,daniel|escriche|romero,daniel|esmoris|tasende
+LaLiga 2,25704,José Manuel Hernando Riol,Racing Santander,Saúl,Burgos,299103,0.27999999999999997,FALSE,0,FALSE,FALSE,jose|manuel|hernando|riol,saul
+LaLiga 2,25713,Rafael Tresaco Blasco,Cultural y Deportiva Leonesa,Rafa Tresaco,CyD Leonesa,34606,0.19841269841269848,FALSE,1,FALSE,FALSE,rafael|tresaco|blasco,rafa|tresaco
+LaLiga 2,25742,José Alejandro Suárez Suárez,UD Las Palmas,José Arnáiz,Granada,6810,0.27792207792207796,FALSE,1,FALSE,FALSE,jose|alejandro|suarez|suarez,jose|arnaiz
+LaLiga 2,25764,Marcos André de Sousa Mendonça,Real Valladolid,Marcos Luna Marcos Ruiz,Almería,297531,0.28913043478260875,FALSE,1,FALSE,FALSE,marcos|andre|sousa|mendonca,marcos|luna|marcos|ruiz
+LaLiga 2,25789,Salvador Ruiz Rodríguez,CD Castellon,Rafael Rodríguez Ruiz,Málaga,363575,0.21252406378264516,FALSE,2,FALSE,FALSE,salvador|ruiz|rodriguez,rafael|rodriguez|ruiz
+LaLiga 2,25935,Javier Castro Urdín,Racing Santander,Javier Martón,Eibar,133558,0.17622582096266315,FALSE,1,FALSE,FALSE,javier|castro|urdin,javier|marton
+LaLiga 2,26015,Victor Álvarez Rozada,UD Las Palmas,Víctor Valverde da Silva,Albacete,326217,0.2529761904761906,FALSE,1,FALSE,FALSE,victor|alvarez|rozada,victor|valverde|silva
+LaLiga 2,26157,Daniel Villahermosa Martínez,FC Andorra,Dani Villahermosa,FC Andorra,41603,0.2093837535014006,TRUE,1,FALSE,FALSE,daniel|villahermosa|martinez,dani|villahermosa
+LaLiga 2,28931,Agustín Medina Delgado,Albacete Balompie,Agustín Sienra,CD Castellón,48439,0.226911976911977,FALSE,1,FALSE,FALSE,agustin|medina|delgado,agustin|sienra
+LaLiga 2,30863,Diego Hernández Barriuso,CD Castellon,Diego Alende,FC Andorra,34728,0.2537878787878788,FALSE,1,FALSE,FALSE,diego|hernandez|barriuso,diego|alende
+LaLiga 2,30889,Juan Diego Molina Martínez,RC Deportivo de La Coruña,Juan Díaz,Cádiz,452041,0.26780626780626776,FALSE,1,FALSE,FALSE,juan|diego|molina|martinez,juan|diaz
+LaLiga 2,30900,Ricardo Rodríguez Gil Carcedo,Albacete Balompie,Dani Rodríguez,Leganés,24088,0.29746115953012503,FALSE,1,FALSE,FALSE,ricardo|rodriguez|gil|carcedo,dani|rodriguez
+LaLiga 2,30901,José Raúl Gutiérrez Parejo,Real Zaragoza,José Gragera,RC Deportivo La Coruña,25587,0.26554001554001566,FALSE,1,FALSE,FALSE,jose|raul|gutierrez|parejo,jose|gragera
+LaLiga 2,31943,Rubén Díez Adán,Agrupación Deportiva Ceuta FC,Rubén Durán,RC Deportivo La Coruña,198020,0.19393939393939405,FALSE,1,FALSE,FALSE,ruben|diez|adan,ruben|duran
+LaLiga 2,31973,José Alejandro Martín Valerón,Cordoba CF,José Arnáiz,Granada,6810,0.2820271682340649,FALSE,1,FALSE,FALSE,jose|alejandro|martin|valeron,jose|arnaiz
+LaLiga 2,31991,José Luis Zalazar Martínez,Agrupación Deportiva Ceuta FC,Alex Douma Johan Lebarbier,Real Sociedad B,324436,0.2935222672064777,FALSE,0,FALSE,FALSE,jose|luis|zalazar|martinez,alex|douma|johan|lebarbier
+LaLiga 2,33132,Juan Pedro Jiménez Melero,Málaga CF,Juanpe,Málaga,48744,0.2533333333333333,FALSE,0,FALSE,FALSE,juan|pedro|jimenez|melero,juanpe
+LaLiga 2,34485,Francisco Jesús Crespo García,UD Las Palmas,Francisco Gracia,CyD Leonesa,434033,0.18067528735632182,FALSE,1,FALSE,FALSE,francisco|jesus|crespo|garcia,francisco|gracia
+LaLiga 2,35291,Alejandro Millán Iranzo,CD Leganés,Alejandro Lizancos,Burgos,407000,0.19056964573268928,FALSE,1,FALSE,FALSE,alejandro|millan|iranzo,alejandro|lizancos
+LaLiga 2,35954,Luís Henrique de Barros Lopes,CD Leganés,Luis Nlavo,Leganés,136414,0.30804597701149433,TRUE,1,FALSE,FALSE,luis|henrique|barros|lopes,luis|nlavo
+LaLiga 2,41319,Juan Miguel Latasa Fernández Layos,Real Valladolid,Juanmi Latasa,Real Valladolid,39637,0.244343891402715,TRUE,1,FALSE,FALSE,juan|miguel|latasa|fernandez|layos,juanmi|latasa
+LaLiga 2,41327,Xavier Sintes Egea,Cordoba CF,Xavi Sintes,Córdoba CF,39344,0.22053872053872065,TRUE,1,FALSE,FALSE,xavier|sintes|egea,xavi|sintes
+LaLiga 2,42888,Alejandro Suárez Cardero,CD Mirandes,Alejandro Calvo,FC Andorra,386181,0.22286324786324785,FALSE,1,FALSE,FALSE,alejandro|suarez|cardero,alejandro|calvo
+LaLiga 2,61683,Guilherme Borges Guedes,UD Almería,Guilherme Sousa Carvalho Fernandes,Real Valladolid,347958,0.24888948714497255,FALSE,1,FALSE,FALSE,guilherme|borges|guedes,guilherme|sousa|carvalho|fernandes
+LaLiga 2,63346,Pedro Alejandro García Mejías,UD Las Palmas,Pedro Serna,Granada,39282,0.2986938349007315,FALSE,1,FALSE,FALSE,pedro|alejandro|garcia|mejias,pedro|serna
+LaLiga 2,66228,Guillermo Bueno López,Real Valladolid,Guille Bueno,Real Valladolid,136328,0.22619047619047633,TRUE,1,FALSE,FALSE,guillermo|bueno|lopez,guille|bueno
+LaLiga 2,69290,Javier Fernández Abruñedo,Cultural y Deportiva Leonesa,Javier Hernandez,Mirandés,405555,0.15416666666666667,FALSE,1,FALSE,FALSE,javier|fernandez|abrunedo,javier|hernandez
+LaLiga 2,69310,Luis Miguel Cruz Hernández,RC Deportivo de La Coruña,Luismi Cruz,RC Deportivo La Coruña,159795,0.28321678321678323,FALSE,1,FALSE,FALSE,luis|miguel|cruz|hernandez,luismi|cruz
+LaLiga 2,69346,Alejandro Meléndez Ruiz,Albacete Balompie,Alejandro Roldán,Albacete,406828,0.2078157349896481,TRUE,1,FALSE,FALSE,alejandro|melendez|ruiz,alejandro|roldan
+LaLiga 2,69821,José Antonio Abad Martínez,Sociedad Deportiva Huesca,José Antonio Caro,Las Palmas,24920,0.18024132730015083,FALSE,2,FALSE,FALSE,jose|antonio|abad|martinez,jose|antonio|caro
+LaLiga 2,69914,Dalisson De Almeida Leite,Cordoba CF,Daniel Esmorís Tasende,Real Zaragoza,299061,0.24826156299840527,FALSE,0,FALSE,FALSE,dalisson|almeida|leite,daniel|esmoris|tasende
+LaLiga 2,70214,Ignacio Martín Gómez,Real Sporting de Gijón,Higinio Marín,Albacete,24482,0.2618881118881119,FALSE,0,FALSE,FALSE,ignacio|martin|gomez,higinio|marin
+LaLiga 2,70523,Marvelous Antolín Garzón,CD Leganés,Marvel,Leganés,140421,0.25000000000000006,TRUE,0,FALSE,FALSE,marvelous|antolin|garzon,marvel
+LaLiga 2,70530,Javier Villar del Fraile,Albacete Balompie,Javi Villar,Albacete,140431,0.2714646464646465,TRUE,1,FALSE,FALSE,javier|villar|fraile,javi|villar
+LaLiga 2,70838,Francisco Sebastián Moyano Jiménez,Real Zaragoza,Francisco Montero,Málaga,21207,0.23774509803921579,FALSE,1,FALSE,FALSE,francisco|sebastian|moyano|jimenez,francisco|montero
+LaLiga 2,75422,Daniel Lorenzo Guerrero,Málaga CF,Dani Lorenzo,Málaga,162322,0.21497584541062797,FALSE,1,FALSE,FALSE,daniel|lorenzo|guerrero,dani|lorenzo
+LaLiga 2,97323,Javier Moreno Arrones Gil,Albacete Balompie,Xavier Moreno Hernández,Real Valladolid,318159,0.21323103154305217,FALSE,1,FALSE,FALSE,javier|moreno|arrones|gil,xavier|moreno|hernandez
+LaLiga 2,183562,Gonzalo Aguilar López,CD Leganés,Gonzalo Melero,Leganés,11669,0.23214285714285726,TRUE,1,FALSE,FALSE,gonzalo|aguilar|lopez,gonzalo|melero
+LaLiga 2,531556,Manuel Justo Román,Cultural y Deportiva Leonesa,Manu Justo,CyD Leonesa,320597,0.14814814814814825,FALSE,1,FALSE,FALSE,manuel|justo|roman,manu|justo
+LaLiga 2,531718,Iñigo Sebastián Magaña,Sociedad Deportiva Huesca,Íñigo Sainz Maza,Racing Santander,42789,0.21049783549783557,FALSE,1,FALSE,FALSE,inigo|sebastian|magana,inigo|sainz|maza
+LaLiga 2,647233,Thiago Helguera Merello Volante,CD Mirandes,Thiago Emanuel Helguera Merello,Mirandés,394211,0.2033054559936281,TRUE,3,FALSE,FALSE,thiago|helguera|merello|volante,thiago|emanuel|helguera|merello
+LaLiga 2,666473,Daniel Requena Sánchez,Cordoba CF,Daniel Rodríguez Sánchez,Málaga,326863,0.21801346801346805,FALSE,2,FALSE,FALSE,daniel|requena|sanchez,daniel|rodriguez|sanchez
+LaLiga 2,759034,Iván San José Cantalejo,Real Valladolid,Iván Alejo,Real Valladolid,6908,0.2917874396135266,TRUE,1,FALSE,FALSE,ivan|san|jose|cantalejo,ivan|alejo
+LaLiga 2,759357,Rodrigo Suárez Marcos,Cultural y Deportiva Leonesa,Rodri Suárez,CyD Leonesa,80804,0.142857142857143,FALSE,1,FALSE,FALSE,rodrigo|suarez|marcos,rodri|suarez
+LaLiga 2,860346,Adrián Hernández Hernández,CD Mirandes,Aridane Hernández,Almería,24212,0.25263951734539974,FALSE,1,FALSE,FALSE,adrian|hernandez|hernandez,aridane|hernandez
+LaLiga 2,861974,Carlos Ruiz Rubio,Málaga CF,Carlos Guirao,Leganés,440180,0.21438365556012615,FALSE,1,FALSE,FALSE,carlos|ruiz|rubio,carlos|guirao
+LaLiga 2,909044,Daniel Diaz Gándara,Real Sociedad San Sebastian B,Dani Díaz,Real Sociedad B,437517,0.17543859649122806,FALSE,1,FALSE,FALSE,daniel|diaz|gandara,dani|diaz
+LaLiga 2,913754,Alvaro Miguel Garcia-Pascual,Cadiz CF,Álvaro García,CD Castellón,502405,0.2369420702754036,FALSE,1,FALSE,FALSE,alvaro|miguel|garciapascual,alvaro|garcia
+LaLiga 2,1023973,Jorge Álvarez,Sociedad Deportiva Huesca,Sergio Álvarez,Eibar,13107,0.10103785103785118,FALSE,1,FALSE,FALSE,jorge|alvarez,sergio|alvarez
+Serie A,16057,Domilson Cordeiro dos Santos,Fiorentina,Romano Floriani,Cremonese,89293,0.3384004884004884,FALSE,0,FALSE,FALSE,domilson|cordeiro|santos,romano|floriani
+Turquía – Süper Lig,12008,Frederico Rodrigues de Paul Santos,Fenerbahce,Fred,Fenerbahçe,9904,0.29411764705882354,TRUE,0,FALSE,FALSE,frederico|rodrigues|paul|santos,fred
+Turquía – Süper Lig,31221,Archibald Norman Brown,Fenerbahce,Archie Brown,Fenerbahçe,39444,0.2702020202020202,TRUE,1,FALSE,FALSE,archibald|norman|brown,archie|brown
+Turquía – Süper Lig,35125,Anderson Souza Conceição,Fenerbahce,Janderson,Göztepe,392190,0.25925925925925924,FALSE,0,FALSE,FALSE,anderson|souza|conceicao,janderson
+UEFA Europa League,31221,Archibald Norman Brown,Fenerbahce,Archie Brown,Fenerbahçe,39444,0.2702020202020202,TRUE,1,FALSE,FALSE,archibald|norman|brown,archie|brown

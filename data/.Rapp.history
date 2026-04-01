@@ -1,0 +1,2 @@
+load("/Users/mateorodriguez/Desktop/analisis_CA/scout_dashboard/data/scout_data.rds")
+load("/Users/mateorodriguez/Desktop/analisis_CA/scout_dashboard/data/fis_data.rds")
