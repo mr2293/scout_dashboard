@@ -16,9 +16,11 @@ library(lubridate)
 library(scales)
 library(fmsb)
 
+username = "echazaro@clubamerica.com.mx"
+password = "gXrDvovd"
 
-username = Sys.getenv("SB_USERNAME")
-password = Sys.getenv("SB_PASSWORD")
+# username = Sys.getenv("SB_USERNAME")
+# password = Sys.getenv("SB_PASSWORD")
 
 # comps <- competitions(username,password)
 
@@ -191,6 +193,24 @@ goles_champions <- all_player_matches(username, password, champions)
 goles_libertadores <- all_player_matches(username, password, libertadores)
 goles_uel <- all_player_matches(username, password, europa_league)
 
+# Helper: safely summarise and join goles data (handles NULL/empty match vectors)
+safe_join_goles <- function(jugs_df, goles_df) {
+  if (is.null(goles_df) || nrow(goles_df) == 0) {
+    return(jugs_df |> mutate(season_goals = NA_real_, season_assists = NA_real_))
+  }
+  goles_summary <- goles_df |>
+    group_by(player_id, player_name) |>
+    summarise(
+      season_goals = sum(player_match_goals, na.rm = FALSE),
+      season_assists = sum(player_match_assists, na.rm = FALSE),
+      .groups = "drop"
+    )
+  jugs_df |>
+    left_join(goles_summary, by = "player_id") |>
+    select(-player_name.x) |>
+    rename(player_name = player_name.y)
+}
+
 glimpse(jugs_ligamx)
 
 distinct_positions <- jugs_ligamx |> 
@@ -232,18 +252,7 @@ jugs_ligamx <- jugs_ligamx |>
            TRUE ~ NA_character_
          ))
 
-goles_ligamx <- goles_ligamx |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  ) |>
-  arrange(desc(season_goals))
-
-jugs_ligamx <- jugs_ligamx |>
-  left_join(goles_ligamx, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_ligamx <- safe_join_goles(jugs_ligamx, goles_ligamx)
 
 ## Delanteros ----
 
@@ -2743,23 +2752,7 @@ jugs_ccl <- jugs_ccl|>
     TRUE ~ NA_character_
   ))
 
-if (!is.null(goles_ccl) && nrow(goles_ccl) > 0) {
-  goles_ccl <- goles_ccl |>
-    group_by(player_id, player_name) |>
-    summarise(
-      season_goals = sum(player_match_goals, na.rm = FALSE),
-      season_assists = sum(player_match_assists, na.rm = FALSE)
-    )
-
-  jugs_ccl <- jugs_ccl |>
-    # left_join(pos_ccl, by = c("player_id")) |>
-    left_join(goles_ccl, by = c("player_id")) |>
-    select(-player_name.x) |>
-    rename(player_name = player_name.y)
-} else {
-  jugs_ccl <- jugs_ccl |>
-    mutate(season_goals = NA_real_, season_assists = NA_real_)
-}
+jugs_ccl <- safe_join_goles(jugs_ccl, goles_ccl)
 
 # LIGA ARGENTINA ----
 
@@ -2775,18 +2768,7 @@ jugs_arg <- jugs_arg|>
     TRUE ~ NA_character_
   ))
 
-goles_arg <- goles_arg |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_arg <- jugs_arg |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_arg, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_arg <- safe_join_goles(jugs_arg, goles_arg)
 
 # BRASILEIRAO SERIE A ----
 
@@ -2802,18 +2784,7 @@ jugs_brasil <- jugs_brasil|>
     TRUE ~ NA_character_
   ))
 
-goles_brasil <- goles_brasil |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_brasil <- jugs_brasil |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_brasil, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_brasil <- safe_join_goles(jugs_brasil, goles_brasil)
 
 # LIGA COLOMBIANA ----
 
@@ -2829,18 +2800,7 @@ jugs_colombia <- jugs_colombia|>
     TRUE ~ NA_character_
   ))
 
-goles_colombia <- goles_colombia |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_colombia <- jugs_colombia |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_colombia, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_colombia <- safe_join_goles(jugs_colombia, goles_colombia)
 
 # LIGA ECUATORIANA ----
 
@@ -2856,18 +2816,7 @@ jugs_ecuador <- jugs_ecuador |>
     TRUE ~ NA_character_
   ))
 
-goles_ecuador <- goles_ecuador |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_ecuador <- jugs_ecuador |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_ecuador, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_ecuador <- safe_join_goles(jugs_ecuador, goles_ecuador)
 
 # LIGA CHILENA ----
 
@@ -2883,18 +2832,7 @@ jugs_chile <- jugs_chile|>
     TRUE ~ NA_character_
   ))
 
-goles_chile <- goles_chile |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_chile <- jugs_chile |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_chile, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_chile <- safe_join_goles(jugs_chile, goles_chile)
 
 # LIGA PARAGUAYA ----
 
@@ -2910,18 +2848,7 @@ jugs_paraguay <- jugs_paraguay|>
     TRUE ~ NA_character_
   ))
 
-goles_paraguay <- goles_paraguay |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_paraguay <- jugs_paraguay |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_paraguay, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_paraguay <- safe_join_goles(jugs_paraguay, goles_paraguay)
 
 # LIGA URUGUAYA ----
 
@@ -2937,18 +2864,7 @@ jugs_uruguay <- jugs_uruguay|>
     TRUE ~ NA_character_
   ))
 
-goles_uruguay <- goles_uruguay |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_uruguay <- jugs_uruguay |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_uruguay, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_uruguay <- safe_join_goles(jugs_uruguay, goles_uruguay)
 
 # MLS ----
 
@@ -2964,18 +2880,7 @@ jugs_mls <- jugs_mls|>
     TRUE ~ NA_character_
   ))
 
-goles_mls <- goles_mls |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_mls <- jugs_mls |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_mls, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_mls <- safe_join_goles(jugs_mls, goles_mls)
 
 # PREMIER LEAGUE ----
 
@@ -2991,18 +2896,7 @@ jugs_premier <- jugs_premier|>
     TRUE ~ NA_character_
   ))
 
-goles_premier <- goles_premier |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_premier <- jugs_premier |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_premier, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_premier <- safe_join_goles(jugs_premier, goles_premier)
 
 # EFL CHAMPIONSHIP ----
 
@@ -3018,18 +2912,7 @@ jugs_championship <- jugs_championship|>
     TRUE ~ NA_character_
   ))
 
-goles_championship <- goles_championship |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_championship <- jugs_championship |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_championship, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_championship <- safe_join_goles(jugs_championship, goles_championship)
 
 # LA LIGA ----
 
@@ -3045,18 +2928,7 @@ jugs_laliga <- jugs_laliga|>
     TRUE ~ NA_character_
   ))
 
-goles_laliga <- goles_laliga |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_laliga <- jugs_laliga |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_laliga, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_laliga <- safe_join_goles(jugs_laliga, goles_laliga)
 
 # LA LIGA 2 ----
 
@@ -3072,18 +2944,7 @@ jugs_laliga_2 <- jugs_laliga_2|>
     TRUE ~ NA_character_
   ))
 
-goles_laliga_2 <- goles_laliga_2 |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_laliga_2 <- jugs_laliga_2 |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_laliga_2, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_laliga_2 <- safe_join_goles(jugs_laliga_2, goles_laliga_2)
 
 # SERIE A ----
 
@@ -3099,18 +2960,7 @@ jugs_serie_a <- jugs_serie_a|>
     TRUE ~ NA_character_
   ))
 
-goles_serie_a <- goles_serie_a |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_serie_a <- jugs_serie_a |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_serie_a, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_serie_a <- safe_join_goles(jugs_serie_a, goles_serie_a)
 
 # SERIE B ----
 
@@ -3126,18 +2976,7 @@ jugs_serie_b <- jugs_serie_b|>
     TRUE ~ NA_character_
   ))
 
-goles_serie_b <- goles_serie_b |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_serie_b <- jugs_serie_b |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_serie_b, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_serie_b <- safe_join_goles(jugs_serie_b, goles_serie_b)
 
 # BUNDESLIGA ----
 
@@ -3153,18 +2992,7 @@ jugs_bundesliga <- jugs_bundesliga|>
     TRUE ~ NA_character_
   ))
 
-goles_bundesliga <- goles_bundesliga |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_bundesliga <- jugs_bundesliga |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_bundesliga, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_bundesliga <- safe_join_goles(jugs_bundesliga, goles_bundesliga)
  
 # BUNDESLIGA 2 ----
 
@@ -3180,18 +3008,7 @@ jugs_bundesliga_2 <- jugs_bundesliga_2|>
     TRUE ~ NA_character_
   ))
 
-goles_bundesliga_2 <- goles_bundesliga_2 |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_bundesliga_2 <- jugs_bundesliga_2 |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_bundesliga_2, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_bundesliga_2 <- safe_join_goles(jugs_bundesliga_2, goles_bundesliga_2)
 
 # LIGUE 1 ----
 
@@ -3207,18 +3024,7 @@ jugs_ligue_1 <- jugs_ligue_1|>
     TRUE ~ NA_character_
   ))
 
-goles_ligue_1 <- goles_ligue_1 |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_ligue_1 <- jugs_ligue_1 |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_ligue_1, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_ligue_1 <- safe_join_goles(jugs_ligue_1, goles_ligue_1)
 
 # EREDIVISIE ----
 
@@ -3234,18 +3040,7 @@ jugs_eredivisie <- jugs_eredivisie|>
     TRUE ~ NA_character_
   ))
 
-goles_eredivisie <- goles_eredivisie |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_eredivisie <- jugs_eredivisie |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_eredivisie, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_eredivisie <- safe_join_goles(jugs_eredivisie, goles_eredivisie)
 
 # LIGA BELGA (JUPILER PRO LEAGUE) ----
 
@@ -3261,18 +3056,7 @@ jugs_belgica <- jugs_belgica|>
     TRUE ~ NA_character_
   ))
 
-goles_belgica <- goles_belgica |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_belgica <- jugs_belgica |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_belgica, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_belgica <- safe_join_goles(jugs_belgica, goles_belgica)
 
 # LIGA PORTUGUESA (PRIMEIRA LIGA) ----
 
@@ -3288,18 +3072,7 @@ jugs_portugal <- jugs_portugal|>
     TRUE ~ NA_character_
   ))
 
-goles_portugal <- goles_portugal |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_portugal <- jugs_portugal |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_portugal, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_portugal <- safe_join_goles(jugs_portugal, goles_portugal)
 
 # LIGA TURCA (SUPER LIG) ----
 
@@ -3315,18 +3088,7 @@ jugs_turquia <- jugs_turquia|>
     TRUE ~ NA_character_
   ))
 
-goles_turquia <- goles_turquia |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_turquia <- jugs_turquia |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_turquia, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_turquia <- safe_join_goles(jugs_turquia, goles_turquia)
 
 # LIGA ESCOCESA (PREMIERSHIP) ----
 
@@ -3342,18 +3104,7 @@ jugs_escocia <- jugs_escocia|>
     TRUE ~ NA_character_
   ))
 
-goles_escocia <- goles_escocia |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_escocia <- jugs_escocia |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_escocia, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_escocia <- safe_join_goles(jugs_escocia, goles_escocia)
 
 # UEFA CHAMPIONS LEAGUE ----
 
@@ -3369,18 +3120,7 @@ jugs_champions <- jugs_champions|>
     TRUE ~ NA_character_
   ))
 
-goles_champions <- goles_champions |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_champions <- jugs_champions |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_champions, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_champions <- safe_join_goles(jugs_champions, goles_champions)
 
 # COPA LIBERTADORES ----
 
@@ -3396,18 +3136,7 @@ jugs_libertadores <- jugs_libertadores|>
     TRUE ~ NA_character_
   ))
 
-goles_libertadores <- goles_libertadores |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_libertadores <- jugs_libertadores |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_libertadores, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_libertadores <- safe_join_goles(jugs_libertadores, goles_libertadores)
 
 # UEFA EUROPA LEAGUE ----
 
@@ -3423,18 +3152,7 @@ jugs_uel <- jugs_uel|>
     TRUE ~ NA_character_
   ))
 
-goles_uel <- goles_uel |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
-
-jugs_uel <- jugs_uel |>
-  # left_join(pos_ligamx, by = c("player_id")) |>
-  left_join(goles_uel, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+jugs_uel <- safe_join_goles(jugs_uel, goles_uel)
 
 # HELPERS ----
 
