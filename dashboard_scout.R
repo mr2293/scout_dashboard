@@ -2743,18 +2743,23 @@ jugs_ccl <- jugs_ccl|>
     TRUE ~ NA_character_
   ))
 
-goles_ccl <- goles_ccl |>
-  group_by(player_id, player_name) |>
-  summarise(
-    season_goals = sum(player_match_goals, na.rm = FALSE),
-    season_assists = sum(player_match_assists, na.rm = FALSE)
-  )
+if (!is.null(goles_ccl) && nrow(goles_ccl) > 0) {
+  goles_ccl <- goles_ccl |>
+    group_by(player_id, player_name) |>
+    summarise(
+      season_goals = sum(player_match_goals, na.rm = FALSE),
+      season_assists = sum(player_match_assists, na.rm = FALSE)
+    )
 
-jugs_ccl <- jugs_ccl |>
-  # left_join(pos_ccl, by = c("player_id")) |>
-  left_join(goles_ccl, by = c("player_id")) |>
-  select(-player_name.x) |>
-  rename(player_name = player_name.y)
+  jugs_ccl <- jugs_ccl |>
+    # left_join(pos_ccl, by = c("player_id")) |>
+    left_join(goles_ccl, by = c("player_id")) |>
+    select(-player_name.x) |>
+    rename(player_name = player_name.y)
+} else {
+  jugs_ccl <- jugs_ccl |>
+    mutate(season_goals = NA_real_, season_assists = NA_real_)
+}
 
 # LIGA ARGENTINA ----
 
