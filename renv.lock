@@ -58,6 +58,44 @@
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
     },
+    "DT": {
+      "Package": "DT",
+      "Version": "0.34.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Wrapper of the JavaScript Library 'DataTables'",
+      "Authors@R": "c( person(\"Yihui\", \"Xie\", role = \"aut\"), person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"aut\"), person(\"Xianying\", \"Tan\", role = \"aut\"), person(\"Garrick\", \"Aden-Buie\", , \"garrick@posit.co\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-7111-0077\")), person(\"JJ\", \"Allaire\", role = \"ctb\"), person(\"Maximilian\", \"Girlich\", role = \"ctb\"), person(\"Greg\", \"Freedman Ellis\", role = \"ctb\"), person(\"Johannes\", \"Rauh\", role = \"ctb\"), person(\"SpryMedia Limited\", role = c(\"ctb\", \"cph\"), comment = \"DataTables in htmlwidgets/lib\"), person(\"Brian\", \"Reavis\", role = c(\"ctb\", \"cph\"), comment = \"selectize.js in htmlwidgets/lib\"), person(\"Leon\", \"Gersen\", role = c(\"ctb\", \"cph\"), comment = \"noUiSlider in htmlwidgets/lib\"), person(\"Bartek\", \"Szopka\", role = c(\"ctb\", \"cph\"), comment = \"jquery.highlight.js in htmlwidgets/lib\"), person(\"Alex\", \"Pickering\", role = \"ctb\"), person(\"William\", \"Holmes\", role = \"ctb\"), person(\"Mikko\", \"Marttila\", role = \"ctb\"), person(\"Andres\", \"Quintero\", role = \"ctb\"), person(\"Stéphane\", \"Laurent\", role = \"ctb\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Data objects in R can be rendered as HTML tables using the JavaScript library 'DataTables' (typically via R Markdown or Shiny). The 'DataTables' library has been included in this R package. The package name 'DT' is an abbreviation of 'DataTables'.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/rstudio/DT",
+      "BugReports": "https://github.com/rstudio/DT/issues",
+      "Imports": [
+        "crosstalk",
+        "htmltools (>= 0.3.6)",
+        "htmlwidgets (>= 1.3)",
+        "jquerylib",
+        "jsonlite (>= 0.9.16)",
+        "magrittr",
+        "promises"
+      ],
+      "Suggests": [
+        "bslib",
+        "future",
+        "httpuv",
+        "knitr (>= 1.8)",
+        "rmarkdown",
+        "shiny (>= 1.6)",
+        "testit",
+        "tibble"
+      ],
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "no",
+      "Author": "Yihui Xie [aut], Joe Cheng [aut], Xianying Tan [aut], Garrick Aden-Buie [aut, cre] (ORCID: <https://orcid.org/0000-0002-7111-0077>), JJ Allaire [ctb], Maximilian Girlich [ctb], Greg Freedman Ellis [ctb], Johannes Rauh [ctb], SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib), Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib), Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib), Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib), Alex Pickering [ctb], William Holmes [ctb], Mikko Marttila [ctb], Andres Quintero [ctb], Stéphane Laurent [ctb], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Garrick Aden-Buie <garrick@posit.co>",
+      "Repository": "CRAN"
+    },
     "MASS": {
       "Package": "MASS",
       "Version": "7.3-65",
@@ -2084,55 +2122,6 @@
       "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
-    "fuzzyjoin": {
-      "Package": "fuzzyjoin",
-      "Version": "0.1.7",
-      "Source": "GitHub",
-      "Type": "Package",
-      "Title": "Join Tables Together on Inexact Matching",
-      "Authors@R": "c(person(\"David\", \"Robinson\", email = \"admiral.david@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Jennifer\", \"Bryan\", email = \"jenny@rstudio.com\", role = \"ctb\"), person(\"Joran\", \"Elias\", email = \"statisticalskier@gmail.com\", role = \"ctb\"), person(\"Steffen\", \"Ehrmann\", email = \"steffen.ehrmann@posteo.de\", role = \"ctb\"))",
-      "Maintainer": "David Robinson <admiral.david@gmail.com>",
-      "Description": "Join tables together based not on whether columns match exactly, but whether they are similar by some comparison. Implementations include string distance and regular expression matching.",
-      "License": "MIT + file LICENSE",
-      "Encoding": "UTF-8",
-      "LazyData": "TRUE",
-      "VignetteBuilder": "knitr",
-      "Depends": [
-        "R (>= 2.10)"
-      ],
-      "Imports": [
-        "stringdist",
-        "stringr",
-        "dplyr (>= 0.8.1)",
-        "tidyr (>= 0.4.0)",
-        "purrr",
-        "geosphere",
-        "tibble"
-      ],
-      "Suggests": [
-        "testthat",
-        "knitr",
-        "ggplot2",
-        "qdapDictionaries",
-        "readr",
-        "rvest",
-        "rmarkdown",
-        "maps",
-        "IRanges",
-        "covr"
-      ],
-      "RoxygenNote": "7.3.2",
-      "URL": "https://github.com/dgrtwo/fuzzyjoin",
-      "BugReports": "https://github.com/dgrtwo/fuzzyjoin/issues",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "fuzzyjoin",
-      "RemoteUsername": "dgrtwo",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0b8668a720dd5946a371dc99a1a81a00083007b9",
-      "NeedsCompilation": "no",
-      "Author": "David Robinson [aut, cre], Jennifer Bryan [ctb], Joran Elias [ctb], Steffen Ehrmann [ctb]"
-    },
     "gargle": {
       "Package": "gargle",
       "Version": "1.6.0",
@@ -2213,39 +2202,6 @@
       "Author": "Hadley Wickham [aut, cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Max Kuhn [aut], Davis Vaughan [aut], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
-    },
-    "geosphere": {
-      "Package": "geosphere",
-      "Version": "1.5-20",
-      "Source": "Repository",
-      "Type": "Package",
-      "Title": "Spherical Trigonometry",
-      "Date": "2024-10-02",
-      "LinkingTo": [
-        "Rcpp"
-      ],
-      "Imports": [
-        "Rcpp",
-        "sp"
-      ],
-      "Depends": [
-        "R (>= 3.0.0)"
-      ],
-      "Suggests": [
-        "methods",
-        "raster",
-        "terra"
-      ],
-      "Authors@R": "c( person(\"Robert J.\", \"Hijmans\", role = c(\"cre\", \"aut\"),  email = \"r.hijmans@gmail.com\"), person(\"Charles\", \"Karney\", role = \"ctb\", comment=\"GeographicLib\"),\t person(\"Ed\", \"Williams\", role = \"ctb\"), person(\"Chris\", \"Vennes\", role = \"ctb\"))",
-      "Description": "Spherical trigonometry for geographic applications. That is, compute distances and related measures for angular (longitude/latitude) locations.",
-      "BugReports": "https://github.com/rspatial/geosphere/issues/",
-      "License": "GPL (>= 3)",
-      "LazyLoad": "yes",
-      "NeedsCompilation": "yes",
-      "Author": "Robert J. Hijmans [cre, aut], Charles Karney [ctb] (GeographicLib), Ed Williams [ctb], Chris Vennes [ctb]",
-      "Maintainer": "Robert J. Hijmans <r.hijmans@gmail.com>",
-      "Repository": "RSPM",
-      "Encoding": "UTF-8"
     },
     "gert": {
       "Package": "gert",
