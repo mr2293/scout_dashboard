@@ -2373,7 +2373,13 @@ vol_radar_clean <- function(player,
   # which players to draw (single or compare)
   players <- c(player, compare_to)
   players <- players[!is.na(players)]
-  stopifnot(all(players %in% df$player_name))
+  missing <- players[!players %in% df$player_name]
+  if (length(missing) > 0) {
+    warning("vol_radar_clean: player(s) not found in data, skipping: ",
+            paste(missing, collapse = ", "))
+    players <- players[players %in% df$player_name]
+  }
+  if (length(players) == 0) return(invisible(NULL))
   
   # -------- global bounds from full cohort (keeps axes consistent) --------
   mins_raw <- df %>% summarise(across(all_of(kpis), ~min(.x, na.rm = TRUE)))
