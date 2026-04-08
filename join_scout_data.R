@@ -23,6 +23,7 @@ normalize_name <- function(x) {
   x |>
     stringi::stri_trans_general("Latin-ASCII") |>
     str_to_lower() |>
+    str_replace_all("[-.'ʼ´`]", " ") |>  # separators → space (fixes "Salles-Lamonge", "S.Sandoval", "O'Brien")
     str_remove_all("[^a-z0-9 ]") |>
     str_squish()
 }
@@ -107,7 +108,24 @@ nickname_map <- c(
   # Other
   "morad"     = "mourad",
   "marvel"    = "marvelous",
-  "dilan"     = "dylan"
+  "dilan"     = "dylan",
+  # Football mononyms (SB common name → first token of SC legal name)
+  "koke"      = "jorge",
+  "raphinha"  = "raphael",
+  "pedri"     = "pedro",
+  "leo"       = "leonardo",
+  "johnny"    = "joao",
+  "isi"       = "isaac",
+  "pep"       = "jose",
+  "tony"      = "antonio",
+  "ricardinho" = "ricardo",
+  "marcao"    = "marcos",
+  "talisca"   = "anderson",
+  "billy"     = "guillermo",
+  "lucho"     = "luis",
+  "pacho"     = "francisco",
+  "pipe"      = "felipe",
+  "juanfer"   = "juan"
 )
 
 # Expand a normalized name: if first token is a known nickname, prepend full form
@@ -302,6 +320,7 @@ team_aliases <- tribble(
   # Colombia
   "atletico nacional",                              "atletico nacional",
   "club atletico nacional",                         "atletico nacional",
+  "atletico nacional medellin",                     "atletico nacional",
   "millonarios futbol club",                        "millonarios",
   "millonarios fc",                                 "millonarios",
   "millonarios",                                    "millonarios",
@@ -313,6 +332,7 @@ team_aliases <- tribble(
   "tolima",                                         "tolima",
   "junior de barranquilla",                         "junior",
   "junior",                                         "junior",
+  "club deportivo junior fc",                       "junior",             # SC name for Junior
   "deportivo cali",                                 "deportivo cali",
   "once caldas",                                    "once caldas",
   "envigado fc",                                    "envigado",
@@ -322,8 +342,22 @@ team_aliases <- tribble(
   "la equidad",                                     "la equidad",
   "boyaca chico fc",                                "boyaca chico",
   "boyaca chico",                                   "boyaca chico",
+  "ad pasto",                                       "pasto",              # SC name for Deportivo Pasto
+  "deportivo pasto",                                "pasto",              # SB name for Deportivo Pasto
+  "pasto",                                          "pasto",
+  "fortaleza ceif fc",                              "fortaleza ceif",     # SC name (FC suffix)
+  "fortaleza ceif",                                 "fortaleza ceif",     # SB name
+  "ad union magdalena",                             "union magdalena",    # SC name
+  "union magdalena",                                "union magdalena",    # SB name
+  "deportivo pereira",                              "deportivo pereira",
+  "atletico bucaramanga",                           "bucaramanga",
+  "america de cali",                                "america cali",       # SC/SB Colombia club
+  "club america de cali",                           "america cali",
+  "independiente medellin",                         "medellin",
+  "independiente medellin fc",                      "medellin",
   "aguilas doradas rionegro",                       "aguilas doradas",
-  "rionegro",                                       "aguilas doradas",
+  "rionegro",                                       "aguilas doradas",   # SB alternate name
+  "rionegro aguilas",                               "aguilas doradas",   # SC name for Rionegro
   "aguilas doradas",                                "aguilas doradas",
   "ca bucaramanga",                                 "bucaramanga",
   "atletico bucaramanga",                           "bucaramanga",
@@ -548,6 +582,7 @@ team_aliases <- tribble(
   "real sociedad san sebastian b",                  "real sociedad b",
   "real sociedad b",                                "real sociedad b",
   "agrupacion deportiva ceuta fc",                  "ceuta",
+  "ad ceuta fc",                                    "ceuta",              # SB alternate name
   "ceuta",                                          "ceuta",
   "ud las palmas",                                  "las palmas",
   # Serie A
@@ -674,9 +709,20 @@ manual_matches <- tribble(
   # LaLiga
   2190,     6697,    "LaLiga",           # Daniel Ceballos Fernández -> Dani Ceballos
   13881,    12194,   "LaLiga",           # Santiago Comesaña Veiga -> Santi Comesaña
-  29176,    6596,    "LaLiga",           # José Luis García Vayá -> José Gayá
-  69308,    41084,   "LaLiga",           # Juan Luis Sánchez Velasco -> Juanlu
-  120550,   255811,  "LaLiga",           # Youssef Enriquez Lekhedim -> Yusi
+  5398,     6596,    "LaLiga",           # José Luis Gayá Peña -> José Gayá (Valencia) [fixed: was wrong sc_id 29176]
+  69308,    41084,   "LaLiga",           # Juan Luis Sánchez Velasco -> Juanlu (Sevilla)
+  120550,   255811,  "LaLiga",           # Youssef Enriquez Lekhedim -> Yusi (Alavés)
+  5942,     5199,    "LaLiga",           # Jorge Resurrección Merodio -> Koke (Atlético Madrid)
+  16062,    10595,   "LaLiga",           # Raphael Dias Belloli -> Raphinha (Barcelona)
+  25738,    30486,   "LaLiga",           # Pedro González López -> Pedri (Barcelona)
+  35342,    68574,   "LaLiga",           # Nicholas Williams Arthuer -> Nico Williams (Athletic Club)
+  31814,    32122,   "LaLiga",           # João Lucas De Souza Cardoso -> Johnny (Atlético Madrid)
+  16261,    11166,   "LaLiga",           # Marcos do Nascimento Teixeira -> Marcão (Sevilla)
+  35630,    39073,   "LaLiga",           # Moriba Kourouma Kourouma -> Ilaix Moriba (Celta Vigo)
+  12242,    6802,    "LaLiga",           # Jonathan Castro Otto -> Jonny Castro (Alavés)
+  24084,    36728,   "LaLiga",           # Mateu Jaume Morey Bauzà -> Mate Morey (Mallorca)
+  32127,    49303,   "LaLiga",           # Josep María Chavarría Pérez -> Pep Chavarría (Rayo)
+  142458,   195724,  "LaLiga",           # Alexandre Zurawski -> Alemão (Rayo Vallecano)
   # LaLiga 2
   647233,   394211,  "LaLiga 2",         # Thiago Helguera Merello Volante -> Thiago Emanuel Helguera Merello
   26157,    41603,   "LaLiga 2",         # Daniel Villahermosa Martínez -> Dani Villahermosa
@@ -686,16 +732,17 @@ manual_matches <- tribble(
   41327,    39344,   "LaLiga 2",         # Xavier Sintes Egea -> Xavi Sintes
   66228,    136328,  "LaLiga 2",         # Guillermo Bueno López -> Guille Bueno
   41319,    39637,   "LaLiga 2",         # Juan Miguel Latasa Fernández -> Juanmi Latasa
-  183562,   11669,   "LaLiga 2",         # Gonzalo Aguilar López -> Gonzalo Melero (same club: Leganés)
+  14001,    11669,   "LaLiga 2",         # Gonzalo Julián Melero Manzanares -> Gonzalo Melero (Leganés) [fixed]
   69346,    406828,  "LaLiga 2",         # Alejandro Meléndez Ruiz -> Alejandro Roldán (Albacete)
   70523,    140421,  "LaLiga 2",         # Marvelous Antolín Garzón -> Marvel (Leganés)
   70530,    140431,  "LaLiga 2",         # Javier Villar del Fraile -> Javi Villar (Albacete)
-  759034,   6908,    "LaLiga 2",         # Iván San José Cantalejo -> Iván Alejo (Valladolid)
+  11552,    6908,    "LaLiga 2",         # Iván Alejo Peralta -> Iván Alejo (Valladolid) [fixed: was wrong sc_id 759034]
   35954,    136414,  "LaLiga 2",         # Luís Henrique de Barros Lopes -> Luis Nlavo (Leganés)
   # Brasil
   29737,    31013,   "Brasil – Série A",  # Fabrizio Germán Angileri -> Fabricio Angileri (Corinthians)
   13942,    11299,   "Brasil – Série A",  # Christopher Ramos De la Flor -> Chris Ramos (Botafogo)
   122012,   129800,  "Brasil – Série A",  # Matheus Leonardo Sales Cardoso -> Matheus Alexandre (Sport)
+  24843,    44092,   "Brasil – Série A",  # Leonardo Rech Ortiz -> Léo Ortiz (Flamengo)
   # Colombia
   525235,   364863,  "Colombia",          # Geindry Steven Cuervo Holguín -> Gendry Cuervo (Envigado)
   35743,    32434,   "Colombia",          # Yílmar Andrés Velásquez -> Yilmar Velázquez (Santa Fe)
@@ -712,6 +759,11 @@ manual_matches <- tribble(
   # Turquía
   31221,    39444,   "Turquía – Süper Lig", # Archibald Norman Brown -> Archie Brown (Fenerbahçe)
   12008,    9904,    "Turquía – Süper Lig", # Frederico Rodrigues de Paul Santos -> Fred (Fenerbahçe)
+  35125,    43133,   "Turquía – Süper Lig", # Anderson Souza Conceição -> Talisca (Fenerbahçe)
+  # Serie A
+  16057,    10322,   "Serie A",            # Domilson Cordeiro dos Santos -> Dodô (Fiorentina)
+  # Liga MX
+  142458,   195724,  "Liga MX",            # Alexandre Zurawski -> Alemão (Pachuca)
   # UCL/UEL (duplicate for Archie Brown in UEL)
   31221,    39444,   "UEFA Europa League"   # Archibald Norman Brown -> Archie Brown
 ) |>
@@ -726,7 +778,7 @@ manual_matches <- tribble(
 # =============================================================================
 
 build_crosswalk_v4 <- function(sb_df, sc_df, league_name,
-                               fuzzy_threshold = 0.20,
+                               fuzzy_threshold = 0.25,
                                fuzzy_method    = "jw") {
   
   message("  Building crosswalk for: ", league_name)
@@ -978,7 +1030,7 @@ results <- imap(shared_leagues, function(pair, league_name) {
     sb_df           = pair$sb,
     sc_df           = pair$sc,
     league_name     = league_name,
-    fuzzy_threshold = 0.20,
+    fuzzy_threshold = 0.25,
     fuzzy_method    = "jw"
   )
 })
@@ -995,6 +1047,29 @@ message("\nBy pass type:")
 print(count(full_crosswalk_auto, match_type, sort = TRUE))
 message("\nBy league:")
 print(count(full_crosswalk_auto, league, sort = TRUE))
+message("\nUnmatched SC by league:")
+print(count(all_unmatched_sc, league, sort = TRUE))
+
+# Cross-reference: for each unmatched SC player, show same-team unmatched SB players
+# This makes it easy to spot new manual matches
+message("\n=== UNMATCHED SC + SAME-TEAM SB CANDIDATES (for manual matching) ===")
+cross_ref <- all_unmatched_sc |>
+  mutate(team_canon_sc = canonicalize_team(team_name_sc)) |>
+  left_join(
+    all_unmatched_sb |>
+      mutate(team_canon_sb = canonicalize_team(team_name_sb)) |>
+      select(sb_player_id, player_name_sb, team_name_sb, league, team_canon_sb),
+    by = c("league", "team_canon_sc" = "team_canon_sb")
+  ) |>
+  filter(!is.na(player_name_sb), player_name_sb != "NA") |>
+  select(league, sc_player_id, player_name_sc, player_name_sb, sb_player_id, team_name_sc)
+
+if (nrow(cross_ref) > 0) {
+  write_csv(cross_ref, "data/unmatched_sc_candidates.csv")
+  message("Saved ", nrow(cross_ref), " candidate pairs → data/unmatched_sc_candidates.csv")
+} else {
+  message("No cross-reference candidates found.")
+}
 
 # =============================================================================
 # 7. SAVE
