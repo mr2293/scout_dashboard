@@ -1,41 +1,25 @@
 sc_player_id,player_name_sc,team_name_sc,league,side
 8496,João Paulo Dias Fernandes,Deportivo Toluca Fútbol Club,Liga MX,skillcorner
-9686,Sébastien Salles-Lamonge,Atlético de San Luis,Liga MX,skillcorner
 25260,Nathanael Ananias da Silva,Club Universidad Nacional,Liga MX,skillcorner
 28353,Helio Júnio Nunes de Castro,Deportivo Toluca Fútbol Club,Liga MX,skillcorner
 30948,Robson Alves de Barros,Atlético de San Luis,Liga MX,skillcorner
 34835,Edgar Iván López,Club de Fútbol Tigres de la UNAL,Liga MX,skillcorner
 36149,Erick Antonio Lira Méndez,Cruz Azul Fútbol Club,Liga MX,skillcorner
-36467,Antonio Jermiah Leone Larios,Club de Fútbol Monterrey,Liga MX,skillcorner
 43279,Luiz Eduardo Teodora da Silva,Mazatlán FC,Liga MX,skillcorner
 49308,Vitor Samuel Ferreira Arantes,Xoloitcuintles Club Tijuana,Liga MX,skillcorner
-61691,Ricardo Jorge Oliveira António,FC Juárez,Liga MX,skillcorner
-142458,Alexandre Zurawski,Club de Fútbol Pachuca,Liga MX,skillcorner
-995733,João Pedro Silverio Lourenço,Atlético de San Luis,Liga MX,skillcorner
-1018042,Jafet Alejandro Cortés Cibrián,Club de Fútbol Puebla de la Franja,Liga MX,skillcorner
-1018043,Luis Blanco  Elie Pérez,Club de Fútbol Atlas,Liga MX,skillcorner
-1018105,Ivan Mauricio González Cataño,Mazatlán FC,Liga MX,skillcorner
-1018109,Misael Gerardo Torres Berlanga,Club Universidad Nacional,Liga MX,skillcorner
 1018138,Andres Pereira,Deportivo Toluca Fútbol Club,Liga MX,skillcorner
 1018143,Sebastian Aceves,Deportivo Toluca Fútbol Club,Liga MX,skillcorner
-1018358,Santiago  Sandoval Gonzales,Club Deportivo Guadalajara,Liga MX,skillcorner
-1020069,Jose Miguel Arroyo Godínez,Deportivo Toluca Fútbol Club,Liga MX,skillcorner
 1028613,Carlos Alberto Rodríguez Santos,Club de Fútbol Tigres de la UNAL,Liga MX,skillcorner
-809462,Marco Osvaldo Iacobellis Nahara,CA San Martín de San Juan,Argentina,skillcorner
 810207,Jeremías Lázaro,Instituto AC Córdoba,Argentina,skillcorner
 3921,Carlos Gilberto Nascimento Silva,Santos Futebol Clube,Brasil – Série A,skillcorner
 12397,Danilo das Neves Pinheiro,CR Vasco da Gama,Brasil – Série A,skillcorner
 13476,Francisco das Chagas Soares dos Santos,Santos Futebol Clube,Brasil – Série A,skillcorner
-13863,Lucas Pacheco Affini,Fortaleza EC,Brasil – Série A,skillcorner
 23980,Eric dos Santos Rodrigues,Red Bull Bragantino,Brasil – Série A,skillcorner
-24829,Eduardo Colcenti Antunes,Red Bull Bragantino,Brasil – Série A,skillcorner
-24843,Leonardo Rech Ortiz,CR Flamengo,Brasil – Série A,skillcorner
 24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,Brasil – Série A,skillcorner
 25174,Vitor Hugo Naum dos Santos,SC Internacional,Brasil – Série A,skillcorner
 25176,Erick Luis Conrado Carvalho,Esporte Clube Bahia,Brasil – Série A,skillcorner
 25184,Glaybson Yago Souza Lisboa,Fortaleza EC,Brasil – Série A,skillcorner
 25264,Matheus Alexandre Anastácio de Souza,SC do Recife,Brasil – Série A,skillcorner
-28253,Fernando Pereira do Nascimento,Ceará Sporting Club,Brasil – Série A,skillcorner
 28283,José Romário Silva de Souza,SC do Recife,Brasil – Série A,skillcorner
 28342,Mário Sérgio Santos Costa,Fortaleza EC,Brasil – Série A,skillcorner
 29932,Victor Alexander da Silva,Botafogo de Futebol e Regatas,Brasil – Série A,skillcorner
@@ -46,11 +30,8 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 31644,Felipe Costa,Mirassol Futebol Clube,Brasil – Série A,skillcorner
 31657,Luis Antonio da Rocha Júnior,Red Bull Bragantino,Brasil – Série A,skillcorner
 31671,Caio Fernando de Oliveira,Clube Atlético Mineiro,Brasil – Série A,skillcorner
-31683,José Marcos Alves Luis,EC Vitória,Brasil – Série A,skillcorner
 31704,Douglas Moreira Fagundes,Grêmio FB Porto Alegrense,Brasil – Série A,skillcorner
-31745,Leonardo Augusto dos Santos Pereira,SC do Recife,Brasil – Série A,skillcorner
 31767,João Pedro Vilardi Pinto,EC Vitória,Brasil – Série A,skillcorner
-32838,Marcos da Silva França,Fluminense FC,Brasil – Série A,skillcorner
 32891,Gustavo Henric da Silva,EC Vitória,Brasil – Série A,skillcorner
 43397,Igor Aquino da Silva,SC do Recife,Brasil – Série A,skillcorner
 142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,Brasil – Série A,skillcorner
@@ -105,7 +86,6 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 37076,Juan Pablo Vargas Campos,Millonarios FC,Colombia,skillcorner
 37079,Elvis Yohan Perlaza Lara,Independiente Santa Fe,Colombia,skillcorner
 38154,Daniel Eduardo Bocanegra Ortíz,América de Cali,Colombia,skillcorner
-38169,Cristhian Javier Báez,Club Deportivo Junior FC,Colombia,skillcorner
 38236,Billy Vladimir Arce Mina,Club Atlético Nacional,Colombia,skillcorner
 38237,Cristian Martínez Borja,Rionegro Aguilas,Colombia,skillcorner
 38238,Luis Alberto Caicedo Medina,AD Pasto,Colombia,skillcorner
@@ -129,7 +109,6 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 43800,Auli Alexander Oliveros Estrada,Rionegro Aguilas,Colombia,skillcorner
 43808,Homer Enrique Martínez Yepez,Independiente Medellin,Colombia,skillcorner
 43829,Neyder Stiven Moreno Betancur,CA Bucaramanga,Colombia,skillcorner
-43976,Adrián Estacio Peña,Deportivo Pereira,Colombia,skillcorner
 43985,José Abad Cuenú Rodríguez,Club Deportivo Junior FC,Colombia,skillcorner
 43996,Leonardo Enrique Saldaña Carvajal,CD Alianza Petrolera,Colombia,skillcorner
 44004,Edwin Andrés Torres Palacios,CD Alianza Petrolera,Colombia,skillcorner
@@ -143,6 +122,8 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 66368,Dairon Andrés Valencia Mosquera,Envigado FC,Colombia,skillcorner
 66371,Jhon Alexander Palacios Santos,Independiente Medellin,Colombia,skillcorner
 66392,José David Ampudia Perea,Boyacá Chicó,Colombia,skillcorner
+66398,Jhon Fredy Salazar Valencia,Club Deportivo Junior FC,Colombia,skillcorner
+66398,Jhon Fredy Salazar Valencia,Rionegro Aguilas,Colombia,skillcorner
 66416,Martín Enrique Payares Campo,AD Unión Magdalena,Colombia,skillcorner
 66442,Kevin Alexander Palacios Salazar,Millonarios FC,Colombia,skillcorner
 66446,Carlos Andrés Ramírez Aguirre,Envigado FC,Colombia,skillcorner
@@ -155,7 +136,6 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 66529,Jhon Emerson Córdoba Mosquera,Millonarios FC,Colombia,skillcorner
 66586,Edison Alexánder López Gil,Envigado FC,Colombia,skillcorner
 66589,Juan Esteban Franco Caicedo,AD Pasto,Colombia,skillcorner
-67392,Julián Andrés Palacios Isaza,Envigado FC,Colombia,skillcorner
 68856,Ruyery Alfonso Blanco Yus,AD Unión Magdalena,Colombia,skillcorner
 69242,William Camilo Hurtado Ortiz,Envigado FC,Colombia,skillcorner
 69453,Joaquín Varela Moreno,Deportivo Cali,Colombia,skillcorner
@@ -186,7 +166,6 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 164884,Luis Ángel Díaz Cuesta,Envigado FC,Colombia,skillcorner
 165137,Manuel Mónaco,CD La Equidad,Colombia,skillcorner
 171340,Daniel Felipe Arcila Rojas,Envigado FC,Colombia,skillcorner
-173327,Cristián Camilo Mosquera Rivas,Fortaleza CEIF FC,Colombia,skillcorner
 173345,Valentín Andrés Sánchez,AD Unión Magdalena,Colombia,skillcorner
 178742,Gianfranco Peña Aponzá,Deportivo Pereira,Colombia,skillcorner
 242065,Rubio César España Álvarez,Envigado FC,Colombia,skillcorner
@@ -195,7 +174,6 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 424928,Mauricio  Gonzalez Carabal,Deportes Tolima,Colombia,skillcorner
 525233,Gonzalo Lencina,Deportes Tolima,Colombia,skillcorner
 526730,Brayan Stiven Carabali Bonilla,AD Pasto,Colombia,skillcorner
-526734,Jhon Anderson Lerma Longa,AD Unión Magdalena,Colombia,skillcorner
 531855,Joseph Nicolás Árevalo Chaparro,Millonarios FC,Colombia,skillcorner
 569394,Freddy Espinal Espinal Valverde,AD Pasto,Colombia,skillcorner
 569394,Freddy Espinal Espinal Valverde,Club Llaneros SA,Colombia,skillcorner
@@ -218,6 +196,7 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 797078,Emilio Aristizabal Chavarriaga,Fortaleza CEIF FC,Colombia,skillcorner
 809181,Anderson Mojica Palacios,Club Llaneros SA,Colombia,skillcorner
 809197,Didier Steven Palacios Algumedo,Envigado FC,Colombia,skillcorner
+809300,Sebastián Navarro Otalora,América de Cali,Colombia,skillcorner
 809894,Andrés Alarcón Mendoza,AD Pasto,Colombia,skillcorner
 811185,Samy Jr. Merheg Enciso,Deportivo Pereira,Colombia,skillcorner
 812668,David Jerónimo Barrera Ramírez,Fortaleza CEIF FC,Colombia,skillcorner
@@ -231,71 +210,45 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 980199,Jhon James Gamboa Valencia,Envigado FC,Colombia,skillcorner
 983934,Daniel Alejandro Mera Choco,AD Unión Magdalena,Colombia,skillcorner
 983938,Darwin Yesid  Palomeque Palacios,AD Unión Magdalena,Colombia,skillcorner
-987102,Jhojan Camilo Torres Guazá,Independiente Santa Fe,Colombia,skillcorner
 998323,Tomás Soto,Envigado FC,Colombia,skillcorner
 998676,Cristian Camilo Valencia Cifuentes,Club Llaneros SA,Colombia,skillcorner
-998681,Eyder Andrés Restrepo Castro,Club Llaneros SA,Colombia,skillcorner
 998683,Andrés Domingo López Pérez,Club Llaneros SA,Colombia,skillcorner
-998685,Jan Carlos Angulo Rosales,Club Llaneros SA,Colombia,skillcorner
 998691,Oscar Orlando Vega Herrera,Club Llaneros SA,Colombia,skillcorner
 998988,Eric Emiliano Larrama Camblong,AD Unión Magdalena,Colombia,skillcorner
-999132,Cristian Enrique Uribe Caro,Club Atlético Nacional,Colombia,skillcorner
 999616,Elian Osvaldo Peralta Villamayor,Boyacá Chicó,Colombia,skillcorner
 999678,Didier Dawson,Envigado FC,Colombia,skillcorner
 1001834,Neiser Villarreal,Millonarios FC,Colombia,skillcorner
 1002380,Emanuel Londoño Sanchez,Envigado FC,Colombia,skillcorner
 1005875,Juan Manuel Quejada Mena,Envigado FC,Colombia,skillcorner
-1018183,Sebastián Valencia Isaza,Fortaleza CEIF FC,Colombia,skillcorner
 1018184,Yoshan Stiven Valois Murillo,AD Pasto,Colombia,skillcorner
 1018293,Juan David Valencia Longa,CD La Equidad,Colombia,skillcorner
 1018339,Frank Matias Salas Loboa,Boyacá Chicó,Colombia,skillcorner
 1022305,Samuel Martín Díaz,Millonarios FC,Colombia,skillcorner
 741346,Lucas Molina,Nublense,Chile,skillcorner
 922030,Felipe Faúndez,Club Deportivo O'Higgins,Chile,skillcorner
-1000788,Martín Ignacio Guzmán Carreño,Everton de Viña del Mar,Chile,skillcorner
-1008824,Yair Franco Ratotti,Club de Deportes Unión Española,Chile,skillcorner
 7157,Mathias Jattah-Njie Jørgensen,LA Galaxy,MLS,skillcorner
 10373,Timothy Michael Ream,Charlotte FC,MLS,skillcorner
 25477,Kee-Hee Kim,Seattle Sounders,MLS,skillcorner
 31134,José Guillermo Rodríguez,Sporting Kansas City,MLS,skillcorner
 31171,Alexander Roldán Leon,Seattle Sounders,MLS,skillcorner
 31520,Ocimar de Almeida Júnior,Houston Dynamo,MLS,skillcorner
-36476,Ralph-William Johnson Priso-Mbongue,Vancouver Whitecaps FC,MLS,skillcorner
-39455,Willy Agada,Real Salt Lake,MLS,skillcorner
 141706,Rwan Philipe Rodrigues de Souza Cruz,Real Salt Lake,MLS,skillcorner
-166528,Alex Freeman,Orlando City,MLS,skillcorner
 171787,Pedro Henrique Fonseca de Araújo Martins,FC Dallas,MLS,skillcorner
 44869,Valentino Francisco  Livramento,Newcastle United,Premier League,skillcorner
-5398,José Luis Gayá Peña,Valencia CF,LaLiga,skillcorner
-5942,Jorge Resurrección Merodio,Atlético Madrid,LaLiga,skillcorner
-12242,Jonathan Castro Otto,Deportivo Alavés,LaLiga,skillcorner
 13519,Antonio Latorre Grueso,RCD Mallorca,LaLiga,skillcorner
 14002,Juan Camilo Hernández Suárez,Real Betis Balompié,LaLiga,skillcorner
-16062,Raphael Dias Belloli,FC Barcelona,LaLiga,skillcorner
-16261,Marcos do Nascimento Teixeira,Sevilla FC,LaLiga,skillcorner
-24084,Mateu Jaume Morey Bauzà,RCD Mallorca,LaLiga,skillcorner
-25738,Pedro González López,FC Barcelona,LaLiga,skillcorner
-25892,Isaac Palazón Camacho,Rayo Vallecano,LaLiga,skillcorner
-31814,João Lucas De Souza Cardoso,Atlético Madrid,LaLiga,skillcorner
-32127,Josep María Chavarría Pérez,Rayo Vallecano,LaLiga,skillcorner
-35342,Nicholas Williams Arthuer,Athletic Club de Bilbao,LaLiga,skillcorner
-35630,Moriba Kourouma Kourouma,RC Celta de Vigo,LaLiga,skillcorner
+29176,José Luis García Vayá,Valencia CF,LaLiga,skillcorner
 53346,Gerard Fernández Castellano,Sevilla FC,LaLiga,skillcorner
 62275,Roger Brugué Ayguadé,Levante UD,LaLiga,skillcorner
 117268,Andrés  López Gallo,Sevilla FC,LaLiga,skillcorner
-142458,Alexandre Zurawski,Rayo Vallecano,LaLiga,skillcorner
 892503,Joaquin Martínez Gauna,Sevilla FC,LaLiga,skillcorner
 246,Adrián Embarba Blázquez,UD Almería,LaLiga 2,skillcorner
 2083,Francisco José Sánchez Rodríguez,Burgos CF,LaLiga 2,skillcorner
-6140,Leonardo Carrilho Baptistão,UD Almería,LaLiga 2,skillcorner
 10938,Joaquín Navarro Jiménez,RC Deportivo de La Coruña,LaLiga 2,skillcorner
-11552,Iván Alejo Peralta,Real Valladolid,LaLiga 2,skillcorner
 13424,Alberto Rodríguez Baró,Real Zaragoza,LaLiga 2,skillcorner
-14001,Gonzalo Julián Melero Manzanares,CD Leganés,LaLiga 2,skillcorner
 23767,José Antonio Rodríguez Díaz,Albacete Balompie,LaLiga 2,skillcorner
 24628,José Sánchez Martínez,Albacete Balompie,LaLiga 2,skillcorner
 25764,Marcos André de Sousa Mendonça,Real Valladolid,LaLiga 2,skillcorner
-25789,Salvador Ruiz Rodríguez,CD Castellon,LaLiga 2,skillcorner
 26015,Victor Álvarez Rozada,UD Las Palmas,LaLiga 2,skillcorner
 28931,Agustín Medina Delgado,Albacete Balompie,LaLiga 2,skillcorner
 30863,Diego Hernández Barriuso,CD Castellon,LaLiga 2,skillcorner
@@ -314,20 +267,15 @@ sc_player_id,player_name_sc,team_name_sc,league,side
 69914,Dalisson De Almeida Leite,Cordoba CF,LaLiga 2,skillcorner
 70838,Francisco Sebastián Moyano Jiménez,Real Zaragoza,LaLiga 2,skillcorner
 97323,Javier Moreno Arrones Gil,Albacete Balompie,LaLiga 2,skillcorner
+183562,Gonzalo Aguilar López,CD Leganés,LaLiga 2,skillcorner
 184356,Malcom Abdulai Ares Djaló,SD Eibar,LaLiga 2,skillcorner
 531584,Álvaro Pérez Campo,Cordoba CF,LaLiga 2,skillcorner
 531718,Iñigo Sebastián Magaña,Sociedad Deportiva Huesca,LaLiga 2,skillcorner
 533047,Carlos Redruello Nimo,Agrupación Deportiva Ceuta FC,LaLiga 2,skillcorner
 666473,Daniel Requena Sánchez,Cordoba CF,LaLiga 2,skillcorner
-731273,Selvi Clúa Oya,CD Mirandes,LaLiga 2,skillcorner
-813397,Manuel Rodríguez Paz,Real Sporting de Gijón,LaLiga 2,skillcorner
+759034,Iván San José Cantalejo,Real Valladolid,LaLiga 2,skillcorner
 860346,Adrián Hernández Hernández,CD Mirandes,LaLiga 2,skillcorner
 861974,Carlos Ruiz Rubio,Málaga CF,LaLiga 2,skillcorner
-913754,Alvaro Miguel Garcia-Pascual,Cadiz CF,LaLiga 2,skillcorner
 1019368,Sergio Martínez,Racing Santander,LaLiga 2,skillcorner
 1019726,Alejandro Gomes  Furtado,Real Zaragoza,LaLiga 2,skillcorner
 1023973,Jorge Álvarez,Sociedad Deportiva Huesca,LaLiga 2,skillcorner
-1036675,Marcos Leiva Calvo,CD Leganés,LaLiga 2,skillcorner
-16057,Domilson Cordeiro dos Santos,Fiorentina,Serie A,skillcorner
-34181,Saúl Basilio Coco-Bassey Oubiña,Torino,Serie A,skillcorner
-35125,Anderson Souza Conceição,Fenerbahce,Turquía – Süper Lig,skillcorner

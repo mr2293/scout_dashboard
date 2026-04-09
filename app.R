@@ -81,6 +81,47 @@ league_map <- c(
 SC_LEAGUES <- names(joined_cache$joined_leagues)
 
 # ============================================================
+# COUNTRY ID → NAME LOOKUP
+# StatsBomb internal country_id → Spanish display name
+# ============================================================
+country_id_names <- c(
+  "11"  = "Argentina",
+  "22"  = "Bélgica",
+  "31"  = "Brasil",
+  "39"  = "Bolivia",
+  "40"  = "Bosnia y Herzegovina",
+  "45"  = "Chile",
+  "49"  = "Colombia",
+  "54"  = "Costa Rica",
+  "65"  = "Ecuador",
+  "68"  = "Inglaterra",
+  "78"  = "Francia",
+  "85"  = "Alemania",
+  "101" = "Honduras",
+  "109" = "Rep. Irlanda",
+  "112" = "Italia",
+  "113" = "Jamaica",
+  "147" = "México",
+  "152" = "Serbia",
+  "154" = "Marruecos",
+  "160" = "Países Bajos",
+  "166" = "Nigeria",
+  "176" = "Panamá",
+  "178" = "Paraguay",
+  "179" = "Perú",
+  "182" = "Polonia",
+  "183" = "Portugal",
+  "201" = "Escocia",
+  "202" = "Senegal",
+  "214" = "España",
+  "233" = "Turquía",
+  "241" = "Estados Unidos",
+  "242" = "Uruguay",
+  "246" = "Venezuela",
+  "249" = "Zimbabue"
+)
+
+# ============================================================
 # CHARTS CONFIG (unchanged from your original)
 # ============================================================
 charts_cfg <- list(
@@ -1052,8 +1093,9 @@ ui <- fluidPage(
   titlePanel("Scouting Dashboard — Club América"),
   
   fluidRow(
-    column(3, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
-    column(3, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
+    column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
+    column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
+    column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
     column(6, selectizeInput(
       "player_search", "Buscar jugador", choices=NULL, multiple=FALSE,
       options=list(placeholder="Escribe un nombre…", selectOnTab=TRUE,
@@ -1062,14 +1104,15 @@ ui <- fluidPage(
   ),
   
   fluidRow(
-    column(1, ""),
+    column(2, selectInput("pos_filter", "Posición", choices="Todas", selected="Todas")),
+    column(2, selectInput("country_filter", "Nacionalidad", choices="Todas", selected="Todas")),
     column(6,
            sliderInput("min_minutes","Minutos jugados", min=0, max=4000,
                        value=c(0,4000), step=50, width="100%"),
            sliderInput("age_range","Rango de edad", min=15, max=45,
                        value=c(17,45), step=1, width="100%")
     ),
-    column(3, "")
+    column(2, "")
   ),
   
   tags$hr(),
@@ -1117,7 +1160,16 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   # ---- Primary data ----
-  league_df <- reactive(get_league_df(scout, input$league))
+  league_df <- reactive({
+    df <- get_league_df(scout, input$league)
+    if ("country_id" %in% names(df)) {
+      id_str <- as.character(df$country_id)
+      mapped  <- country_id_names[id_str]
+      mapped[is.na(mapped)] <- paste0("Otro (", id_str[is.na(mapped)], ")")
+      df$player_country <- mapped
+    }
+    df
+  })
   
   # ---- All players across all leagues (for radar, similarity) ----
   all_players_df <- reactive(all_players_df_from_cache(scout, league_map))
@@ -1189,13 +1241,50 @@ server <- function(input, output, session) {
     amin <- if (length(ages)) max(15, floor(min(ages, na.rm=TRUE))) else 15
     amax <- if (length(ages)) ceiling(max(ages, na.rm=TRUE)) else 45
     updateSliderInput(session, "age_range", min=amin, max=max(amin+1,amax), value=c(amin,amax))
+
+    teams <- sort(unique(as.character(df$team_name[!is.na(df$team_name) & df$team_name != "NA"])))
+    updateSelectInput(session, "team_filter", choices = c("Todos los equipos", teams),
+                      selected = "Todos los equipos")
+
+    if ("player_country" %in% names(df)) {
+      countries <- sort(unique(df$player_country[!is.na(df$player_country)]))
+      updateSelectInput(session, "country_filter", choices = c("Todas", countries),
+                        selected = "Todas")
+    }
+
+    # Reset pos filter (choices repopulated by pg observer below)
+    updateSelectInput(session, "pos_filter", choices = "Todas", selected = "Todas")
   }, ignoreInit=FALSE)
+
+  # ---- Populate primary-position sub-filter when league or pg changes ----
+  observeEvent(list(league_df(), input$pg), {
+    df_pg <- league_df() |> dplyr::filter(position_group == input$pg)
+    positions <- sort(unique(as.character(
+      df_pg$primary_position[!is.na(df_pg$primary_position)]
+    )))
+    updateSelectInput(session, "pos_filter",
+                      choices  = c("Todas", positions),
+                      selected = "Todas")
+  }, ignoreInit = FALSE)
   
   league_df_scatter <- reactive({
     req(!is.null(input$min_minutes), length(input$min_minutes)==2,
         !is.null(input$age_range),   length(input$age_range)==2)
-    apply_scatter_filters(league_df(), minutes_range=input$min_minutes,
-                          age_range=input$age_range)
+    df <- apply_scatter_filters(league_df(), minutes_range=input$min_minutes,
+                                age_range=input$age_range)
+    if (!is.null(input$team_filter) && nzchar(input$team_filter) &&
+        input$team_filter != "Todos los equipos") {
+      df <- df |> dplyr::filter(team_name == input$team_filter)
+    }
+    if (!is.null(input$pos_filter) && nzchar(input$pos_filter) &&
+        input$pos_filter != "Todas") {
+      df <- df |> dplyr::filter(primary_position == input$pos_filter)
+    }
+    if (!is.null(input$country_filter) && nzchar(input$country_filter) &&
+        input$country_filter != "Todas" && "player_country" %in% names(df)) {
+      df <- df |> dplyr::filter(player_country == input$country_filter)
+    }
+    df
   })
   
   # ---- Populate player search ----
@@ -1232,8 +1321,20 @@ server <- function(input, output, session) {
       ),
       plotlyOutput("custom_xy_plot", height="600px")
     )
-    
-    do.call(tabsetPanel, c(id="tabs_pos", std_tabs, list(custom_tab)))
+
+    cross_liga_tab <- tabPanel(
+      title="Cross-Liga", value="cross_liga",
+      fluidRow(
+        column(3, selectInput("cross_league1", "Liga 1", choices=names(league_map), selected=input$league)),
+        column(3, selectInput("cross_league2", "Liga 2", choices=names(league_map),
+                              selected=setdiff(names(league_map), input$league)[1])),
+        column(3, selectInput("cross_xvar", "Eje X", choices=character(0), selected=NULL)),
+        column(3, selectInput("cross_yvar", "Eje Y", choices=character(0), selected=NULL))
+      ),
+      plotlyOutput("cross_liga_plot", height="600px")
+    )
+
+    do.call(tabsetPanel, c(id="tabs_pos", std_tabs, list(custom_tab, cross_liga_tab)))
   })
   
   observeEvent(list(league_df(), input$pg), {
@@ -1357,7 +1458,93 @@ server <- function(input, output, session) {
     ed <- event_data("plotly_click", source="custom_xy")
     if (!is.null(ed$key) && nzchar(ed$key)) selected_player(ed$key)
   }, ignoreInit=TRUE)
-  
+
+  # ---- Cross-liga: populate metric selectors from league 1 ----
+  observeEvent(list(input$cross_league1, input$cross_league2, input$pg), {
+    req(input$cross_league1, input$pg)
+    df1 <- tryCatch(
+      get_league_df(scout, input$cross_league1) |> dplyr::filter(position_group == input$pg),
+      error = function(e) NULL
+    )
+    if (is.null(df1) || nrow(df1) == 0) return()
+    vm <- var_map(df1)
+    if (!length(vm)) return()
+    sel_x <- if ("goals_90" %in% names(vm)) "goals_90" else names(vm)[1]
+    sel_y <- if ("np_xg_90" %in% names(vm)) "np_xg_90" else names(vm)[min(2, length(vm))]
+    updateSelectInput(session, "cross_xvar", choices = names(vm), selected = sel_x)
+    updateSelectInput(session, "cross_yvar", choices = names(vm), selected = sel_y)
+  }, ignoreNULL = TRUE, ignoreInit = FALSE)
+
+  # ---- Cross-liga scatter plot ----
+  output$cross_liga_plot <- renderPlotly({
+    req(input$cross_league1, input$cross_league2, input$cross_xvar, input$cross_yvar,
+        input$min_minutes, input$age_range)
+
+    load_league <- function(lbl) {
+      tryCatch(
+        get_league_df(scout, lbl) |>
+          dplyr::filter(position_group == input$pg) |>
+          apply_scatter_filters(minutes_range = input$min_minutes, age_range = input$age_range) |>
+          dplyr::mutate(.league_src = lbl),
+        error = function(e) NULL
+      )
+    }
+    df1 <- load_league(input$cross_league1)
+    df2 <- load_league(input$cross_league2)
+    req(!is.null(df1) || !is.null(df2))
+    df_both <- dplyr::bind_rows(df1, df2)
+
+    vm <- var_map(if (!is.null(df1)) df1 else df2)
+    req(input$cross_xvar %in% names(vm), input$cross_yvar %in% names(vm))
+    col_x <- vm[[input$cross_xvar]]
+    col_y <- vm[[input$cross_yvar]]
+    req(col_x %in% names(df_both), col_y %in% names(df_both))
+
+    df_plot <- df_both |>
+      dplyr::mutate(
+        .hover  = sprintf("<b>%s</b><br>%s<br>Equipo: %s<br>%s: %s<br>%s: %s",
+                          player_name, .league_src, team_name,
+                          input$cross_xvar, round(.data[[col_x]], 3),
+                          input$cross_yvar, round(.data[[col_y]], 3)),
+        .is_sel = if (!is.null(selected_player())) player_name == selected_player() else FALSE
+      )
+
+    others <- dplyr::filter(df_plot, !.is_sel)
+    sel    <- dplyr::filter(df_plot,  .is_sel)
+
+    p <- suppressWarnings(
+      ggplot() +
+        { if (nrow(others) > 0)
+          geom_point(data = others,
+                     aes(x = .data[[col_x]], y = .data[[col_y]], text = .hover,
+                         key = player_name, color = .league_src),
+                     size = 2.6, alpha = 0.35) } +
+        { if (nrow(sel) > 0)
+          geom_point(data = sel,
+                     aes(x = .data[[col_x]], y = .data[[col_y]], text = .hover,
+                         key = player_name),
+                     size = 4.5, alpha = 1, color = "black", shape = 18) } +
+        scale_color_brewer(type = "qual", palette = "Set1") +
+        labs(x = input$cross_xvar, y = input$cross_yvar,
+             title = paste("Cross-Liga:", input$cross_league1, "vs", input$cross_league2),
+             color = "Liga") +
+        theme_minimal(base_size = 12) +
+        theme(panel.grid.minor  = element_blank(),
+              panel.grid.major  = element_line(linewidth = 0.2, color = "grey85"),
+              axis.title        = element_text(face = "bold"),
+              plot.title        = element_text(face = "bold"),
+              plot.margin       = margin(10, 12, 10, 12))
+    )
+
+    ggplotly(p, tooltip = "text", source = "cross_liga") |>
+      layout(hoverlabel = list(align = "left"))
+  })
+
+  observeEvent(event_data("plotly_click", source = "cross_liga"), {
+    ed <- event_data("plotly_click", source = "cross_liga")
+    if (!is.null(ed$key) && nzchar(ed$key)) selected_player(ed$key)
+  }, ignoreInit = TRUE)
+
   # ---- Similarity ----
   build_similarity_pool <- function(dat, pg) {
     df <- dplyr::filter(dat, position_group == pg)
@@ -1527,12 +1714,16 @@ server <- function(input, output, session) {
     row <- dat |> dplyr::filter(player_name==selected_player()) |> dplyr::slice_head(n=1)
     req(nrow(row)==1)
     
+    age_val <- compute_age_years(row$birth_date)
+    age_str <- if (is.finite(age_val) && age_val <= 100) paste0(age_val, " años") else "–"
+
     meta <- tibble::tribble(
       ~Métrica, ~Valor, ~Percentil,
       "Nombre",          as.character(row$player_name),          "",
       "Equipo",          as.character(row$team_name),            "",
       "Liga",            as.character(input$league),             "",
       "Nacimiento",      as.character(row$birth_date),           "",
+      "Edad",            age_str,                                "",
       "90s Jugados",     fmt_num(row$player_season_90s_played,1),"",
       "Minutos Jugados", fmt_num(row$player_season_minutes,0),   ""
     )

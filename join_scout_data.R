@@ -1071,6 +1071,28 @@ if (nrow(cross_ref) > 0) {
   message("No cross-reference candidates found.")
 }
 
+# SC match rate by league
+sc_totals <- imap_dfr(shared_leagues, function(pair, league_name) {
+  tibble(league = league_name,
+         total_sc = pair$sc |> distinct(player_id) |> nrow())
+})
+sc_unmatched_counts <- count(all_unmatched_sc, league, name = "unmatched_sc")
+sc_rate <- sc_totals |>
+  left_join(sc_unmatched_counts, by = "league") |>
+  mutate(
+    unmatched_sc = replace_na(unmatched_sc, 0),
+    matched_sc   = total_sc - unmatched_sc,
+    pct_matched  = round(100 * matched_sc / total_sc, 1)
+  ) |>
+  arrange(pct_matched)
+message("\n=== SC MATCH RATE BY LEAGUE ===")
+print(sc_rate)
+message(sprintf(
+  "\nOVERALL SC MATCH RATE: %.1f%% (%d matched / %d total)",
+  100 * sum(sc_rate$matched_sc) / sum(sc_rate$total_sc),
+  sum(sc_rate$matched_sc), sum(sc_rate$total_sc)
+))
+
 # =============================================================================
 # 7. SAVE
 # =============================================================================

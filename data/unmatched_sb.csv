@@ -6,9 +6,7 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 393875,Diogo Osmar Bagüí Tobar,Tijuana,Liga MX,statsbomb
 27163,Juan Pablo Vargas,Puebla,Liga MX,statsbomb
 5597,Keylor Navas,Pumas UNAM,Liga MX,statsbomb
-45685,Sébastien Antoine Luc Salles Lamonge,Atlético San Luis,Liga MX,statsbomb
 206065,Osinachi Christian Ebere,Cruz Azul,Liga MX,statsbomb
-132471,Ricardinho,Juárez,Liga MX,statsbomb
 18784,Paulinho,Toluca,Liga MX,statsbomb
 408920,Bayron Duarte,Querétaro,Liga MX,statsbomb
 423122,Jordan García,León,Liga MX,statsbomb
@@ -22,7 +20,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 36498,César Araújo,Tigres UANL,Liga MX,statsbomb
 437672,Franco Andrés Rossi Donazar,Toluca,Liga MX,statsbomb
 16251,Jesús Medina,Atlético San Luis,Liga MX,statsbomb
-47114,Tony Leone,Monterrey,Liga MX,statsbomb
 82746,Bryan Aarón Casas Roque,Necaxa,Liga MX,statsbomb
 540405,Jaime Andrés Estrada González,Mazatlán,Liga MX,statsbomb
 49983,Ricardo Rodríguez,Mazatlán,Liga MX,statsbomb
@@ -36,7 +33,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 43622,Erik Lira,Cruz Azul,Liga MX,statsbomb
 541105,Ricardo Alonso,Necaxa,Liga MX,statsbomb
 49982,Ricardo Gutiérrez,Mazatlán,Liga MX,statsbomb
-482815,I.Cataño,Mazatlán,Liga MX,statsbomb
 423845,Said Gaytán,Mazatlán,Liga MX,statsbomb
 33098,Luis Malagón,América,Liga MX,statsbomb
 37069,Jesús Rodríguez,Puebla,Liga MX,statsbomb
@@ -47,7 +43,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 34326,Brian Rubio,Mazatlán,Liga MX,statsbomb
 459824,Christopher Mora,León,Liga MX,statsbomb
 198553,Oscar García,León,Liga MX,statsbomb
-482766,L.Pérez,Atlas,Liga MX,statsbomb
 530673,Lucca Vuoso,Santos Laguna,Liga MX,statsbomb
 92422,Héctor Holguín,Santos Laguna,Liga MX,statsbomb
 469976,Juan Alexander Sigala García,Pachuca,Liga MX,statsbomb
@@ -61,7 +56,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 27893,Antonio Rodríguez,Tijuana,Liga MX,statsbomb
 232966,José Raúl Rangel Aguilar,Guadalajara,Liga MX,statsbomb
 43048,Brian Gutierrez,Guadalajara,Liga MX,statsbomb
-483481,S.Sandoval González,Guadalajara,Liga MX,statsbomb
 540503,Rogelio Andrés González Román,Cruz Azul,Liga MX,statsbomb
 208278,Andres Montaño,Cruz Azul,Liga MX,statsbomb
 36935,Andrés Gudiño,Cruz Azul,Liga MX,statsbomb
@@ -69,14 +63,11 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 37879,Santiago Muñoz,Atlético San Luis,Liga MX,statsbomb
 28536,Gibrán Lajud,Atlético San Luis,Liga MX,statsbomb
 239906,Leonardo Flores,Atlético San Luis,Liga MX,statsbomb
-47114,Tony Leone,Pumas UNAM,Liga MX,statsbomb
-482807,M.Torres Berlanga,Pumas UNAM,Liga MX,statsbomb
 482804,R.Parra Arteaga,Pumas UNAM,Liga MX,statsbomb
 49779,Eduardo Mustre Torres,Puebla,Liga MX,statsbomb
 49982,Ricardo Gutiérrez,Puebla,Liga MX,statsbomb
 36949,Julio José González Vela-Alvizu,Puebla,Liga MX,statsbomb
 275606,Ulises Torres Méndez,Puebla,Liga MX,statsbomb
-482765,J.Cibrián,Puebla,Liga MX,statsbomb
 540502,Israel Tello Robles,Necaxa,Liga MX,statsbomb
 440616,Francisco Javier Méndez Lara,Necaxa,Liga MX,statsbomb
 274994,Raúl Alejandro Martínez Ruiz,Necaxa,Liga MX,statsbomb
@@ -93,15 +84,12 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 37592,Luis García,Toluca,Liga MX,statsbomb
 432725,Francisco Pumpido,Toluca,Liga MX,statsbomb
 30459,Jorge Díaz,Toluca,Liga MX,statsbomb
-483950,J.Arroyo Godínez,Toluca,Liga MX,statsbomb
 26303,Hugo González,Toluca,Liga MX,statsbomb
 482833,S.Cordova,Toluca,Liga MX,statsbomb
 463039,Josué Miguel Nehemías Ovalle Aranda,Mazatlán,Liga MX,statsbomb
 114730,Dudu,Mazatlán,Liga MX,statsbomb
-195724,Alemão,Pachuca,Liga MX,statsbomb
 29574,Lima,América,Liga MX,statsbomb
 123690,Vitinho,Tijuana,Liga MX,statsbomb
-432381,J.Lourenço,Atlético San Luis,Liga MX,statsbomb
 29237,Robson Bambu,Atlético San Luis,Liga MX,statsbomb
 42471,Lucas Esteves,Atlético San Luis,Liga MX,statsbomb
 44068,Nathan Silva,Pumas UNAM,Liga MX,statsbomb
@@ -225,7 +213,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 426351,Lucas Javier Acosta,San Martín San Juan,Argentina,statsbomb
 27858,Juan Ignacio Cavallaro,San Martín San Juan,Argentina,statsbomb
 52240,Matías Nahuel Borgogno,San Martín San Juan,Argentina,statsbomb
-423921,Marcos Iacobellis,San Martín San Juan,Argentina,statsbomb
 424763,Gastón Moreyra,San Martín San Juan,Argentina,statsbomb
 429353,Santiago Barrera,San Martín San Juan,Argentina,statsbomb
 47077,Hernán Ezequiel Lópes,San Martín San Juan,Argentina,statsbomb
@@ -584,7 +571,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 113297,Igor Cariús,Sc Do Recife,Brasil – Série A,statsbomb
 446360,Adriel Gomes do Nascimento,Sc Do Recife,Brasil – Série A,statsbomb
 137254,Gustavo Maia,Sc Do Recife,Brasil – Série A,statsbomb
-112986,Léo,Sc Do Recife,Brasil – Série A,statsbomb
 44474,Matheus Babi,EC Juventude,Brasil – Série A,statsbomb
 428670,Davi Goes,EC Juventude,Brasil – Série A,statsbomb
 211447,Nata,EC Juventude,Brasil – Série A,statsbomb
@@ -601,7 +587,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 75813,Magrão,Fortaleza,Brasil – Série A,statsbomb
 25268,José Welison,Fortaleza,Brasil – Série A,statsbomb
 391741,Lelê,Ceará,Brasil – Série A,statsbomb
-25231,Fernando Sobral,Ceará,Brasil – Série A,statsbomb
 196652,Rodriguinho,Ceará,Brasil – Série A,statsbomb
 119670,Paulo Baya,Ceará,Brasil – Série A,statsbomb
 44093,Weverson,Fortaleza,Brasil – Série A,statsbomb
@@ -616,7 +601,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 269829,Felipinho,EC Juventude,Brasil – Série A,statsbomb
 479756,João Paulo,EC Juventude,Brasil – Série A,statsbomb
 17621,Lucas Fernandes,EC Juventude,Brasil – Série A,statsbomb
-431708,Marcão,EC Juventude,Brasil – Série A,statsbomb
 448720,B.Toffolo,EC Juventude,Brasil – Série A,statsbomb
 364775,Hudson,EC Juventude,Brasil – Série A,statsbomb
 272041,Cipriano,EC Juventude,Brasil – Série A,statsbomb
@@ -643,11 +627,11 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 25527,Marinho,Fortaleza,Brasil – Série A,statsbomb
 25178,Yago Pikachu,Fortaleza,Brasil – Série A,statsbomb
 3956,David Luiz,Fortaleza,Brasil – Série A,statsbomb
-21297,Lucas Sasha,Fortaleza,Brasil – Série A,statsbomb
 25270,Igor Rabello,Atlético Mineiro,Brasil – Série A,statsbomb
 25174,Junior Santos,Atlético Mineiro,Brasil – Série A,statsbomb
 25123,Dudu,Atlético Mineiro,Brasil – Série A,statsbomb
 25101,Wéverton,Palmeiras,Brasil – Série A,statsbomb
+392953,Leonardo,Cruzeiro,Brasil – Série A,statsbomb
 196652,Rodriguinho,Cruzeiro,Brasil – Série A,statsbomb
 40122,Oscar,São Paulo,Brasil – Série A,statsbomb
 481418,Alisson de Melo,Internacional,Brasil – Série A,statsbomb
@@ -685,13 +669,11 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 26923,Vitinho,Internacional,Brasil – Série A,statsbomb
 25106,Marcelo Lomba,Palmeiras,Brasil – Série A,statsbomb
 41998,John,Botafogo,Brasil – Série A,statsbomb
-44092,Léo Ortiz,Flamengo,Brasil – Série A,statsbomb
 423306,Iago,Flamengo,Brasil – Série A,statsbomb
 27701,Cacá,Corinthians,Brasil – Série A,statsbomb
 439642,Bahia,Corinthians,Brasil – Série A,statsbomb
 271869,Leo Mana,Corinthians,Brasil – Série A,statsbomb
 25251,Thaciano,Santos,Brasil – Série A,statsbomb
-25109,Zé Rafael,Santos,Brasil – Série A,statsbomb
 271717,Tchoca,Corinthians,Brasil – Série A,statsbomb
 25245,Caio Paulista,Atlético Mineiro,Brasil – Série A,statsbomb
 449714,João Freitas,Atlético Mineiro,Brasil – Série A,statsbomb
@@ -702,7 +684,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 249874,Cadu,Atlético Mineiro,Brasil – Série A,statsbomb
 29650,Reinier,Atlético Mineiro,Brasil – Série A,statsbomb
 25092,Eduardo Sasha,Red Bull Bragantino,Brasil – Série A,statsbomb
-36258,Eduardo Santos,Red Bull Bragantino,Brasil – Série A,statsbomb
 38721,Bruno Praxedes,Red Bull Bragantino,Brasil – Série A,statsbomb
 460435,Davi Gomes,Red Bull Bragantino,Brasil – Série A,statsbomb
 25327,Ramires,Red Bull Bragantino,Brasil – Série A,statsbomb
@@ -776,7 +757,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 27118,Gil,Santos,Brasil – Série A,statsbomb
 82019,Matheus Donelli,Corinthians,Brasil – Série A,statsbomb
 46607,Hugo Souza,Corinthians,Brasil – Série A,statsbomb
-112986,Léo,EC Vitória,Brasil – Série A,statsbomb
 44542,Fabrício,EC Vitória,Brasil – Série A,statsbomb
 196863,Matheuzinho,EC Vitória,Brasil – Série A,statsbomb
 232339,Camutanga,EC Vitória,Brasil – Série A,statsbomb
@@ -827,7 +807,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 409478,Dyogo,Flamengo,Brasil – Série A,statsbomb
 531128,João Camargo,Flamengo,Brasil – Série A,statsbomb
 144184,Cleiton,Flamengo,Brasil – Série A,statsbomb
-25156,Léo Pereira,Flamengo,Brasil – Série A,statsbomb
 337758,Matheus Gonçalves,Flamengo,Brasil – Série A,statsbomb
 472244,Joshua,Flamengo,Brasil – Série A,statsbomb
 23522,Emerson Royal,Flamengo,Brasil – Série A,statsbomb
@@ -901,7 +880,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 44745,NA,América de Cali,Colombia,statsbomb
 5528,NA,Deportivo Cali,Colombia,statsbomb
 437530,Luis Mina,América de Cali,Colombia,statsbomb
-461806,E.Restrepo Castro,Llaneros,Colombia,statsbomb
 32829,Iván Arboleda,Águilas Doradas,Colombia,statsbomb
 483804,Jorge Rivaldo,Águilas Doradas,Colombia,statsbomb
 186378,Juan Esteban Avalo Trejos,Águilas Doradas,Colombia,statsbomb
@@ -950,7 +928,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 423127,NA,Alianza Valledupar,Colombia,statsbomb
 418919,Juan Arango,Deportivo Cali,Colombia,statsbomb
 485369,Sebastián Viveros del Castillo,Millonarios,Colombia,statsbomb
-482810,S.Isaza,Millonarios,Colombia,statsbomb
 27278,Diego Novoa,Millonarios,Colombia,statsbomb
 186783,NA,Rionegro,Colombia,statsbomb
 186378,Juan Esteban Avalo Trejos,Rionegro,Colombia,statsbomb
@@ -964,7 +941,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 10853,NA,Atlético Nacional,Colombia,statsbomb
 423126,NA,Atlético Nacional,Colombia,statsbomb
 479796,NA,Atlético Nacional,Colombia,statsbomb
-462333,C.Uribe Caro,Atlético Nacional,Colombia,statsbomb
 249295,Luis Felipe Mosquera Paredes,Deportivo Pereira,Colombia,statsbomb
 528792,Calderon A.,Deportivo Pereira,Colombia,statsbomb
 438675,Sebastián Arbeláez,Deportivo Pereira,Colombia,statsbomb
@@ -972,7 +948,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 530371,Jhon Montoya,Deportivo Pereira,Colombia,statsbomb
 530370,Santiago Alzate,Deportivo Pereira,Colombia,statsbomb
 423012,Nicolas Rengifo,Deportivo Pereira,Colombia,statsbomb
-79575,Sebastián Acosta Pineda,Deportivo Pereira,Colombia,statsbomb
 36151,Ederson Moreno,Deportivo Pereira,Colombia,statsbomb
 530366,Miguel Aguirre Angel,Deportivo Pereira,Colombia,statsbomb
 530373,Josseph Mosquera,Deportivo Pereira,Colombia,statsbomb
@@ -984,6 +959,7 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 462563,R.Romaña Garavito,Llaneros,Colombia,statsbomb
 82711,NA,Llaneros,Colombia,statsbomb
 527593,NA,Llaneros,Colombia,statsbomb
+27415,Jhon Vásquez,Llaneros,Colombia,statsbomb
 27447,NA,Cúcuta Deportivo,Colombia,statsbomb
 423829,NA,Cúcuta Deportivo,Colombia,statsbomb
 366679,NA,Cúcuta Deportivo,Colombia,statsbomb
@@ -1020,7 +996,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 445328,Sergio Andrés Aponzá Cantoñil,Alianza Valledupar,Colombia,statsbomb
 94936,Alejandro Rodríguez Bahena,Deportivo Cali,Colombia,statsbomb
 52249,NA,Cúcuta Deportivo,Colombia,statsbomb
-460737,J.Angulo Rosales,Deportes Tolima,Colombia,statsbomb
 261625,NA,Deportes Tolima,Colombia,statsbomb
 526115,Yoimar Moreno,Deportes Tolima,Colombia,statsbomb
 391769,Élan Ricardo,Deportes Tolima,Colombia,statsbomb
@@ -1030,7 +1005,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 482811,Jhon Sebastian Palacios Sanchez,Fortaleza CEIF,Colombia,statsbomb
 479256,NA,Fortaleza CEIF,Colombia,statsbomb
 530361,NA,Fortaleza CEIF,Colombia,statsbomb
-366014,Cristian Daniel Santander Rosero,Fortaleza CEIF,Colombia,statsbomb
 36614,NA,Fortaleza CEIF,Colombia,statsbomb
 27379,Jhon Jairo Velásquez,Fortaleza CEIF,Colombia,statsbomb
 541997,NA,Fortaleza CEIF,Colombia,statsbomb
@@ -1052,7 +1026,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 402704,NA,Atlético Bucaramanga,Colombia,statsbomb
 36904,NA,Atlético Bucaramanga,Colombia,statsbomb
 486309,Christopher Martín,Millonarios,Colombia,statsbomb
-445189,C.Barrios,Millonarios,Colombia,statsbomb
 27062,David Mackalister Silva Mosquera,Millonarios,Colombia,statsbomb
 261627,Jorge Leguín Cabezas Hurtado,Millonarios,Colombia,statsbomb
 208679,NA,Deportivo Pasto,Colombia,statsbomb
@@ -1098,7 +1071,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 479650,Lucas Villa Valencia,Alianza Valledupar,Colombia,statsbomb
 28816,Johan Wallens,Alianza Valledupar,Colombia,statsbomb
 476945,Yeider García,Inter Bogotá,Colombia,statsbomb
-482987,D.Longa,Inter Bogotá,Colombia,statsbomb
 477423,Juan Mateo Santamaria Gaona,Inter Bogotá,Colombia,statsbomb
 462624,Miguel Angel Amaya Peña,Inter Bogotá,Colombia,statsbomb
 433182,Bayron Yuseth Caicedo Mosquera,Inter Bogotá,Colombia,statsbomb
@@ -1120,7 +1092,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 547382,NA,Junior,Colombia,statsbomb
 28812,Harold Rivera,Junior,Colombia,statsbomb
 52299,Weibmar Banny Asprilla Mena,Santa Fe,Colombia,statsbomb
-293344,Johan Torres,Santa Fe,Colombia,statsbomb
 45215,Guillermo de Amores,Millonarios,Colombia,statsbomb
 35444,NA,Millonarios,Colombia,statsbomb
 52972,NA,Independiente Medellín,Colombia,statsbomb
@@ -1227,7 +1198,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 83537,Vicente Javier Conelli González,Huachipato,Chile,statsbomb
 426764,N.Cárcamo,Huachipato,Chile,statsbomb
 429952,Dylan Oyarzún,Huachipato,Chile,statsbomb
-463040,M.Guzmán Carreño,Everton,Chile,statsbomb
 288479,Claudio Iván González Landeros,Everton,Chile,statsbomb
 48266,Joan Cruz,Everton,Chile,statsbomb
 464322,Byron Navarro,Everton,Chile,statsbomb
@@ -1318,7 +1288,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 378568,Axel Cerda,Universidad Católica,Chile,statsbomb
 35753,Francisco Arancibia,Universidad Católica,Chile,statsbomb
 484496,José Salas,Universidad Católica,Chile,statsbomb
-476387,F.Ratotti,Unión Española,Chile,statsbomb
 425971,Enzo Hoyos,Deportes Iquique,Chile,statsbomb
 35832,Leandro Requena,Deportes Iquique,Chile,statsbomb
 535123,Gonzalo Aban,Deportes Limache,Chile,statsbomb
@@ -1389,7 +1358,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 206169,Thomas Ivory Williams,Orlando City,MLS,statsbomb
 304025,Zakaria Taifi,Orlando City,MLS,statsbomb
 428632,Colin Guske,Orlando City,MLS,statsbomb
-224439,Alexander Freeman,Orlando City,MLS,statsbomb
 117066,Calvin Fodrey,Austin FC,MLS,statsbomb
 17053,Brad Stuver,Austin FC,MLS,statsbomb
 114239,Christopher Brady,Chicago Fire,MLS,statsbomb
@@ -1557,7 +1525,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 434483,Rayan Elloumi,Vancouver Whitecaps,MLS,statsbomb
 389462,Brandon Cambridge,Charlotte,MLS,statsbomb
 395078,Stephen Afrifa,Sporting Kansas City,MLS,statsbomb
-50411,Ralph Priso,Vancouver Whitecaps,MLS,statsbomb
 29758,Sam Adekugbe,Vancouver Whitecaps,MLS,statsbomb
 431383,Johnny Selemani,Vancouver Whitecaps,MLS,statsbomb
 129317,Antoine Coupland,Vancouver Whitecaps,MLS,statsbomb
@@ -1586,9 +1553,7 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 131702,Mateja Đorđević,Austin FC,MLS,statsbomb
 42633,Novak Mićović,LA Galaxy,MLS,statsbomb
 122998,Nikola Petkovic,Charlotte,MLS,statsbomb
-135811,William Agada,Sporting Kansas City,MLS,statsbomb
 117919,Sunusi Ibrahim,CF Montreal,MLS,statsbomb
-135811,William Agada,Real Salt Lake,MLS,statsbomb
 261301,Monsef Bakrar,New York City FC,MLS,statsbomb
 22360,Xande Silva,St. Louis City,MLS,statsbomb
 22360,Xande Silva,Atlanta United,MLS,statsbomb
@@ -2170,7 +2135,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 252269,Noah Sadiki,Sunderland,Premier League,statsbomb
 3690,Aaron Wan-Bissaka,West Ham United,Premier League,statsbomb
 48369,Arsen Zakharyan,Real Sociedad,LaLiga,statsbomb
-32122,Johnny,Atlético Madrid,LaLiga,statsbomb
 224439,Alexander Freeman,Villarreal,LaLiga,statsbomb
 16249,Yangel Herrera,Girona,LaLiga,statsbomb
 416690,Juan Arango,Girona,LaLiga,statsbomb
@@ -2218,7 +2182,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 3447,Ademola Lookman,Atlético Madrid,LaLiga,statsbomb
 11223,Fábio Cardoso,Sevilla,LaLiga,statsbomb
 30605,André Almeida,Valencia,LaLiga,statsbomb
-39073,Ilaix Moriba,Celta Vigo,LaLiga,statsbomb
 206941,Jhon Elmer Solis Romero,Girona,LaLiga,statsbomb
 11671,Cucho Hernández,Real Betis,LaLiga,statsbomb
 28272,Ladislav Krejčí,Girona,LaLiga,statsbomb
@@ -2244,10 +2207,7 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 158900,Roony Bardghji,Barcelona,LaLiga,statsbomb
 48310,Luiz Júnior,Villarreal,LaLiga,statsbomb
 271988,Endrick,Real Madrid,LaLiga,statsbomb
-195724,Alemão,Rayo Vallecano,LaLiga,statsbomb
 263243,Wesley Gassova,Real Sociedad,LaLiga,statsbomb
-11166,Marcão Teixeira,Sevilla,LaLiga,statsbomb
-10595,Raphinha,Barcelona,LaLiga,statsbomb
 35859,Matías Dituro,Elche,LaLiga,statsbomb
 5109,Paulo Gazzaniga,Girona,LaLiga,statsbomb
 51887,Federico Gattoni,Sevilla,LaLiga,statsbomb
@@ -2291,7 +2251,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 441602,Andrés Antañón,Celta Vigo,LaLiga,statsbomb
 133774,Yago Alonso,Elche,LaLiga,statsbomb
 6754,David López,Girona,LaLiga,statsbomb
-6802,Jonny Castro,Deportivo Alavés,LaLiga,statsbomb
 133353,Gavi,Barcelona,LaLiga,statsbomb
 416254,Toni Fernández,Barcelona,LaLiga,statsbomb
 443905,Dro Fernández,Barcelona,LaLiga,statsbomb
@@ -2312,7 +2271,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 464359,Hugo Cortés,Villarreal,LaLiga,statsbomb
 452089,Carlos Macia Coves,Villarreal,LaLiga,statsbomb
 6667,Mikel Vesga,Athletic Club,LaLiga,statsbomb
-68574,Nico Williams,Athletic Club,LaLiga,statsbomb
 11748,Unai Simón,Athletic Club,LaLiga,statsbomb
 324018,Urko Izeta,Athletic Club,LaLiga,statsbomb
 315471,Unai Gómez Etxebarria,Athletic Club,LaLiga,statsbomb
@@ -2337,7 +2295,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 133556,Karrikaburu,Real Sociedad,LaLiga,statsbomb
 9748,Antonio Sivera,Deportivo Alavés,LaLiga,statsbomb
 422660,Aitor Buenadicha,Deportivo Alavés,LaLiga,statsbomb
-49303,Pep Chavarría,Rayo Vallecano,LaLiga,statsbomb
 132414,Nico Serrano,Athletic Club,LaLiga,statsbomb
 419557,Oso,Sevilla,LaLiga,statsbomb
 49260,José Salinas,Espanyol,LaLiga,statsbomb
@@ -2346,7 +2303,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 38804,Adrià Altimira,Villarreal,LaLiga,statsbomb
 6753,Dani Raba,Valencia,LaLiga,statsbomb
 74481,Alfon González,Sevilla,LaLiga,statsbomb
-5199,Koke,Atlético Madrid,LaLiga,statsbomb
 74481,Alfon González,Villarreal,LaLiga,statsbomb
 39159,Arnau Tenas,Villarreal,LaLiga,statsbomb
 50494,Yeremi Pino,Villarreal,LaLiga,statsbomb
@@ -2368,7 +2324,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 320846,Álex Sancris,Getafe,LaLiga,statsbomb
 3269,Kiko Femenía,Getafe,LaLiga,statsbomb
 337485,Álex Forés Mendoza,Real Oviedo,LaLiga,statsbomb
-30491,Isi Palazón,Rayo Vallecano,LaLiga,statsbomb
 256026,Damián Rodríguez,Celta Vigo,LaLiga,statsbomb
 320484,Yoel Lago Amil,Celta Vigo,LaLiga,statsbomb
 346691,Fer López,Celta Vigo,LaLiga,statsbomb
@@ -2390,10 +2345,8 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 6587,Toni Lato,Mallorca,LaLiga,statsbomb
 24067,Abdón Prats,Mallorca,LaLiga,statsbomb
 24088,Dani Rodríguez,Mallorca,LaLiga,statsbomb
-36728,Mate Morey,Mallorca,LaLiga,statsbomb
 440917,Jan Salas,Mallorca,LaLiga,statsbomb
 161585,Javier Llabrés,Mallorca,LaLiga,statsbomb
-30486,Pedri,Barcelona,LaLiga,statsbomb
 409595,Xavi Espart,Barcelona,LaLiga,statsbomb
 24315,Kike Barja,Osasuna,LaLiga,statsbomb
 397360,Iñigo Goñi,Osasuna,LaLiga,statsbomb
@@ -2488,7 +2441,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 29310,Shon Zalman Weissman,Granada,LaLiga 2,statsbomb
 31235,Maranhão,Real Valladolid,LaLiga 2,statsbomb
 143506,Dali,Córdoba CF,LaLiga 2,statsbomb
-6761,Léo Baptistão,Almería,LaLiga 2,statsbomb
 6636,Rodrigo Ely,Almería,LaLiga 2,statsbomb
 49392,Lázaro,Almería,LaLiga 2,statsbomb
 36958,Adrián Rodríguez,Real Zaragoza,LaLiga 2,statsbomb
@@ -2519,7 +2471,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 35404,Jokin Ezkieta,Racing Santander,LaLiga 2,statsbomb
 344404,Yeray Cabanzón,Racing Santander,LaLiga 2,statsbomb
 33225,Óscar Gil,CD Castellón,LaLiga 2,statsbomb
-24577,Salva Ruiz,CD Castellón,LaLiga 2,statsbomb
 141360,Yago Cantero,AD Ceuta FC,LaLiga 2,statsbomb
 411794,Baba,Granada,LaLiga 2,statsbomb
 178546,Arana,Real Sociedad B,LaLiga 2,statsbomb
@@ -2623,7 +2574,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 11539,Adri Embarba,Almería,LaLiga 2,statsbomb
 24212,Aridane Hernández,Almería,LaLiga 2,statsbomb
 8697,Andrés Fernández,Almería,LaLiga 2,statsbomb
-405156,Silvi Clúa,Almería,LaLiga 2,statsbomb
 145047,Manu Rico,Huesca,LaLiga 2,statsbomb
 114273,Hugo Pérez,Huesca,LaLiga 2,statsbomb
 23795,Dani Jiménez,Huesca,LaLiga 2,statsbomb
@@ -2658,13 +2608,11 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 22029,Kevin Vázquez,Sporting Gijón,LaLiga 2,statsbomb
 47495,Pablo García,Sporting Gijón,LaLiga 2,statsbomb
 156099,Álex Oyón,Sporting Gijón,LaLiga 2,statsbomb
-428359,M.Rodríguez Paz,Sporting Gijón,LaLiga 2,statsbomb
 31615,Rubén Yáñez,Sporting Gijón,LaLiga 2,statsbomb
 182082,Jesús Bernal,Sporting Gijón,LaLiga 2,statsbomb
 531433,Nicolás Riestra,Sporting Gijón,LaLiga 2,statsbomb
 7022,Suso,Cádiz,LaLiga 2,statsbomb
 192289,Victor Wehbi Aznar Ussen,Cádiz,LaLiga 2,statsbomb
-442090,Alvaro Pascual,Cádiz,LaLiga 2,statsbomb
 4778,Jordi Mboula,CyD Leonesa,LaLiga 2,statsbomb
 421551,Guzmán Ortega,CyD Leonesa,LaLiga 2,statsbomb
 434033,Francisco Gracia,CyD Leonesa,LaLiga 2,statsbomb
@@ -2673,7 +2621,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 47461,Eneko Satrústegui,CyD Leonesa,LaLiga 2,statsbomb
 175050,Pelayo Rey,CyD Leonesa,LaLiga 2,statsbomb
 23921,Juan Soriano,Leganés,LaLiga 2,statsbomb
-534824,M.Calvo,Leganés,LaLiga 2,statsbomb
 407929,Andrés Campos Bautista,Leganés,LaLiga 2,statsbomb
 440180,Carlos Guirao,Leganés,LaLiga 2,statsbomb
 298749,Lalo,Leganés,LaLiga 2,statsbomb
@@ -2702,7 +2649,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 440051,Pica,Mirandés,LaLiga 2,statsbomb
 312416,Siren Diao,Mirandés,LaLiga 2,statsbomb
 420489,Etienne Eto’o Pineda,Mirandés,LaLiga 2,statsbomb
-405156,Silvi Clúa,Mirandés,LaLiga 2,statsbomb
 416368,Pablo López,Mirandés,LaLiga 2,statsbomb
 171574,Juanpa,Mirandés,LaLiga 2,statsbomb
 61129,Corrie Ndaba,Lecce,Serie A,statsbomb
@@ -2741,7 +2687,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 4699,Caleb Ekuban,Genoa,Serie A,statsbomb
 190754,Ibrahim Sulemana,Bologna,Serie A,statsbomb
 35658,Kamaldeen Sulemana,Atalanta,Serie A,statsbomb
-52324,Saúl Coco,Torino,Serie A,statsbomb
 408107,Andrias Edmundsson,Hellas Verona,Serie A,statsbomb
 49217,Jordan Zemura,Udinese,Serie A,statsbomb
 30632,Nikola Krstović,Atalanta,Serie A,statsbomb
@@ -3130,7 +3075,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 304166,Alieu Eybi Njie,Torino,Serie A,statsbomb
 117247,Isak Hien,Atalanta,Serie A,statsbomb
 231941,Giovane,Hellas Verona,Serie A,statsbomb
-10322,Dodô,Fiorentina,Serie A,statsbomb
 3411,Hernani,Parma Calcio 1913,Serie A,statsbomb
 408492,Lorran,Pisa,Serie A,statsbomb
 3366,Diego Carlos,Como,Serie A,statsbomb
@@ -3715,7 +3659,6 @@ sb_player_id,player_name_sb,team_name_sb,league,side
 232700,Thalisson Kelven,Gençlerbirligi,Turquía – Süper Lig,statsbomb
 3067,Ederson Moraes,Fenerbahçe,Turquía – Süper Lig,statsbomb
 16045,Rodrigo Becão,Fenerbahçe,Turquía – Süper Lig,statsbomb
-43133,Talisca,Fenerbahçe,Turquía – Süper Lig,statsbomb
 307239,Ruan,Alanyaspor,Turquía – Süper Lig,statsbomb
 25255,Paulo Victor,Alanyaspor,Turquía – Süper Lig,statsbomb
 10885,Bruno Vianna,Alanyaspor,Turquía – Süper Lig,statsbomb

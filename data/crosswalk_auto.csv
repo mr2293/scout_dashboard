@@ -134,6 +134,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 469978,Joban Cera,Tijuana,1002987,Joban González Cera,Xoloitcuintles Club Tijuana,p3_token_same_team,Liga MX
 181902,Mauro Zaleta,Mazatlán,100328,Mauro Aldair Zaleta Oropeza,Mazatlán FC,p3_token_same_team,Liga MX
 415244,Joaquín Moxica,Monterrey,1005620,Joaquín Alejandro Moxica Chapa,Club de Fútbol Monterrey,p3_token_same_team,Liga MX
+482765,J.Cibrián,Puebla,1018042,Jafet Alejandro Cortés Cibrián,Club de Fútbol Puebla de la Franja,p3_token_same_team,Liga MX
+482766,L.Pérez,Atlas,1018043,Luis Blanco  Elie Pérez,Club de Fútbol Atlas,p3_token_same_team,Liga MX
+482815,I.Cataño,Mazatlán,1018105,Ivan Mauricio González Cataño,Mazatlán FC,p3_token_same_team,Liga MX
+482807,M.Torres Berlanga,Pumas UNAM,1018109,Misael Gerardo Torres Berlanga,Club Universidad Nacional,p3_token_same_team,Liga MX
+483950,J.Arroyo Godínez,Toluca,1020069,Jose Miguel Arroyo Godínez,Deportivo Toluca Fútbol Club,p3_token_same_team,Liga MX
 486357,José Chávez,Toluca,1022899,José Abraham Estrada Chávez,Deportivo Toluca Fútbol Club,p3_token_same_team,Liga MX
 523985,Stanley García,Pumas UNAM,1028052,Stanley García Arriola,Club Universidad Nacional,p3_token_same_team,Liga MX
 525749,Emmanuel Sánchez,Cruz Azul,1028950,Emmanuel Sanchez Miranda,Cruz Azul Fútbol Club,p3_token_same_team,Liga MX
@@ -425,14 +430,19 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 26318,Rogelio Funes Mori,León,9206,Rogelio Gabriel Funes Mori,Club Social y Deportivo León,p3_token_same_team,Liga MX
 6612,Rubén Duarte,Pumas UNAM,9335,Rubén Duarte Sánchez,Club Universidad Nacional,p3_token_same_team,Liga MX
 7794,Samir,Mazatlán,9498,Samir Caetano de Souza Santos,Mazatlán FC,p3_token_same_team,Liga MX
+45685,Sébastien Antoine Luc Salles Lamonge,Atlético San Luis,9686,Sébastien Salles-Lamonge,Atlético de San Luis,p3_token_same_team,Liga MX
 450451,Sergio Hernández,Atlas,969839,Sergio Ismael Hernández Flores,Club de Fútbol Atlas,p3_token_same_team,Liga MX
 45608,Walter Portales,Puebla,973074,Walter Alberto Portales Chávez,Club de Fútbol Puebla de la Franja,p3_token_same_team,Liga MX
 422652,Diego Ochoa,Juárez,974493,Diego Ochoa Berdejo,FC Juárez,p3_token_same_team,Liga MX
 6673,Sergio Canales,Monterrey,9750,Sergio Canales Madrazo,Club de Fútbol Monterrey,p3_token_same_team,Liga MX
 5201,Sergio Ramos,Monterrey,9765,Sergio Ramos García,Club de Fútbol Monterrey,p3_token_same_team,Liga MX
+432381,J.Lourenço,Atlético San Luis,995733,João Pedro Silverio Lourenço,Atlético de San Luis,p3_token_same_team,Liga MX
 459663,Ángel Leyva,Mazatlán,999099,Ángel Alberto Leyva Serrano,Mazatlán FC,p3_token_same_team,Liga MX
 6807,Rober,Atlas,13957,Roberto Suárez Pier,Club de Fútbol Atlas,p3b_nickname_same_team,Liga MX
 132801,Juninho,Pumas UNAM,187165,Olávio Vieira dos Santos Júnior,Club Universidad Nacional,p3b_nickname_same_team,Liga MX
+47114,Tony Leone,Monterrey,36467,Antonio Jermiah Leone Larios,Club de Fútbol Monterrey,p3b_nickname_same_team,Liga MX
+132471,Ricardinho,Juárez,61691,Ricardo Jorge Oliveira António,FC Juárez,p3b_nickname_same_team,Liga MX
+483481,S.Sandoval González,Guadalajara,1018358,Santiago  Sandoval Gonzales,Club Deportivo Guadalajara,p4_fuzzy_0.24,Liga MX
 213974,Fidel Barajas Juarez Jr,Atlético San Luis,158834,Fidel Junior Barajas Juárez,Atlético de San Luis,p4_fuzzy_0.151,Liga MX
 23846,Uroš Đurđević,Atlas,22090,Uros  Djurdjevic,Club de Fútbol Atlas,p4_fuzzy_0.044,Liga MX
 27887,Bryan Eduardo Garnica Cortéz,Puebla,23253,Brayan Eduardo Garnica Cortéz,Club de Fútbol Puebla de la Franja,p4_fuzzy_0.125,Liga MX
@@ -442,13 +452,13 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 23849,Fran Villalba,Santos Laguna,24584,Francisco José Villalba Rodrigo,Club Santos Laguna,manual,Liga MX
 33360,Morad,Tijuana,25644,Mourad Daoudi El Ghezouani,Xoloitcuintles Club Tijuana,manual,Liga MX
 482805,D.Ramírez Castillo,Pumas UNAM,1018107,Dennis Yael Ramírez Castillo,Club Universidad Nacional,manual,Liga MX
+195724,Alemão,Pachuca,142458,Alexandre Zurawski,Club de Fútbol Pachuca,manual,Liga MX
 424480,Luis Ignacio Abraham,Banfield,843008,Luis Ignacio Abraham,CA Banfield,p1_exact_name_team,Argentina
 30803,Matko Mijael Miljevic,Huracán,28519,Matko Mijael Miljevic,Club Atlético Huracán,p1_exact_name_team,Argentina
 5521,Luis Jan Piers Advíncula Castrillón,Boca Juniors,6413,Luis Jan Piers Advíncula Castrillón,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
 27850,Sebastián Villa Cano,Independiente Rivadavia,18228,Sebastián Villa Cano,CS Independiente Rivadavia,p1_exact_name_team,Argentina
 29128,Edwuin Steven Cetré Angulo,Estudiantes,25949,Edwuin Steven Cetré Angulo,Estudiantes de La Plata,p1_exact_name_team,Argentina
 186930,Alexis Castillo Manyoma,Estudiantes,117896,Alexis Castillo Manyoma,Estudiantes de La Plata,p1_exact_name_team,Argentina
-49526,Jherson Steven Mosquera Castro,Newell's Old Boys,43949,Jherson Steven Mosquera Castro,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 6333,Miguel Ángel Borja Hernández,River Plate,12062,Miguel Ángel Borja Hernández,Club Atlético River Plate,p1_exact_name_team,Argentina
 5692,Juan Fernando Quintero Paniagua,River Plate,5528,Juan Fernando Quintero Paniagua,Club Atlético River Plate,p1_exact_name_team,Argentina
 47067,Jhohan Sebastián Romaña Espitia,San Lorenzo,38170,Jhohan Sebastián Romaña Espitia,Club Atlético San Lorenzo de Almagro,p1_exact_name_team,Argentina
@@ -466,7 +476,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 53260,Facundo Mallo Blanco,Rosario Central,118014,Facundo Mallo Blanco,Club Atlético Rosario Central,p1_exact_name_team,Argentina
 285532,Juan Sebastián Boselli Graf,Estudiantes,244189,Juan Sebastián Boselli Graf,Estudiantes de La Plata,p1_exact_name_team,Argentina
 45216,Facundo Federico Waller Martiarena,Huracán,25979,Facundo Federico Waller Martiarena,Club Atlético Huracán,p1_exact_name_team,Argentina
-37466,Martín Alejandro Fernández Figueira,Newell's Old Boys,34347,Martín Alejandro Fernández Figueira,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 36344,Alan Jesús Rodríguez Guaglianoni,Argentinos Juniors,69506,Alan Jesús Rodríguez Guaglianoni,Asociación Atlética Argentinos Juniors,p1_exact_name_team,Argentina
 44484,Leandro Nicolás Lozano Fernández,Argentinos Juniors,69512,Leandro Nicolás Lozano Fernández,Asociación Atlética Argentinos Juniors,p1_exact_name_team,Argentina
 195997,Leonard Richard Costa Martínez,Independiente Rivadavia,115612,Leonard Richard Costa Martínez,CS Independiente Rivadavia,p1_exact_name_team,Argentina
@@ -481,8 +490,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 368503,Paul Vicente Riveros Allende,Banfield,586989,Paul Vicente Riveros Allende,CA Banfield,p1_exact_name_team,Argentina
 87443,Enzo Daniel Giménez Rojas,Rosario Central,43782,Enzo Daniel Giménez Rojas,Club Atlético Rosario Central,p1_exact_name_team,Argentina
 126681,Matías  Galarza Fonda,River Plate,145072,Matias Galarza Fonda,Club Atlético River Plate,p1_exact_name_team,Argentina
-27934,Saúl Savin Salcedo Zárate,Newell's Old Boys,26286,Saúl Savín Salcedo Zárate,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-27961,Carlos Gabriel González Espínola,Newell's Old Boys,23669,Carlos Gabriel González Espínola,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 57758,Luca Leovino Martínez Dupuy,Godoy Cruz,36649,Luca Leovino Martínez Dupuy,Club Deportivo Godoy Cruz Antonio Tomba,p1_exact_name_team,Argentina
 43999,Andrés Vombergar,San Lorenzo,13714,Andrés Vombergar,Club Atlético San Lorenzo de Almagro,p1_exact_name_team,Argentina
 47031,Bastián Jean Yañez Miranda,Godoy Cruz,43929,Bastián Jean Yáñez Miranda,Club Deportivo Godoy Cruz Antonio Tomba,p1_exact_name_team,Argentina
@@ -563,10 +570,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 3595,Manuel Lanzini,Vélez Sarsfield,6623,Manuel Lanzini,Club Atlético Vélez Sarsfield,p1_exact_name_team,Argentina
 3246,Guido Marcelo Carrillo,Estudiantes,4110,Guido Marcelo Carrillo,Estudiantes de La Plata,p1_exact_name_team,Argentina
 27758,Alexis Castro,Estudiantes,28704,Alexis Castro,Estudiantes de La Plata,p1_exact_name_team,Argentina
-29054,Mauricio Luciano Lollo,Newell's Old Boys,28654,Mauricio Luciano Lollo,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-437730,Mateo Silvetti,Newell's Old Boys,837713,Mateo Silvetti,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-5504,Éver Maximiliano David Banega,Newell's Old Boys,3210,Éver Maximiliano David Banega,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-423742,Luciano Ramón Herrera,Newell's Old Boys,809351,Luciano Ramón Herrera,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 135751,David Maximiliano González,Godoy Cruz,65857,David Maximiliano González,Club Deportivo Godoy Cruz Antonio Tomba,p1_exact_name_team,Argentina
 91996,Luciano Leonel Recalde,San Martín San Juan,58757,Luciano Leonel Recalde,CA San Martín de San Juan,p1_exact_name_team,Argentina
 426309,Franco Adrián Toloza,San Martín San Juan,843077,Franco Adrián Toloza,CA San Martín de San Juan,p1_exact_name_team,Argentina
@@ -596,10 +599,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 397048,Santiago López Grobin,Rosario Central,672077,Santiago López Grobin,Club Atlético Rosario Central,p1_exact_name_team,Argentina
 112971,Alejo Véliz,Rosario Central,43448,Alejo Véliz,Club Atlético Rosario Central,p1_exact_name_team,Argentina
 265101,Tomás O'Connor,Rosario Central,165547,Tomás O'Connor,Club Atlético Rosario Central,p1_exact_name_team,Argentina
-25122,Víctor Leandro Cuesta,Newell's Old Boys,28319,Víctor Leandro Cuesta,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-92865,Ángelo Martino,Newell's Old Boys,43465,Ángelo Martino,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-31150,Juan Manuel García,Newell's Old Boys,36900,Juan Manuel García,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-147298,Tomás Jacob,Newell's Old Boys,70724,Tomás Jacob,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 54380,Walter Uriel Mazzantti,Huracán,38986,Walter Uriel Mazzantti,Club Atlético Huracán,p1_exact_name_team,Argentina
 402166,Leonel Ulises Pérez,Huracán,714613,Leonel Ulises Pérez,Club Atlético Huracán,p1_exact_name_team,Argentina
 397066,Juan Francisco Bisanz,Huracán,542833,Juan Francisco Bisanz,Club Atlético Huracán,p1_exact_name_team,Argentina
@@ -612,10 +611,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 386964,Juan Ignacio Barinaga,Boca Juniors,589729,Juan Ignacio Barinaga,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
 51992,Lautaro Emanuel Blanco,Boca Juniors,36640,Lautaro Emanuel Blanco,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
 33265,Alan Agustín Velasco,Boca Juniors,26472,Alan Agustín Velasco,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
-424397,Alejo Gastón Montero,Newell's Old Boys,29762,Alejo Gastón Montero,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-27844,Darío Ismael Benedetto,Newell's Old Boys,23114,Darío Ismael Benedetto,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-34908,Gonzalo Maroni,Newell's Old Boys,24242,Gonzalo Maroni,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
-51877,Alejo Germán Tabares,Newell's Old Boys,36771,Alejo Germán Tabares,Club Atlético Newell's Old Boys,p1_exact_name_team,Argentina
 51853,Oscar Exequiel Zeballos,Boca Juniors,36636,Oscar Exequiel Zeballos,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
 144123,Emiliano Sebastián Viveros Mereles,Argentinos Juniors,70111,Emiliano Sebastián Viveros Mereles,Asociación Atlética Argentinos Juniors,p1_exact_name_team,Argentina
 51402,Nicolás Adrián Oroz,Argentinos Juniors,70906,Nicolás Adrián Oroz,Asociación Atlética Argentinos Juniors,p1_exact_name_team,Argentina
@@ -700,6 +695,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 28564,Lucas Manuel Zelarayán,Belgrano,23269,Lucas Manuel Zelarayán,CA Belgrano de Córdoba,p2_exact_name_unique,Argentina
 34194,Eduar Ayrton Preciado García,Aldosivi,18252,Eduar Ayrton Preciado Garcia,CA Aldosivi,p2_exact_name_unique,Argentina
 28712,Duván Andrés Vergara Hernández,Racing Club,35671,Duván Andrés Vergara Hernández,Racing Club de Avellaneda,p2_exact_name_unique,Argentina
+49526,Jherson Steven Mosquera Castro,Newell's Old Boys,43949,Jherson Steven Mosquera Castro,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
 27354,Kevin Alexander Balanta Lucumí,Defensa y Justicia,25958,Kevin Alexander Balanta Lucumí,Club Social y Deportivo Defensa y Justicia,p2_exact_name_unique,Argentina
 27428,Álvaro Anyiver Angulo Mosquera,Independiente,25956,Álvaro Anyiver Angulo Mosquera,CA Independiente,p2_exact_name_unique,Argentina
 33261,Juan Camilo Portilla Orozco,Talleres de Córdoba,43999,Juan Camilo Portilla Orozco,Club Atlético Talleres,p2_exact_name_unique,Argentina
@@ -730,10 +726,12 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 46077,Blas Esteban Armoa Núñez,Tigre,36241,Blas Esteban Armoa Núñez,CA Tigre,p2_exact_name_unique,Argentina
 31956,Richard Rafael Sánchez Guerrero,Racing Club,18238,Richard Rafael Sánchez Guerrero,Racing Club de Avellaneda,p2_exact_name_unique,Argentina
 47074,José Ignacio Florentín Bobadilla,Central Córdoba SdE,38166,José Ignacio Florentín Bobadilla,Club Atlético Central Córdoba,p2_exact_name_unique,Argentina
+27934,Saúl Savin Salcedo Zárate,Newell's Old Boys,26286,Saúl Savín Salcedo Zárate,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
 29582,Gabriel Ávalos Stumpfs,Independiente,26342,Gabriel Ávalos Stumpfs,CA Independiente,p2_exact_name_unique,Argentina
 428539,Clever Domingo Ferreira Ñamandu,Atlético Tucumán,813567,Clever Domingo Ferreira Ñamandu,CA Tucuman,p2_exact_name_unique,Argentina
 87519,Juan José Franco Arrellaga,Instituto,39095,Juan José Franco Arrellaga,Instituto AC Córdoba,p2_exact_name_unique,Argentina
 29234,Blás Miguel Riveros Galeano,Talleres de Córdoba,13738,Blás Miguel Riveros Galeano,Club Atlético Talleres,p2_exact_name_unique,Argentina
+27961,Carlos Gabriel González Espínola,Newell's Old Boys,23669,Carlos Gabriel González Espínola,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
 27969,Matías Ezequiel Catalán,Talleres de Córdoba,36104,Matías Ezequiel Catalán,Club Atlético Talleres,p2_exact_name_unique,Argentina
 28639,Pablo Ignacio Galdames Millán,Independiente,23635,Pablo Ignacio Galdames Millán,CA Independiente,p2_exact_name_unique,Argentina
 381492,Felipe Ignacio Loyola Olea,Independiente,559211,Felipe Ignacio Loyola Olea,CA Independiente,p2_exact_name_unique,Argentina
@@ -811,6 +809,17 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 7134,José Luis Palomino,Talleres de Córdoba,5414,José Luis Palomino,Club Atlético Talleres,p2_exact_name_unique,Argentina
 426215,Tiago Serrago,Aldosivi,811619,Tiago Serrago,CA Aldosivi,p2_exact_name_unique,Argentina
 307568,Elías Lautaro Cabrera,Tigre,206381,Elías Lautaro Cabrera,CA Tigre,p2_exact_name_unique,Argentina
+29054,Mauricio Luciano Lollo,Newell's Old Boys,28654,Mauricio Luciano Lollo,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+437730,Mateo Silvetti,Newell's Old Boys,837713,Mateo Silvetti,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+5504,Éver Maximiliano David Banega,Newell's Old Boys,3210,Éver Maximiliano David Banega,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+25122,Víctor Leandro Cuesta,Newell's Old Boys,28319,Víctor Leandro Cuesta,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+92865,Ángelo Martino,Newell's Old Boys,43465,Ángelo Martino,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+31150,Juan Manuel García,Newell's Old Boys,36900,Juan Manuel García,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+147298,Tomás Jacob,Newell's Old Boys,70724,Tomás Jacob,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+424397,Alejo Gastón Montero,Newell's Old Boys,29762,Alejo Gastón Montero,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+27844,Darío Ismael Benedetto,Newell's Old Boys,23114,Darío Ismael Benedetto,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+34908,Gonzalo Maroni,Newell's Old Boys,24242,Gonzalo Maroni,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
+51877,Alejo Germán Tabares,Newell's Old Boys,36771,Alejo Germán Tabares,Club Atlético Newell's Old Boys,p2_exact_name_unique,Argentina
 48886,Aaron Nicolás Molinas,Defensa y Justicia,58276,Aaron Nicolás Molinas,Club Social y Deportivo Defensa y Justicia,p2_exact_name_unique,Argentina
 26408,Víctor Emanuel Aguilera,Defensa y Justicia,23214,Víctor Emanuel Aguilera,Club Social y Deportivo Defensa y Justicia,p2_exact_name_unique,Argentina
 245631,Santiago Hidalgo Massa,Independiente,156480,Santiago Hidalgo Massa,CA Independiente,p2_exact_name_unique,Argentina
@@ -921,7 +930,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 32824,Juan Bautista Miritello,Defensa y Justicia,28549,Juan Bautista Miritello,Club Social y Deportivo Defensa y Justicia,p2_exact_name_unique,Argentina
 241147,Gonzalo Agustín Piñeiro,Tigre,152983,Gonzalo Agustín Piñeiro,CA Tigre,p2_exact_name_unique,Argentina
 424697,Facundo Sebastián Miño,Deportivo Riestra,843418,Facundo Sebastián Miño,CD Riestra,p2_exact_name_unique,Argentina
-464406,Facundo Samuel Guch,Newell's Old Boys,1000869,Facundo Guch,Club Atlético Newell's Old Boys,p3_token_same_team,Argentina
 460489,Ignacio Perruzzi Ambrosini,San Lorenzo,1001753,Ignacio Perruzzi,Club Atlético San Lorenzo de Almagro,p3_token_same_team,Argentina
 20846,Emanuel Mammana,Vélez Sarsfield,11153,Emanuel Hernán Mammana,Club Atlético Vélez Sarsfield,p3_token_same_team,Argentina
 196871,Tomás Silva,CA Platense,116281,Tomás Ariel Silva,CA Platense,p3_token_same_team,Argentina
@@ -932,7 +940,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 260044,Lautaro Di Lollo,Boca Juniors,172878,Lautaro Federico Di Lollo,Club Atlético Boca Juniors,p3_token_same_team,Argentina
 28264,Milton Casco,River Plate,24950,Milton Óscar Casco,Club Atlético River Plate,p3_token_same_team,Argentina
 31116,Francisco Pizzini,Vélez Sarsfield,24961,Francisco Andrés Pizzini,Club Atlético Vélez Sarsfield,p3_token_same_team,Argentina
-319232,David Sotelo,Newell's Old Boys,256828,David José Sotelo,Club Atlético Newell's Old Boys,p3_token_same_team,Argentina
 51907,Gastón González,CA Sarmiento,26277,Gastón Nicolás González,CA Sarmiento,p3_token_same_team,Argentina
 31829,César Ibáñez,Huracán,26283,César Fernando Ibáñez,Club Atlético Huracán,p3_token_same_team,Argentina
 31766,Valentín Burgoa,CA Sarmiento,26513,Valentín Alberto Burgoa,CA Sarmiento,p3_token_same_team,Argentina
@@ -949,7 +956,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 73598,Bautista Barros Schelotto,CA Platense,36785,Bautista Barros Schelotto Suárez,CA Platense,p3_token_same_team,Argentina
 70762,Joaquín Pombo,Banfield,36824,Joaquín Pombo Steinberger,CA Banfield,p3_token_same_team,Argentina
 51923,Imanol Machuca,Vélez Sarsfield,36898,Imanol Javier Machuca,Club Atlético Vélez Sarsfield,p3_token_same_team,Argentina
-108644,Martín Luciano,Newell's Old Boys,43399,Martín Abel Luciano,Club Atlético Newell's Old Boys,p3_token_same_team,Argentina
 367310,Mateo Mendoza,Godoy Cruz,541169,Mateo Tomás Mendoza,Club Deportivo Godoy Cruz Antonio Tomba,p3_token_same_team,Argentina
 384250,Facundo Santiago Rodríguez Fábregas,Estudiantes,569404,Facundo Santiago Rodríguez,Estudiantes de La Plata,p3_token_same_team,Argentina
 91083,Leonardo Sequeira,Huracán,57435,Leonardo Exequiel Sequeira,Club Atlético Huracán,p3_token_same_team,Argentina
@@ -968,11 +974,10 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 424517,Nicolás Pelaitay,San Martín San Juan,843644,Franco Nicolás Pelaitay,CA San Martín de San Juan,p3_token_same_team,Argentina
 402766,Alejandro Molina,San Martín San Juan,843645,Lorenzo Alejandro Molina,CA San Martín de San Juan,p3_token_same_team,Argentina
 448913,Agustín Ladstatter,San Lorenzo,968293,Agustín Ladstatter Villafañe,Club Atlético San Lorenzo de Almagro,p3_token_same_team,Argentina
-36042,Lucas Alexander Sosa,Newell's Old Boys,43552,Luca Alexander Sosa,Club Atlético Newell's Old Boys,p4_fuzzy_0.017,Argentina
 108743,Aaron Facundo Quiroz,Vélez Sarsfield,57443,Aarón Facundo Quirós,Club Atlético Vélez Sarsfield,p4_fuzzy_0.033,Argentina
-410965,Giovani Chiaverano Meroi,Newell's Old Boys,774110,Giovanni Chiaverano Meroi,Club Atlético Newell's Old Boys,p4_fuzzy_0.09,Argentina
+423921,Marcos Iacobellis,San Martín San Juan,809462,Marco Osvaldo Iacobellis Nahara,CA San Martín de San Juan,p4_fuzzy_0.229,Argentina
 439275,Santiago Lencinas,River Plate,849341,Santiago Lencina,Club Atlético River Plate,p4_fuzzy_0.02,Argentina
-452624,Luca Regiardo,Newell's Old Boys,971399,Luca Reggiardo,Club Atlético Newell's Old Boys,p4_fuzzy_0.024,Argentina
+464406,Facundo Samuel Guch,Newell's Old Boys,1000869,Facundo Guch,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 193688,Franco Emanuel Pardo,Unión,115103,Franco Emanuel Pardo,Club Atlético Unión,p5_token_no_team,Argentina
 194424,Marcelo Luciano Estigarribia,Unión,115107,Marcelo Luciano Estigarribia,Club Atlético Unión,p5_token_no_team,Argentina
 198381,Juan Pablo Pignani,Central Córdoba SdE,117208,Juan Pablo Pignani,Club Atlético Central Córdoba,p5_token_no_team,Argentina
@@ -991,6 +996,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 131488,Leonel Mosevich,Instituto,16945,Julio Leonel  Mosevich,Instituto AC Córdoba,p5_token_no_team,Argentina
 285016,Juan Ludueña,Unión,175376,Juan Pablo Ludueña,Club Atlético Unión,p5_token_no_team,Argentina
 298012,Facundo Gabriel Zabala,Independiente,184027,Facundo Gabriel Zabala Díaz,CA Independiente,p5_token_no_team,Argentina
+319232,David Sotelo,Newell's Old Boys,256828,David José Sotelo,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 32310,Nicolás Cordero,Argentinos Juniors,26293,Nicolás Fernando Cordero,Instituto AC Córdoba,p5_token_no_team,Argentina
 28474,Cristian Alberto Tarragona,Unión,26337,Cristian Alberto Tarragona,Club Atlético Unión,p5_token_no_team,Argentina
 28897,Norberto Alejandro Briasco Belekyan,Gimnasia La Plata,26465,Norberto Alejandro Briasco Balekian,Gimnasia y Esgrima La Plata,p5_token_no_team,Argentina
@@ -1009,6 +1015,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 27779,Héctor Fértoli,Tigre,28700,Héctor Hugo Fértoli,CA Tigre,p5_token_no_team,Argentina
 6894,Ezequiel Muñoz,Lanús,3225,Ezequiel Matías Muñoz,CA Lanús,p5_token_no_team,Argentina
 44108,Adrián Sporle,Independiente,33816,Adrián Marcelo Spörle,CA Independiente,p5_token_no_team,Argentina
+37466,Martín Alejandro Fernández Figueira,Newell's Old Boys,34347,Martín Alejandro Fernández Figueira,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 31719,Francisco González,Newell's Old Boys,35602,Francisco Agustín González,Club Social y Deportivo Defensa y Justicia,p5_token_no_team,Argentina
 26365,Omar Fernando Tobio,Barracas Central,36666,Fernando Omar Tobio,CA Barracas Central,p5_token_no_team,Argentina
 51904,Stéfano Moreyra,Instituto,36677,Stéfano Nahuel Moreyra,Instituto AC Córdoba,p5_token_no_team,Argentina
@@ -1021,6 +1028,8 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 53879,Siro Rosane,Barracas Central,36814,Siro Ignacio Cabral Rosané,CA Barracas Central,p5_token_no_team,Argentina
 41588,Agustín Cardozo,Lanús,38310,Agustín Ezequiel Cardozo,CA Lanús,p5_token_no_team,Argentina
 424425,Federico Gabriel Losas,CA Platense,39476,Federico Gabriel Vera,CA Independiente,p5_token_no_team,Argentina
+108644,Martín Luciano,Newell's Old Boys,43399,Martín Abel Luciano,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
+36042,Lucas Alexander Sosa,Newell's Old Boys,43552,Luca Alexander Sosa,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 364984,Luciano Javier Cabral Melgarejo,Independiente,522696,Luciano Javier Cabral,CA Independiente,p5_token_no_team,Argentina
 367635,Alan Sosa,Gimnasia La Plata,534592,Alan Alejandro Sosa,Gimnasia y Esgrima La Plata,p5_token_no_team,Argentina
 367633,Rodrigo Castillo,Lanús,534593,Rodrigo Castillo,Gimnasia y Esgrima La Plata,p5_token_no_team,Argentina
@@ -1040,9 +1049,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 153734,Blas Agustín Palavecino,Aldosivi,71801,Agustín Blas Palavecino,CA Aldosivi,p5_token_no_team,Argentina
 96086,Ronaldo Dejesús López,Lanús,72368,Ronaldo De Jesús López,CA Lanús,p5_token_no_team,Argentina
 404060,Mariano Troilo,Belgrano,728068,Mariano Emir Troilo,CA Belgrano de Córdoba,p5_token_no_team,Argentina
+410965,Giovani Chiaverano Meroi,Newell's Old Boys,774110,Giovanni Chiaverano Meroi,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 414731,Luca Klimowicz Corti,Instituto,792965,Luca Klimowicz,Instituto AC Córdoba,p5_token_no_team,Argentina
 411834,Gerónimo Heredia,Belgrano,795093,Gerónimo Heredia Velazquez,CA Belgrano de Córdoba,p5_token_no_team,Argentina
 418898,Franco Rami,Aldosivi,801097,Franco Ezequiel Rami,CA Aldosivi,p5_token_no_team,Argentina
+423742,Luciano Ramón Herrera,Newell's Old Boys,809351,Luciano Ramón Herrera,Club Atlético Newell's Old Boys,p5_token_no_team,Argentina
 408560,Valentín Demian Fascendini,Unión,809352,Valentín Damian Fascendini,Club Atlético Unión,p5_token_no_team,Argentina
 423492,Nicolás Caro Torres,Deportivo Riestra,809485,Nicolás Ezequiel Caro Torres,CD Riestra,p5_token_no_team,Argentina
 416943,Alessio Ezequiel Naim Ham,Unión,810282,Ezequiel Ham,Club Atlético Unión,p5_token_no_team,Argentina
@@ -1050,6 +1061,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 437701,Jonathan De Irastorza,Independiente,837494,Jonathan Rodrigo Adrián De Irastorza,CA Independiente,p5_token_no_team,Argentina
 438317,Lautaro Godoy,Atlético Tucumán,840520,Lautaro Agustin Godoy,CA Tucuman,p5_token_no_team,Argentina
 424379,Rodrigo Agustín Colazo,Unión,843692,Rodrigo Augustin Colazo,Club Atlético Unión,p5_token_no_team,Argentina
+452624,Luca Regiardo,Newell's Old Boys,971399,Luca Reggiardo,Club Atlético Newell's Old Boys,p6_fuzzy_noTeam_0.024,Argentina
 64207,José Andrés Hurtado Cheme,Red Bull Bragantino,38209,José Andrés Hurtado Cheme,Red Bull Bragantino,p1_exact_name_team,Brasil – Série A
 2988,Memphis Depay,Corinthians,7387,Memphis Depay,Sport Club Corinthians Paulista,p1_exact_name_team,Brasil – Série A
 7002,Rafael Tolói,São Paulo,8812,Rafael Tolói,São Paulo FC,p1_exact_name_team,Brasil – Série A
@@ -1417,42 +1429,58 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 433965,Gabriel Bontempo,Santos,995889,Gabriel Morais Silva Bontempo,Santos Futebol Clube,p3_token_same_team,Brasil – Série A
 430062,Maykon,EC Vitória,997330,Maykon Kesley de Jesus Ramalho,EC Vitória,p3_token_same_team,Brasil – Série A
 132801,Juninho,Flamengo,22159,Emerson Aparecido Leite de Souza Júnior,CR Flamengo,p3b_nickname_same_team,Brasil – Série A
+25156,Léo Pereira,Flamengo,25200,Leonardo Pereira,CR Flamengo,p3b_nickname_same_team,Brasil – Série A
 25423,Rony,Atlético Mineiro,25203,Ronielson Da Silva Barbosa,Clube Atlético Mineiro,p3b_nickname_same_team,Brasil – Série A
 29574,Lima,Fluminense,25233,Vinícius Moreira de Lima,Fluminense FC,p3b_nickname_same_team,Brasil – Série A
 27050,Juninho,Internacional,28240,José Carlos Ferreira Júnior,SC Internacional,p3b_nickname_same_team,Brasil – Série A
+112986,Léo,Sc Do Recife,31745,Leonardo Augusto dos Santos Pereira,SC do Recife,p3b_nickname_same_team,Brasil – Série A
 42475,Edu,EC Vitória,31777,Lucas Eduardo Ribeiro de Souza,EC Vitória,p3b_nickname_same_team,Brasil – Série A
 49301,Santi Ramos Mingo,Bahia,32159,Santiago Ramos Mingo,Esporte Clube Bahia,p3b_nickname_same_team,Brasil – Série A
 43387,Hulk,Atlético Mineiro,43781,Givanildo Vieira de Souza,Clube Atlético Mineiro,p3b_nickname_same_team,Brasil – Série A
 7024,Jorginho,Flamengo,5365,Jorge Luiz Frello Filho,CR Flamengo,p3b_nickname_same_team,Brasil – Série A
 416466,Souza,Santos,799299,João Victor de Souza Menezes,Santos Futebol Clube,p3b_nickname_same_team,Brasil – Série A
+21297,Lucas Sasha,Fortaleza,13863,Lucas Pacheco Affini,Fortaleza EC,p4_fuzzy_0.244,Brasil – Série A
+36258,Eduardo Santos,Red Bull Bragantino,24829,Eduardo Colcenti Antunes,Red Bull Bragantino,p4_fuzzy_0.202,Brasil – Série A
+25109,Zé Rafael,Santos,24859,José Rafael Vivian,Santos Futebol Clube,p4_fuzzy_0.222,Brasil – Série A
 36904,Enmerson Manuel Batalla Martínez,EC Juventude,35712,Emerson Manuel Batalla Martínez,Juventude RS,p4_fuzzy_0.064,Brasil – Série A
+25231,Fernando Sobral,Ceará,53099,Fernando José Marques Maciel,Ceará Sporting Club,p4_fuzzy_0.237,Brasil – Série A
 36775,Bruno,Ceará,16209,Bruno Vinícius Souza Ramos,SC Internacional,p5_token_no_team,Brasil – Série A
 44576,Oliveira,Vasco da Gama,172964,Daniel de Oliveira Sertanejo,Mirassol Futebol Clube,p5_token_no_team,Brasil – Série A
-436001,José,Cruzeiro,24859,José Rafael Vivian,Santos Futebol Clube,p5_token_no_team,Brasil – Série A
 474385,Victor Hugo,Botafogo,25158,Victor Hugo Soares dos Santos,Esporte Clube Bahia,p5_token_no_team,Brasil – Série A
-392953,Leonardo,Cruzeiro,25200,Leonardo Pereira,CR Flamengo,p5_token_no_team,Brasil – Série A
+18615,Fernando,Red Bull Bragantino,28253,Fernando Pereira do Nascimento,Ceará Sporting Club,p5_token_no_team,Brasil – Série A
 423309,Guilherme,Flamengo,31490,Guilherme de Jesus da Silva,Fortaleza EC,p5_token_no_team,Brasil – Série A
+436001,José,Cruzeiro,31683,José Marcos Alves Luis,EC Vitória,p5_token_no_team,Brasil – Série A
 114491,Matheus França,Vasco da Gama,32808,Matheus França Silva,Sport Club Corinthians Paulista,p5_token_no_team,Brasil – Série A
 6590,Neto,Botafogo,32843,Francisco Alves da Silva Neto,SC do Recife,p5_token_no_team,Brasil – Série A
 25202,Fábio,Fluminense,43856,Fábio Silva de Freitas,Red Bull Bragantino,p5_token_no_team,Brasil – Série A
-18615,Fernando,Red Bull Bragantino,53099,Fernando José Marques Maciel,Ceará Sporting Club,p5_token_no_team,Brasil – Série A
 394737,Rodrigo,Fortaleza,632562,Rodrigo Eduardo da Silva,Juventude RS,p5_token_no_team,Brasil – Série A
+431708,Marcão,EC Juventude,32838,Marcos da Silva França,Fluminense FC,p5b_nickname_no_team,Brasil – Série A
 395268,Luisão,Santos,632559,Luiz Henrique Soares Firmino,Mirassol Futebol Clube,p5b_nickname_no_team,Brasil – Série A
 31013,Fabricio Angileri,Corinthians,29737,Fabrizio Germán Angileri,Sport Club Corinthians Paulista,manual,Brasil – Série A
 31013,Fabricio Angileri,Corinthians,29737,Fabrizio Germán Angileri,Sport Club Corinthians Paulista,manual,Brasil – Série A
 11299,Chris Ramos,Botafogo,13942,Christopher Ramos De la Flor,Botafogo de Futebol e Regatas,manual,Brasil – Série A
 129800,Matheus Alexandre,Sc Do Recife,122012,Matheus Leonardo Sales Cardoso,SC do Recife,manual,Brasil – Série A
+44092,Léo Ortiz,Flamengo,24843,Leonardo Rech Ortiz,CR Flamengo,manual,Brasil – Série A
+444502,Sebastián Ramírez Maya,Fortaleza CEIF,927730,Sebastian Ramírez Maya,Fortaleza CEIF FC,p1_exact_name_team,Colombia
+407508,José Eduardo Bernal Chong,Deportivo Pasto,751436,José Eduardo Bernal Chong,AD Pasto,p1_exact_name_team,Colombia
+367202,Diego Hernández,Águilas Doradas,531854,Diego Hernández,Rionegro Aguilas,p1_exact_name_team,Colombia
+408992,Javier Alexander Mena,Águilas Doradas,793554,Javier Alexander Mena,Rionegro Aguilas,p1_exact_name_team,Colombia
 132520,Faber Andrés Gil Mosquera,Atlético Bucaramanga,66496,Faber Andrés Gil Mosquera,CA Bucaramanga,p1_exact_name_team,Colombia
 130899,Santiago Andrés Aguilar Murillo,Deportivo Pereira,66543,Santiago Andrés Aguilar Murillo,Deportivo Pereira,p1_exact_name_team,Colombia
 59318,Jorge Andrés  Bermúdez Correa,Deportivo Pereira,43952,Jorge Andrés Bermúdez Correa,Deportivo Pereira,p1_exact_name_team,Colombia
 185715,Eber Antonio Moreno Gómez,Deportivo Pereira,115067,Eber Antonio Moreno Gómez,Deportivo Pereira,p1_exact_name_team,Colombia
 35510,Robert Andrés Mejía Navarrete,Once Caldas,35802,Robert Andrés Mejía Navarrete,Once Caldas,p1_exact_name_team,Colombia
+134192,Jhon Harold Balanta Carabalí,Fortaleza CEIF,66377,Jhon Harold Balanta Carabalí,Fortaleza CEIF FC,p1_exact_name_team,Colombia
+408992,Javier Alexander Mena,Rionegro,793554,Javier Alexander Mena,Rionegro Aguilas,p1_exact_name_team,Colombia
 37576,Delio Ángel Ramírez Raigosa,Boyacá Chicó,43953,Delio Ángel Ramírez Raigosa,Boyacá Chicó,p1_exact_name_team,Colombia
 130786,Carlos Yesith De Las Salas Simanca,Atlético Bucaramanga,66408,Carlos Yesith De Las Salas Simanca,CA Bucaramanga,p1_exact_name_team,Colombia
 130639,Yani David Quintero Rivas,Deportivo Cali,66474,Yani David Quintero Rivas,Deportivo Cali,p1_exact_name_team,Colombia
 388780,Beckham David Castro Espinosa,Millonarios,632719,Beckham David Castro Espinosa,Millonarios FC,p1_exact_name_team,Colombia
 163192,Dewar Steven Victoria Palacios,Millonarios,76822,Dewar Steven Victoria Palacios,Millonarios FC,p1_exact_name_team,Colombia
+367202,Diego Hernández,Rionegro,531854,Diego Hernández,Rionegro Aguilas,p1_exact_name_team,Colombia
+186377,Nicolás Lara Vásquez,Rionegro,115030,Nicolás Lara Vásquez,Rionegro Aguilas,p1_exact_name_team,Colombia
 37039,Jersson David González Niño,Deportes Tolima,43802,Jersson David González Niño,Deportes Tolima,p1_exact_name_team,Colombia
+187145,Yeison Abelardo Súarez Vásquez,Junior,115077,Yeison Abelardo Súarez Vásquez,Club Deportivo Junior FC,p1_exact_name_team,Colombia
 37038,Carlos Manuel Cortés Barreiro,Llaneros,35716,Carlos Manuel Cortes  Barreiro,Club Llaneros SA,p1_exact_name_team,Colombia
 241923,Juan José Mera González,Deportes Tolima,153754,Juan José Mera González,Deportes Tolima,p1_exact_name_team,Colombia
 415611,Simón García Valero,Atlético Nacional,797077,Simon Garcia Valero,Club Atlético Nacional,p1_exact_name_team,Colombia
@@ -1484,19 +1512,16 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 130726,Daniel Londoño Castañeda,Independiente Medellín,66467,Daniel Londoño Castañeda,Independiente Medellin,p1_exact_name_team,Colombia
 130898,Francisco Javier Chaverra Angulo,Independiente Medellín,66544,Francisco Javier Chaverra Angulo,Independiente Medellin,p1_exact_name_team,Colombia
 277518,Yeicar Alberto Perlaza Perea,Santa Fe,171770,Yeicar Alberto Perlaza Perea,Independiente Santa Fe,p1_exact_name_team,Colombia
+87604,Guillermo Miguel Paiva Ayala,Junior,72375,Guillermo Miguel Paiva Ayala,Club Deportivo Junior FC,p1_exact_name_team,Colombia
 438506,Brian Leonel Benítez ,Llaneros,841148,Brian Leonel Benítez,Club Llaneros SA,p1_exact_name_team,Colombia
 56515,Luciano Daniel Pons,Atlético Bucaramanga,36633,Luciano Daniel Pons,CA Bucaramanga,p1_exact_name_team,Colombia
 28063,Emanuel Olivera,Santa Fe,28737,Emanuel Olivera,Independiente Santa Fe,p1_exact_name_team,Colombia
-444502,Sebastián Ramírez Maya,Fortaleza CEIF,927730,Sebastian Ramírez Maya,Fortaleza CEIF FC,p2_exact_name_unique,Colombia
 113271,Carlos Alberto Vivas González,Inter Bogotá,38723,Carlos Alberto Vivas González,CD La Equidad,p2_exact_name_unique,Colombia
-407508,José Eduardo Bernal Chong,Deportivo Pasto,751436,José Eduardo Bernal Chong,AD Pasto,p2_exact_name_unique,Colombia
 344304,Mayer Andrés Gil Hurtado,Deportivo Pasto,379266,Mayer Andrés Gil Hurtado,CD Alianza Petrolera,p2_exact_name_unique,Colombia
 185716,Joider Micolta Piedahita,Deportivo Pasto,115069,Joider Micolta Piedahita,CD La Equidad,p2_exact_name_unique,Colombia
 401171,Diego Andrés Mendoza Benítez,Deportivo Pereira,707642,Diego Andrés Mendoza Benítez,CD Alianza Petrolera,p2_exact_name_unique,Colombia
-134192,Jhon Harold Balanta Carabalí,Fortaleza CEIF,66377,Jhon Harold Balanta Carabalí,Fortaleza CEIF FC,p2_exact_name_unique,Colombia
 130632,Jesús Antonio Figueroa Olaya,Alianza Valledupar,66378,Jesús Antonio Figueroa Olaya,CD Alianza Petrolera,p2_exact_name_unique,Colombia
 110702,Juan José Tello Perlaza,Deportivo Cali,66533,Juan José Tello Perlaza,AD Unión Magdalena,p2_exact_name_unique,Colombia
-186377,Nicolás Lara Vásquez,Rionegro,115030,Nicolás Lara Vásquez,Rionegro Aguilas,p2_exact_name_unique,Colombia
 338039,Samuel Velásquez Uribe,Atlético Nacional,324515,Samuel Velásquez Uribe,Deportes Tolima,p2_exact_name_unique,Colombia
 80204,Daniel Mateo Rodas Jiménez,Inter Bogotá,66532,Daniel Mateo Rodas Jiménez,CD La Equidad,p2_exact_name_unique,Colombia
 206944,Kevin Parra Atehortúa,Inter Bogotá,123402,Kevin Parra Atehortúa,CD La Equidad,p2_exact_name_unique,Colombia
@@ -1515,39 +1540,50 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 220726,Carlos Andrés Esparragoza Pérez,Alianza Valledupar,131820,Carlos Andrés Esparragoza Pérez,Club Deportivo Junior FC,p2_exact_name_unique,Colombia
 196873,Kalazan José Suárez Díaz,Inter Bogotá,116283,Kalazán José Suárez Díaz,CD Alianza Petrolera,p2_exact_name_unique,Colombia
 84379,Facundo Nicolás Boné Vale,Inter Bogotá,38831,Facundo Nicolás Boné Vale,AD Pasto,p2_exact_name_unique,Colombia
-87604,Guillermo Miguel Paiva Ayala,Junior,72375,Guillermo Miguel Paiva Ayala,Club Deportivo Junior FC,p2_exact_name_unique,Colombia
 276825,Diego Gabriel Chávez,Deportivo Pasto,171145,Diego Gabriel Chávez,CA Bucaramanga,p2_exact_name_unique,Colombia
 475912,Halam Loboa,Independiente Medellín,1008538,Halam Stiven Loboa Diaz,Independiente Medellin,p3_token_same_team,Colombia
 482836,Jhon Mina,Deportivo Cali,1018304,Jhon Michael Aponza Mina,Deportivo Cali,p3_token_same_team,Colombia
 485558,Juan Duque,Atlético Nacional,1022303,Juan Manuel Rengifo Duque,Club Atlético Nacional,p3_token_same_team,Colombia
+27681,Teófilo Gutiérrez,Junior,10231,Teófilo Antonio Gutiérrez Roncancio,Club Deportivo Junior FC,p3_token_same_team,Colombia
 9998,Alfredo Morelos,Atlético Nacional,11321,Alfredo José Morelos Aviléz,Club Atlético Nacional,p3_token_same_team,Colombia
+196915,Johan Caicedo,Deportivo Pasto,116520,Johan Caicedo Caicedo,AD Pasto,p3_token_same_team,Colombia
 197356,Juan Mosquera,Atlético Bucaramanga,117902,Juan Camilo Mosquera Perlaza,CA Bucaramanga,p3_token_same_team,Colombia
+31599,Jermein Peña,Junior,117914,Jermein Zidane Peña Maiguel,Club Deportivo Junior FC,p3_token_same_team,Colombia
 6193,Mateus Uribe,Atlético Nacional,12067,Andrés Mateus Uribe Villa,Club Atlético Nacional,p3_token_same_team,Colombia
 28520,William Tesillo,Atlético Nacional,12071,William José Tesillo Gutiérrez,Club Atlético Nacional,p3_token_same_team,Colombia
 26926,Luis Manuel Orejuela,Deportivo Cali,12375,Luis Manuel Orejuela García,Deportivo Cali,p3_token_same_team,Colombia
 24620,Andrés Sarmiento,Atlético Nacional,14764,Andrés De Jesús Sarmiento Salas,Club Atlético Nacional,p3_token_same_team,Colombia
 31745,Efraín Navarro,Once Caldas,153751,Efraín Navarro Guerrero,Once Caldas,p3_token_same_team,Colombia
+10324,Guillermo Celis,Junior,16056,Guillermo León Celis Montiel,Club Deportivo Junior FC,p3_token_same_team,Colombia
+5688,Carlos Bacca,Junior,1616,Carlos Arturo Bacca Ahumada,Club Deportivo Junior FC,p3_token_same_team,Colombia
+27443,Nicolás Gil,Deportivo Pasto,171146,Nicolás Gil Uribe,AD Pasto,p3_token_same_team,Colombia
 25532,Felipe Aguilar,Deportivo Cali,18219,Felipe Aguilar Mendoza,Deportivo Cali,p3_token_same_team,Colombia
 28518,Edwin Cardona,Atlético Nacional,18221,Edwin Andrés Cardona Bedoya,Club Atlético Nacional,p3_token_same_team,Colombia
+25256,Yimmi Chará,Junior,18225,Yimmi Javier Chará Zamora,Club Deportivo Junior FC,p3_token_same_team,Colombia
 26356,Avilés Hurtado,Deportivo Cali,23222,Avilés Hurtado Herrera,Deportivo Cali,p3_token_same_team,Colombia
 35683,Francisco Meza,Llaneros,23552,Francisco Javier Meza Palma,Club Llaneros SA,p3_token_same_team,Colombia
 13452,Dairon Asprilla,Atlético Nacional,23851,Dairon Estibens Asprilla Rivas,Club Atlético Nacional,p3_token_same_team,Colombia
 6896,Marlos Moreno,Atlético Nacional,24059,Marlos Moreno Durán,Club Atlético Nacional,p3_token_same_team,Colombia
 37476,Jordy Ararat,Deportivo Pereira,24192,Jordy Joâo Monroy Ararat,Deportivo Pereira,p3_token_same_team,Colombia
 27843,Jorman Campuzano,Atlético Nacional,25432,Jorman David Campuzano Puentes,Club Atlético Nacional,p3_token_same_team,Colombia
+27381,Edwin Herrera,Junior,25959,Edwin Alberto Herrera Hernández,Club Deportivo Junior FC,p3_token_same_team,Colombia
 28659,Dayro Moreno,Once Caldas,26541,Dayro Mauricio Moreno Galindo,Once Caldas,p3_token_same_team,Colombia
 12574,Michael Barrios,Once Caldas,27112,Michael David Barrios Puerta,Once Caldas,p3_token_same_team,Colombia
 28818,Diego Moreno,Independiente Medellín,27287,Diego Fernando Moreno Quintero,Independiente Medellin,p3_token_same_team,Colombia
 28875,Francisco Fydriszewski,Independiente Medellín,28750,Francisco David Fydriszewski,Independiente Medellin,p3_token_same_team,Colombia
 29524,Juan Bauza,Atlético Nacional,30829,Juan Francisco Bauza,Club Atlético Nacional,p3_token_same_team,Colombia
+27211,Jorge Obregón,Águilas Doradas,32189,Jorge Leonardo Obregón Rojas,Rionegro Aguilas,p3_token_same_team,Colombia
 31741,Sebastián Salazar,Boyacá Chicó,32881,Sebastián Enrique Salazar Beltrán,Boyacá Chicó,p3_token_same_team,Colombia
 32035,Dylan Borrero,América de Cali,32903,Dylan Felipe Borrero Caicedo,América de Cali,p3_token_same_team,Colombia
 524514,N. Valencia,Boyacá Chicó,334600,John Henry Sánchez Valencia,Boyacá Chicó,p3_token_same_team,Colombia
+27066,Edwin Velasco,Deportivo Pasto,35667,Edwin Alexis Velasco Uzuriaga,AD Pasto,p3_token_same_team,Colombia
 29505,Luis Sánchez,Once Caldas,35669,Luis Francisco Sánchez Mosquera,Once Caldas,p3_token_same_team,Colombia
 27502,Cristian Arrieta,Deportes Tolima,35672,Cristian Camilo Arrieta Medina,Deportes Tolima,p3_token_same_team,Colombia
 27171,Rafael Carrascal,América de Cali,35680,Rafael Andrés Carrascal Avilez,América de Cali,p3_token_same_team,Colombia
 27300,Fabián Sambueza,Atlético Bucaramanga,35684,Fabián Héctor Sambueza,CA Bucaramanga,p3_token_same_team,Colombia
 27386,Fabián Viáfara,Deportivo Cali,35703,Fabián Alexis Viáfara Alarcón,Deportivo Cali,p3_token_same_team,Colombia
+28936,Leonardo Pico,Fortaleza CEIF,35705,Rubén Leonardo Pico Carvajal,Fortaleza CEIF FC,p3_token_same_team,Colombia
+48898,Fabián Ángel,Junior,35710,Fabián Steven Ángel Bernal,Club Deportivo Junior FC,p3_token_same_team,Colombia
 27374,Baldomero Perlaza,Independiente Medellín,35726,Baldomero Perlaza Perlaza,Independiente Medellin,p3_token_same_team,Colombia
 27474,Brayan Rovira,Deportes Tolima,35738,Brayan Andrés Rovira Ferreira,Deportes Tolima,p3_token_same_team,Colombia
 27162,Danovis Banguero,Millonarios,35779,Danovis Banguero Lerma,Millonarios FC,p3_token_same_team,Colombia
@@ -1555,7 +1591,10 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 27064,Juan Pablo Nieto,Deportes Tolima,35781,Juan Pablo Nieto Salazar,Deportes Tolima,p3_token_same_team,Colombia
 27167,Sergio Mosquera,Millonarios,35785,Sergio Andrés Mosquera Zapata,Millonarios FC,p3_token_same_team,Colombia
 29984,Junior Hernández,Deportes Tolima,35790,Junior Alexis Hernández Angulo,Deportes Tolima,p3_token_same_team,Colombia
+27254,Jonathan Marulanda,Fortaleza CEIF,35793,Jonathan Marulanda Vásquez,Fortaleza CEIF FC,p3_token_same_team,Colombia
 28853,Anderson Angulo,Deportes Tolima,35817,Anderson Darley Angulo Tenorio,Deportes Tolima,p3_token_same_team,Colombia
+37477,Frank Lozano,Águilas Doradas,35821,Frank Sebastián Lozano Rengifo,Rionegro Aguilas,p3_token_same_team,Colombia
+30948,Andrés Arroyo,Fortaleza CEIF,35851,Andrés Juan Arroyo Romero,Fortaleza CEIF FC,p3_token_same_team,Colombia
 27467,Christian Mafla,Santa Fe,35853,Christian Camilo Mafla Rebellón,Independiente Santa Fe,p3_token_same_team,Colombia
 28296,Julián Quiñónes,Deportivo Cali,35856,Julián Alveiro Quiñónes García,Deportivo Cali,p3_token_same_team,Colombia
 28617,Andrés Mosquera,América de Cali,36099,Andrés Felipe Mosquera Guardia,América de Cali,p3_token_same_team,Colombia
@@ -1566,7 +1605,9 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 48791,Esneyder Mena,Independiente Medellín,37058,Esneyder Mena Perea,Independiente Medellin,p3_token_same_team,Colombia
 32667,Cristian Tovar,América de Cali,37063,Cristian Camilo Tovar Angola,América de Cali,p3_token_same_team,Colombia
 29356,Stiven Vega,Millonarios,37077,Stiven Vega Londoño,Millonarios FC,p3_token_same_team,Colombia
+47077,Hernán Lópes,Águilas Doradas,38177,Hernán Ezequiel Lópes,Rionegro Aguilas,p3_token_same_team,Colombia
 27287,Leonardo Castro,Millonarios,38269,Leonardo Fabio Castro Loaiza,Millonarios FC,p3_token_same_team,Colombia
+29106,Yesid Díaz,Fortaleza CEIF,38271,Yesid Alberto Díaz Montero,Fortaleza CEIF FC,p3_token_same_team,Colombia
 47182,Jorge Arias,Millonarios,38400,Jorge Enrique Arias De la Hoz,Millonarios FC,p3_token_same_team,Colombia
 27233,Jeison Angulo,Santa Fe,38420,Jeison Andrés Angulo Trujillo,Independiente Santa Fe,p3_token_same_team,Colombia
 46623,Leonardo Flores,Atlético Bucaramanga,38513,Leonardo José Flores Soto,CA Bucaramanga,p3_token_same_team,Colombia
@@ -1582,6 +1623,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 30207,Hugo Rodallega,Santa Fe,4352,Hugo Rodallega Martínez,Independiente Santa Fe,p3_token_same_team,Colombia
 26714,Marco Pérez,Deportivo Pereira,43665,Marco Jhonnier Pérez Murillo,Deportivo Pereira,p3_token_same_team,Colombia
 28850,Ever Valencia,Deportes Tolima,43940,Ever Augusto Valencia Ruíz,Deportes Tolima,p3_token_same_team,Colombia
+27261,Bryan Castrillón,Junior,43942,Bryan David Castrillón Gómez,Club Deportivo Junior FC,p3_token_same_team,Colombia
 27672,Sebastián Guzmán,Deportes Tolima,43965,Sebastián Felipe Guzmán Mendoza,Deportes Tolima,p3_token_same_team,Colombia
 37581,Jairo Molina,Boyacá Chicó,43995,Jairo Gabriel Molina Ospino,Boyacá Chicó,p3_token_same_team,Colombia
 35686,Iván Scarpeta,Santa Fe,44010,Iván René Scarpeta Silgado,Independiente Santa Fe,p3_token_same_team,Colombia
@@ -1598,76 +1640,75 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 27060,Kevin Londoño,Atlético Bucaramanga,66444,Kevin Alexander Londoño Asprilla,CA Bucaramanga,p3_token_same_team,Colombia
 101891,Jarrinson Guerrero,Deportivo Pereira,66456,Jarrinson Yuber Quiñones Guerrero,Deportivo Pereira,p3_token_same_team,Colombia
 27509,Iván Rojas,Once Caldas,66461,Iván Andrés Rojas Vásquez,Once Caldas,p3_token_same_team,Colombia
+29238,Santiago Jiménez,Deportivo Pasto,66464,Santiago Jiménez Mejía,AD Pasto,p3_token_same_team,Colombia
 48747,Juan Manuel Zapata,Atlético Nacional,66472,Juan Manuel Zapata Zumaque,Club Atlético Nacional,p3_token_same_team,Colombia
+34896,Jaen Pineda,Águilas Doradas,66484,Jaen Carlos Pineda Jiménez,Rionegro Aguilas,p3_token_same_team,Colombia
+27409,Jesús Rivas,Junior,66534,Jesús David Rivas Hernández,Club Deportivo Junior FC,p3_token_same_team,Colombia
+149348,Dylan Lozano,Águilas Doradas,70803,Dylan Stiven Lozano Chica,Rionegro Aguilas,p3_token_same_team,Colombia
+154505,John Deivid Méndez Muñoz,Deportivo Pasto,72810,John Méndez,AD Pasto,p3_token_same_team,Colombia
 422980,Juan Castaño,Once Caldas,809182,Juan Felipe Castaño Zuluaga,Once Caldas,p3_token_same_team,Colombia
 423729,Jhon Largacha,Deportivo Pereira,809292,Jhon Edinson Largacha Nuñez,Deportivo Pereira,p3_token_same_team,Colombia
+423123,Daniel Rivera,Junior,809296,Daniel Alejandro Rivera Garzón,Club Deportivo Junior FC,p3_token_same_team,Colombia
+423125,Kevin Balanta,Fortaleza CEIF,809299,Kevin Adrián Balanta Carabalí,Fortaleza CEIF FC,p3_token_same_team,Colombia
 424421,Kevin Tamayo,Once Caldas,809893,Kevin Tamayo Zapata,Once Caldas,p3_token_same_team,Colombia
+428098,Santiago Cuero,Fortaleza CEIF,813291,Santiago Cuero Sánchez,Fortaleza CEIF FC,p3_token_same_team,Colombia
 429662,Kevin Rodríguez,Once Caldas,816251,Kevin Andrés Cuesta Rodríguez,Once Caldas,p3_token_same_team,Colombia
 425599,Jan Lucumí,América de Cali,818112,Jan Fanc Lucumí González,América de Cali,p3_token_same_team,Colombia
+437806,Jhomier González,Junior,837817,Jhomier Javier Guerrero González,Club Deportivo Junior FC,p3_token_same_team,Colombia
 437903,Jefry Zapata,Once Caldas,838296,Jefry Arley Zapata Ramírez,Once Caldas,p3_token_same_team,Colombia
 438801,Jhojan Escobar,Llaneros,846221,Jhojan Escobar Salcedo,Club Llaneros SA,p3_token_same_team,Colombia
 3445,Falcao,Millonarios,8771,Radamel Falcao García Zárate,Millonarios FC,p3_token_same_team,Colombia
+442119,Jhon Navia,Junior,906229,Jhon Ronny Navia Mina,Club Deportivo Junior FC,p3_token_same_team,Colombia
 460735,Mateo Castillo,América de Cali,978952,Mateo Castillo Márquez,América de Cali,p3_token_same_team,Colombia
 460739,José Antonio Cavadía Pedraza,América de Cali,978953,José Cavadia,América de Cali,p3_token_same_team,Colombia
 460738,Joel Sebastián Romero Hurtado,América de Cali,978954,Joel Sebastián Romero,América de Cali,p3_token_same_team,Colombia
 460672,Arlen Banguero,Boyacá Chicó,987104,Arlen Duban Banguero Vásquez,Boyacá Chicó,p3_token_same_team,Colombia
 461582,Elkin Rivero,Atlético Nacional,998324,Elkin Jose Rivero Almario,Club Atlético Nacional,p3_token_same_team,Colombia
+461806,E.Restrepo Castro,Llaneros,998681,Eyder Andrés Restrepo Castro,Club Llaneros SA,p3_token_same_team,Colombia
+462333,C.Uribe Caro,Atlético Nacional,999132,Cristian Enrique Uribe Caro,Club Atlético Nacional,p3_token_same_team,Colombia
 6839,Dani Torres,Santa Fe,13888,Daniel Alejandro Torres Rojas,Independiente Santa Fe,p3b_nickname_same_team,Colombia
+423121,Sebastián Navarro,Fortaleza CEIF,1018183,Sebastián Valencia Isaza,Fortaleza CEIF FC,p4_fuzzy_0.222,Colombia
 520102,Matías López,Deportivo Cali,1024935,Matias  Orozco,Deportivo Cali,p4_fuzzy_0.186,Colombia
 476174,Juan José Rosa Arboleda,Atlético Nacional,123401,Juan José Arias,Club Atlético Nacional,p4_fuzzy_0.188,Colombia
+366014,Cristian Daniel Santander Rosero,Fortaleza CEIF,173327,Cristián Camilo Mosquera Rivas,Fortaleza CEIF FC,p4_fuzzy_0.244,Colombia
 49139,Cristian Estaban Trujillo Riascos,Deportes Tolima,35818,Cristian Esteban Trujillo Riascos,Deportes Tolima,p4_fuzzy_0.098,Colombia
+27281,Jhon Fredy Salazar,Atlético Bucaramanga,35840,Jhon Freduar Vásquez Anaya,CA Bucaramanga,p4_fuzzy_0.228,Colombia
 27179,Fredy Hinestroza,Atlético Bucaramanga,3675,Freddy Hinestroza Arias,CA Bucaramanga,p4_fuzzy_0.101,Colombia
+27257,Cristian Barrios,Junior,38169,Cristhian Javier Báez,Club Deportivo Junior FC,p4_fuzzy_0.228,Colombia
+79575,Sebastián Acosta Pineda,Deportivo Pereira,43976,Adrián Estacio Peña,Deportivo Pereira,p4_fuzzy_0.23,Colombia
+293344,Johan Torres,Santa Fe,987102,Jhojan Camilo Torres Guazá,Independiente Santa Fe,p4_fuzzy_0.235,Colombia
 469027,Luis Marimón,Llaneros,1002379,Luis Mario Marimón Herrera,Millonarios FC,p5_token_no_team,Colombia
-27681,Teófilo Gutiérrez,Junior,10231,Teófilo Antonio Gutiérrez Roncancio,Club Deportivo Junior FC,p5_token_no_team,Colombia
 186379,Víctor Danilo Mejía Mina,Cúcuta Deportivo,115043,Víctor Danilo Mejía Mina,Deportivo Cali,p5_token_no_team,Colombia
 27666,Diego Ruíz,Boyacá Chicó,115046,Diego Armando Ruíz De La Rosa,Fortaleza CEIF FC,p5_token_no_team,Colombia
-187145,Yeison Abelardo Súarez Vásquez,Junior,115077,Yeison Abelardo Súarez Vásquez,Club Deportivo Junior FC,p5_token_no_team,Colombia
-196915,Johan Caicedo,Deportivo Pasto,116520,Johan Caicedo Caicedo,AD Pasto,p5_token_no_team,Colombia
-31599,Jermein Peña,Junior,117914,Jermein Zidane Peña Maiguel,Club Deportivo Junior FC,p5_token_no_team,Colombia
 27535,Fabián Cantillo,Alianza Valledupar,117916,Fabián David Cantillo Beleño,AD Unión Magdalena,p5_token_no_team,Colombia
 211809,Jesús Muñoz,Alianza Valledupar,151228,Jesús Muñoz Gutiérrez,CD Alianza Petrolera,p5_token_no_team,Colombia
-10324,Guillermo Celis,Junior,16056,Guillermo León Celis Montiel,Club Deportivo Junior FC,p5_token_no_team,Colombia
-5688,Carlos Bacca,Junior,1616,Carlos Arturo Bacca Ahumada,Club Deportivo Junior FC,p5_token_no_team,Colombia
-27443,Nicolás Gil,Deportivo Pasto,171146,Nicolás Gil Uribe,AD Pasto,p5_token_no_team,Colombia
 24588,Didier Moreno,Independiente Medellín,18220,Didier Andrés Moreno Asprilla,Club Deportivo Junior FC,p5_token_no_team,Colombia
 27477,Helibelton Palacios,Santa Fe,18223,Helibelton Palacios Zapata,Millonarios FC,p5_token_no_team,Colombia
-25256,Yimmi Chará,Junior,18225,Yimmi Javier Chará Zamora,Club Deportivo Junior FC,p5_token_no_team,Colombia
 15885,Darwin Quintero,Millonarios,23334,Carlos Darwin Quintero Villalba,Deportivo Pereira,p5_token_no_team,Colombia
 45911,Jaime Alvarado,Once Caldas,25950,Jaime Alberto Alvarado Hoyos,Independiente Medellin,p5_token_no_team,Colombia
-27381,Edwin Herrera,Junior,25959,Edwin Alberto Herrera Hernández,Club Deportivo Junior FC,p5_token_no_team,Colombia
 29508,Luis Sandoval,Deportes Tolima,25963,Luis Fernando Sandoval Oyola,Independiente Medellin,p5_token_no_team,Colombia
 29555,Edwar López,Deportes Tolima,26273,Edwar Manuel López Gomez,Independiente Santa Fe,p5_token_no_team,Colombia
 25185,Juan Quintero,Santa Fe,28280,Juan Sebastián Quintero Fletcher,Deportivo Cali,p5_token_no_team,Colombia
 28458,Wilson Morelo,Deportivo Pasto,28741,Wilson David Morelo López,Rionegro Aguilas,p5_token_no_team,Colombia
 25293,Yony González,Independiente Medellín,31703,Yony Alexander González Copete,Rionegro Aguilas,p5_token_no_team,Colombia
-27211,Jorge Obregón,Águilas Doradas,32189,Jorge Leonardo Obregón Rojas,Rionegro Aguilas,p5_token_no_team,Colombia
 15315,Felipe Pardo,Alianza Valledupar,3362,Édgar Felipe Pardo Castro,CD Alianza Petrolera,p5_token_no_team,Colombia
 27777,Gustavo Torres,Deportivo Pereira,34166,Gustavo Adolfo Torres Grueso,AD Pasto,p5_token_no_team,Colombia
 27290,Andrés Ricaurte,Rionegro,34510,Andrés Ricaurte Vélez,Fortaleza CEIF FC,p5_token_no_team,Colombia
-27066,Edwin Velasco,Deportivo Pasto,35667,Edwin Alexis Velasco Uzuriaga,AD Pasto,p5_token_no_team,Colombia
 27793,Yesús Cabrera,Boyacá Chicó,35670,Yesus Segundo Cabrera Ramírez,Deportivo Pereira,p5_token_no_team,Colombia
 27798,Marlon Torres,América de Cali,35674,Marlon Aldair Torres Obeso,Deportes Tolima,p5_token_no_team,Colombia
 27265,Kelvin Osorio,Llaneros,35681,Kelvin David Osorio Antury,Deportivo Pereira,p5_token_no_team,Colombia
 27377,Fáiner Torijano,Deportivo Pasto,35691,Fáiner Torijano Cano,Independiente Medellin,p5_token_no_team,Colombia
-28936,Leonardo Pico,Fortaleza CEIF,35705,Rubén Leonardo Pico Carvajal,Fortaleza CEIF FC,p5_token_no_team,Colombia
-48898,Fabián Ángel,Junior,35710,Fabián Steven Ángel Bernal,Club Deportivo Junior FC,p5_token_no_team,Colombia
 27799,Carlos Sierra,América de Cali,35715,Carlos José Sierra López,Club Llaneros SA,p5_token_no_team,Colombia
 27169,Omar Albornoz,Cúcuta Deportivo,35777,Omar Antonio Albornoz Contreras,Deportivo Pereira,p5_token_no_team,Colombia
 50308,Kevin Pérez,Junior,35789,Kevin Andrés Pérez Pérez,Deportes Tolima,p5_token_no_team,Colombia
 27585,Jean Carlos Pestaña,Junior,35792,Jean Carlos Pestaña Hernández,América de Cali,p5_token_no_team,Colombia
-27254,Jonathan Marulanda,Fortaleza CEIF,35793,Jonathan Marulanda Vásquez,Fortaleza CEIF FC,p5_token_no_team,Colombia
 27394,Andrey Estupiñán,Deportivo Pasto,35812,Andrey Estupiñán Quiñones,Deportivo Cali,p5_token_no_team,Colombia
 28383,Daniel Cataño,Independiente Medellín,35813,Daniel Felipe Cataño Torres,Millonarios FC,p5_token_no_team,Colombia
 27416,Juan David Ríos,Junior,35815,Juan David Ríos Henao,Deportivo Pereira,p5_token_no_team,Colombia
-37477,Frank Lozano,Águilas Doradas,35821,Frank Sebastián Lozano Rengifo,Boyacá Chicó,p5_token_no_team,Colombia
-27415,Jhon Vásquez,Llaneros,35840,Jhon Freduar Vásquez Anaya,CA Bucaramanga,p5_token_no_team,Colombia
 32041,Kevin Moreno,Alianza Valledupar,35842,Kevin Joacid Moreno Sinisterra,CD Alianza Petrolera,p5_token_no_team,Colombia
-30948,Andrés Arroyo,Fortaleza CEIF,35851,Andrés Juan Arroyo Romero,Deportes Tolima,p5_token_no_team,Colombia
 49874,Brayan Montaño,Cúcuta Deportivo,35852,Brayan Stiven Montaño Montaño,CD La Equidad,p5_token_no_team,Colombia
 51901,Yéiler Góez,Deportivo Pasto,36674,Yéiler Andrés Góez,Club Llaneros SA,p5_token_no_team,Colombia
 27451,Harrinson Mancilla,Deportivo Pasto,36689,Harrinson Mancilla Mulato,Rionegro Aguilas,p5_token_no_team,Colombia
-47077,Hernán Lópes,Águilas Doradas,38177,Hernán Ezequiel Lópes,Rionegro Aguilas,p5_token_no_team,Colombia
-29106,Yesid Díaz,Fortaleza CEIF,38271,Yesid Alberto Díaz Montero,Fortaleza CEIF FC,p5_token_no_team,Colombia
 27537,Yulián Gómez,Inter Bogotá,38274,Yulián Andrés Gómez Mosquera,Deportivo Cali,p5_token_no_team,Colombia
 27258,Steven Rodríguez,Deportivo Cali,38282,Steven Andrés Rodríguez Ossa,Club Deportivo Junior FC,p5_token_no_team,Colombia
 29102,Edwin Mosquera,Santa Fe,38539,Edwin Stiven Mosquera Palacios,Millonarios FC,p5_token_no_team,Colombia
@@ -1677,39 +1718,27 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 50309,Léider Riascos,Llaneros,43672,Léider Andrés Riascos Suárez,CD La Equidad,p5_token_no_team,Colombia
 27351,Johan Caballero,Inter Bogotá,43804,Johan Camilo Caballero Cristancho,Rionegro Aguilas,p5_token_no_team,Colombia
 29506,Joan Castro,Inter Bogotá,43886,Joan Sebastián Castro Dinas,Club Atlético Nacional,p5_token_no_team,Colombia
-27261,Bryan Castrillón,Junior,43942,Bryan David Castrillón Gómez,Club Deportivo Junior FC,p5_token_no_team,Colombia
 49526,Jherson Mosquera,Deportes Tolima,43949,Jherson Steven Mosquera Castro,Independiente Medellin,p5_token_no_team,Colombia
 82708,Kevin Andrey Londoño,Cúcuta Deportivo,43957,Kevin Andrey Londoño Flórez,Boyacá Chicó,p5_token_no_team,Colombia
 27376,Carlos Henao,Jaguares de Córdoba,43991,Carlos Alberto Henao Sánchez,CA Bucaramanga,p5_token_no_team,Colombia
 27271,Israel Alba,Atlético Bucaramanga,44013,Israel Alba Marín,AD Pasto,p5_token_no_team,Colombia
-367202,Diego Hernández,Águilas Doradas,531854,Diego Hernández,Rionegro Aguilas,p5_token_no_team,Colombia
+482987,D.Longa,Inter Bogotá,526734,Jhon Anderson Lerma Longa,AD Unión Magdalena,p5_token_no_team,Colombia
 369981,Jannenson Sarmiento,Junior,541388,Jannenson Alberto Sarmiento Escobar,AD Unión Magdalena,p5_token_no_team,Colombia
 383795,Julián Angulo,Millonarios,570602,Julián Estiben Angulo Sevillano,Club Llaneros SA,p5_token_no_team,Colombia
 386971,Samir Mayo,Inter Bogotá,591644,Samir Mayo Herrera,CD La Equidad,p5_token_no_team,Colombia
-27281,Jhon Fredy Salazar,Atlético Bucaramanga,66398,Jhon Fredy Salazar Valencia,Club Deportivo Junior FC,p5_token_no_team,Colombia
 34595,Santiago Orozco,Cúcuta Deportivo,66406,Santiago Orozco Fernández,CD La Equidad,p5_token_no_team,Colombia
-27257,Cristian Barrios,Junior,66407,Cristian Darío Barrios Puerta,América de Cali,p5_token_no_team,Colombia
+445189,C.Barrios,Millonarios,66407,Cristian Darío Barrios Puerta,América de Cali,p5_token_no_team,Colombia
 32498,Misael Martínez,Alianza Valledupar,66420,Misael Smith Martínez Olivella,CD Alianza Petrolera,p5_token_no_team,Colombia
-29238,Santiago Jiménez,Deportivo Pasto,66464,Santiago Jiménez Mejía,AD Pasto,p5_token_no_team,Colombia
-34896,Jaen Pineda,Águilas Doradas,66484,Jaen Carlos Pineda Jiménez,Rionegro Aguilas,p5_token_no_team,Colombia
-27409,Jesús Rivas,Junior,66534,Jesús David Rivas Hernández,Club Deportivo Junior FC,p5_token_no_team,Colombia
 29313,Mateo Puerta,Santa Fe,66552,Mateo Puerta Peláez,Rionegro Aguilas,p5_token_no_team,Colombia
-149348,Dylan Lozano,Águilas Doradas,70803,Dylan Stiven Lozano Chica,Rionegro Aguilas,p5_token_no_team,Colombia
+482810,S.Isaza,Millonarios,67392,Julián Andrés Palacios Isaza,Envigado FC,p5_token_no_team,Colombia
 44492,Wiston Fernández,Alianza Valledupar,71037,Wiston Daniel Fernández Queirolo,CD Alianza Petrolera,p5_token_no_team,Colombia
-154505,John Deivid Méndez Muñoz,Deportivo Pasto,72810,John Méndez,AD Pasto,p5_token_no_team,Colombia
-408992,Javier Alexander Mena,Águilas Doradas,793554,Javier Alexander Mena,Rionegro Aguilas,p5_token_no_team,Colombia
 422913,Santiago Córdoba,Deportivo Pasto,809199,Santiago Córdoba Urrutia,Fortaleza CEIF FC,p5_token_no_team,Colombia
 423124,Ronaldo Pajaro,Deportivo Cali,809295,Ronaldo Ismael Pájaro Beltrán,Fortaleza CEIF FC,p5_token_no_team,Colombia
-423123,Daniel Rivera,Junior,809296,Daniel Alejandro Rivera Garzón,Club Deportivo Junior FC,p5_token_no_team,Colombia
-423125,Kevin Balanta,Fortaleza CEIF,809299,Kevin Adrián Balanta Carabalí,Fortaleza CEIF FC,p5_token_no_team,Colombia
-423121,Sebastián Navarro,Fortaleza CEIF,809300,Sebastián Navarro Otalora,América de Cali,p5_token_no_team,Colombia
-428098,Santiago Cuero,Fortaleza CEIF,813291,Santiago Cuero Sánchez,Fortaleza CEIF FC,p5_token_no_team,Colombia
 429923,Kelvin Flórez,Deportes Tolima,818330,Kelvin Javier Flórez Mosquera,Fortaleza CEIF FC,p5_token_no_team,Colombia
-437806,Jhomier González,Junior,837817,Jhomier Javier Guerrero González,Club Deportivo Junior FC,p5_token_no_team,Colombia
-442119,Jhon Navia,Junior,906229,Jhon Ronny Navia Mina,Club Deportivo Junior FC,p5_token_no_team,Colombia
 460763,Joao Abonia,Cúcuta Deportivo,979529,Yair Joao Abonía Vásquez,CD La Equidad,p5_token_no_team,Colombia
 460992,Eduar Arízalas,Cúcuta Deportivo,980200,Eduar Arley Arízalas Tenorio,Deportivo Pereira,p5_token_no_team,Colombia
 37480,Bryan Urueña,Águilas Doradas,998675,Bryan Eduardo Urueña Díaz,Club Llaneros SA,p5_token_no_team,Colombia
+460737,J.Angulo Rosales,Deportes Tolima,998685,Jan Carlos Angulo Rosales,Club Llaneros SA,p5_token_no_team,Colombia
 31049,Andrés Mosquera,Santa Fe,635361,Diego Andrés Castillo Mosquera,AD Pasto,p5b_nickname_no_team,Colombia
 78991,Dannovi Quiñonez Quiñonez,Inter Bogotá,66519,Dannovi Quiñones Quiñones,CD La Equidad,p6_fuzzy_noTeam_0.053,Colombia
 364863,NA,NA,525235,Geindry Steven Cuervo Holguín,Envigado FC,manual,Colombia
@@ -1727,14 +1756,9 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 317187,Maximiliano José Gutiérrez Jara,Huachipato,236683,Maximiliano José Gutiérrez Jara,Club Deportivo Huachipato,p1_exact_name_team,Chile
 430613,Ian Alex Garguez Gomez,Palestino,827225,Ian Alex Garguez Gomez,Club Deportivo Palestino,p1_exact_name_team,Chile
 119102,Antonio Alejandro Ceza Gavilán,Palestino,48218,Antonio Alejandro Ceza Gavilán,Club Deportivo Palestino,p1_exact_name_team,Chile
-116297,Nicolás Andrés Garrido Ceballos,O'Higgins,71433,Nicolás Andrés Garrido Ceballos,Club Deportivo O'Higgins,p1_exact_name_team,Chile
-54376,Joaquín Alberto Montecinos Naranjo,O'Higgins,71365,Joaquín Alberto Montecinos Naranjo,Club Deportivo O'Higgins,p1_exact_name_team,Chile
 197105,Renzo Mariano Malanca,Huachipato,117203,Renzo Mariano Malanca,Club Deportivo Huachipato,p1_exact_name_team,Chile
-424523,Alan Ariel Robledo,O'Higgins,843030,Alan Ariel Robledo,Club Deportivo O'Higgins,p1_exact_name_team,Chile
-196956,Juan Ignacio Díaz,O'Higgins,118891,Juan Ignacio Díaz,Club Deportivo O'Higgins,p1_exact_name_team,Chile
 35928,Jonathan Oscar Benítez,Palestino,38596,Jonathan Óscar Benítez,Club Deportivo Palestino,p1_exact_name_team,Chile
 28874,Julián Rodrigo Fernández,Palestino,26498,Julián Rodrigo Fernández,Club Deportivo Palestino,p1_exact_name_team,Chile
-130895,Matías Gonzalo Lugo,O'Higgins,59044,Matías Gonzalo Lugo,Club Deportivo O'Higgins,p1_exact_name_team,Chile
 104181,César Augusto Yanis Velasco,Cobresal,68850,César Augusto Yanis Velasco,Club de Deportes Cobresal,p2_exact_name_unique,Chile
 36444,Joaquín Fernández Pertusso,La Serena,33501,Joaquín Fernández Pertusso,CD La Serena,p2_exact_name_unique,Chile
 275886,Alan Gabriel Saldivia Vázquez,Colo Colo,636864,Alan Gabriel Saldivia Vázquez,CSD Colo Colo,p2_exact_name_unique,Chile
@@ -1761,12 +1785,13 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 43258,Jonathan Gabriel Villagra Bustamante,Colo Colo,43917,Jonathan Gabriel Villagra Bustamante,CSD Colo Colo,p2_exact_name_unique,Chile
 76083,Esteban Andres Pavez Suazo,Colo Colo,36243,Esteban Andrés Pavez Suazo,CSD Colo Colo,p2_exact_name_unique,Chile
 449264,Daniel Abraham Saavedra Yáñez,Deportivo Ñublense SADP,968399,Daniel Abraham Saavedra Yáñez,Nublense,p2_exact_name_unique,Chile
+116297,Nicolás Andrés Garrido Ceballos,O'Higgins,71433,Nicolás Andrés Garrido Ceballos,Club Deportivo O'Higgins,p2_exact_name_unique,Chile
+54376,Joaquín Alberto Montecinos Naranjo,O'Higgins,71365,Joaquín Alberto Montecinos Naranjo,Club Deportivo O'Higgins,p2_exact_name_unique,Chile
 116625,Lucas Bastián Alarcón Ancapi,La Serena,43928,Lucas Bastián Alarcón Ancapi,CD La Serena,p2_exact_name_unique,Chile
 103219,Robinson Manuel Rivera Zúñiga,La Serena,54611,Robinson Manuel Rivera Zúñiga,CD La Serena,p2_exact_name_unique,Chile
 463051,Sebastián Andrés Díaz Aracena,La Serena,982204,Sebastián Andrés Díaz Aracena,CD La Serena,p2_exact_name_unique,Chile
 463053,Fernando Elías Dinamarca Tapia,La Serena,982207,Fernando Elías Dinamarca Tapia,CD La Serena,p2_exact_name_unique,Chile
 426055,Alejandro Esteban Azócar Machuca,Coquimbo Unido,811936,Alejandro Esteban Azócar Machuca,CD Coquimbo Unido,p2_exact_name_unique,Chile
-36535,Tomás Pablo Astaburuaga Montoya,Universidad Católica,23578,Tomás Pablo Asta-Buruaga Montoya,CD Universidad Católica,p2_exact_name_unique,Chile
 74778,Clemente José Montes Barroilhet,Universidad Católica,43710,Clemente José Montes Barroilhet,CD Universidad Católica,p2_exact_name_unique,Chile
 472115,Sebastián Andrés Arancibia Flores,Universidad Católica,841512,Sebastian Andres Arancibia Flores,CD Universidad Católica,p2_exact_name_unique,Chile
 463049,Jhonatan Kauan Eleoterio Diogo,La Serena,439626,Jhonatan Kauan Eleoterio Diogo,CD La Serena,p2_exact_name_unique,Chile
@@ -1774,7 +1799,9 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 48078,Salvador Sánchez,Deportes Iquique,33295,Salvador Sánchez,Club Deportes Iquique,p2_exact_name_unique,Chile
 29055,Matías Hernán Moya,Deportes Iquique,28746,Matías Hernán Moya,Club Deportes Iquique,p2_exact_name_unique,Chile
 90483,Gabriel Maximiliano Graciani,Deportivo Ñublense SADP,40828,Gabriel Maximiliano Graciani,Nublense,p2_exact_name_unique,Chile
+424523,Alan Ariel Robledo,O'Higgins,843030,Alan Ariel Robledo,Club Deportivo O'Higgins,p2_exact_name_unique,Chile
 241752,Nahuel Brunet,Unión La Calera,153776,Nahuel Brunet,CD Unión La Calera,p2_exact_name_unique,Chile
+196956,Juan Ignacio Díaz,O'Higgins,118891,Juan Ignacio Díaz,Club Deportivo O'Higgins,p2_exact_name_unique,Chile
 424083,Christian Damián Moreno,Cobresal,810607,Christian Damián Moreno,Club de Deportes Cobresal,p2_exact_name_unique,Chile
 196966,Gonzalo Ezequiel Paz,Deportes Limache,118882,Gonzalo Ezequiel Paz,Club Deportes Limache,p2_exact_name_unique,Chile
 367877,Nelson da Silva,Deportes Limache,540500,Nelson Da Silva,Club Deportes Limache,p2_exact_name_unique,Chile
@@ -1783,31 +1810,26 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 87430,Claudio Ezequiel Aquino,Colo Colo,38618,Claudio Ezequiel Aquino,CSD Colo Colo,p2_exact_name_unique,Chile
 110998,Gonzalo Ariel Sosa,Deportivo Ñublense SADP,54622,Gonzalo Ariel Sosa,Nublense,p2_exact_name_unique,Chile
 103215,Federico Joel Mateos,Deportivo Ñublense SADP,54610,Federico Joel Mateos,Nublense,p2_exact_name_unique,Chile
+130895,Matías Gonzalo Lugo,O'Higgins,59044,Matías Gonzalo Lugo,Club Deportivo O'Higgins,p2_exact_name_unique,Chile
 130891,Lautaro Nahuel Ovando,La Serena,59046,Lautaro Nahuel Ovando,CD La Serena,p2_exact_name_unique,Chile
 89254,Nicolás Agustín Ferreyra,La Serena,23594,Nicolás Agustín Ferreyra,CD La Serena,p2_exact_name_unique,Chile
 35863,Fernando Matías Zampedri,Universidad Católica,38258,Fernando Matías Zampedri,CD Universidad Católica,p2_exact_name_unique,Chile
 193858,Bruno Leonel Cabrera,Coquimbo Unido,118894,Bruno Leonel Cabrera,CD Coquimbo Unido,p2_exact_name_unique,Chile
 91350,Matías Tomás Palavecino,Coquimbo Unido,57417,Matías Tomás Palavecino,CD Coquimbo Unido,p2_exact_name_unique,Chile
 426058,Nicolás Johansen,Coquimbo Unido,811935,Nicolas Johansen,CD Coquimbo Unido,p2_exact_name_unique,Chile
-194422,Felipe Ogaz,O'Higgins,115105,Felipe Andrés Ogaz Muñoz,Club Deportivo O'Higgins,p3_token_same_team,Chile
-21172,Maximiliano Romero,O'Higgins,12653,Maximiliano Samuel Romero,Club Deportivo O'Higgins,p3_token_same_team,Chile
-27189,Bryan Rabello,O'Higgins,1544,Bryan Martín Rabello Mella,Club Deportivo O'Higgins,p3_token_same_team,Chile
+476387,F.Ratotti,Unión Española,1008824,Yair Franco Ratotti,Club de Deportes Unión Española,p3_token_same_team,Chile
 26313,Fernando Meza,Palestino,23423,Fernando Nicolás Meza,Club Deportivo Palestino,p3_token_same_team,Chile
 26310,Bryan Carrasco,Palestino,23598,Bryan Paul Carrasco Santos,Club Deportivo Palestino,p3_token_same_team,Chile
 35827,Ariel Martínez,Palestino,23599,Ariel Elías Martínez Arce,Club Deportivo Palestino,p3_token_same_team,Chile
 35810,Cris Martínez,Huachipato,23653,Cris Robert Martínez Escobar,Club Deportivo Huachipato,p3_token_same_team,Chile
 29988,José Bizama,Palestino,23660,José Carlos Bizama Venegas,Club Deportivo Palestino,p3_token_same_team,Chile
 35823,Jimmy Martínez,Huachipato,23671,Jimmy Antonio Martínez Ruiz,Club Deportivo Huachipato,p3_token_same_team,Chile
-35890,Luis Pavez,O'Higgins,23701,Luis Alberto Pavez Muñoz,Club Deportivo O'Higgins,p3_token_same_team,Chile
 35807,Claudio Sepúlveda,Huachipato,23717,Claudio Elías Sepúlveda Castro,Club Deportivo Huachipato,p3_token_same_team,Chile
-25406,Martín Sarrafiore,O'Higgins,28324,Martín Nicolás Sarrafiore,Club Deportivo O'Higgins,p3_token_same_team,Chile
 35736,Cristian Suárez,Palestino,28431,Cristian Fernando Suárez Figueroa,Club Deportivo Palestino,p3_token_same_team,Chile
-35758,Juan Leiva,O'Higgins,28477,Juan Andrés Leiva Mieres,Club Deportivo O'Higgins,p3_token_same_team,Chile
 26808,Gonzalo Castellani,Unión Española,28718,Gonzalo Pablo Castellani,Club de Deportes Unión Española,p3_token_same_team,Chile
 30008,Simón Ramírez,Unión Española,29253,Simón Alonso Ramírez Cuevas,Club de Deportes Unión Española,p3_token_same_team,Chile
 335306,Kevin Alexander Contreras Araya,Unión Española,296390,Kevin Contreras Araya,Club de Deportes Unión Española,p3_token_same_team,Chile
 36296,Fabricio Formiliano,Unión Española,34293,Fabricio Orosmán Formiliano Duarte,Club de Deportes Unión Española,p3_token_same_team,Chile
-31719,Francisco González,O'Higgins,35602,Francisco Agustín González,Club Deportivo O'Higgins,p3_token_same_team,Chile
 36144,Nicolás Díaz,Unión Española,36166,Nicolás Andrés Díaz Huincales,Club de Deportes Unión Española,p3_token_same_team,Chile
 12585,Pablo Aránguiz,Unión Española,38732,Pablo Mauricio Aránguiz Salazar,Club de Deportes Unión Española,p3_token_same_team,Chile
 26286,Joe Abrigo,Palestino,38801,Joe Axel Abrigo Navarro,Club Deportivo Palestino,p3_token_same_team,Chile
@@ -1815,7 +1837,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 37846,Benjamín Gazzolo,Huachipato,38990,Benjamín José Gazzolo Freire,Club Deportivo Huachipato,p3_token_same_team,Chile
 35783,Ariel Uribe,Unión Española,43662,Ariel Alfonso Uribe Lepe,Club de Deportes Unión Española,p3_token_same_team,Chile
 364718,Felipe Espinoza,Unión Española,522469,Felipe Espinoza Ramírez,Club de Deportes Unión Española,p3_token_same_team,Chile
-368623,Arnaldo Castillo,O'Higgins,531465,Arnaldo Castillo Benega,Club Deportivo O'Higgins,p3_token_same_team,Chile
 93209,Julián Brea,Huachipato,57480,Julián Agustín Brea,Club Deportivo Huachipato,p3_token_same_team,Chile
 35906,Pablo Parra,Palestino,63235,Pablo Alejandro Parra Rubilar,Club Deportivo Palestino,p3_token_same_team,Chile
 35872,Matías Marín,Unión Española,69789,Matías Nicolás Marín Vega,Club de Deportes Unión Española,p3_token_same_team,Chile
@@ -1823,31 +1844,32 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 103990,Brayan Garrido,Huachipato,69866,Brayan Andrés Garrido Martínez,Club Deportivo Huachipato,p3_token_same_team,Chile
 44497,Agustín Nadruz,Unión Española,71043,Agustín Nadruz Blanco,Club de Deportes Unión Española,p3_token_same_team,Chile
 35884,Rafael Caroca,Huachipato,71323,Rafael Antonio Caroca Cordero,Club Deportivo Huachipato,p3_token_same_team,Chile
-46345,Moisés González,O'Higgins,71383,Moises Alejandro González Torres,Club Deportivo O'Higgins,p3_token_same_team,Chile
 35747,Leandro Díaz,Huachipato,71401,Leandro Enrique Díaz Parra,Club Deportivo Huachipato,p3_token_same_team,Chile
 28730,Matías Suárez,Unión Española,7198,Matías Ezequiel Suárez,Club de Deportes Unión Española,p3_token_same_team,Chile
 392958,Vicente Espinoza,Palestino,725208,Vicente Ariel Espinoza Hevia,Club Deportivo Palestino,p3_token_same_team,Chile
-426038,Esteban González,O'Higgins,811156,Esteban Alex Calderon Gonzalez,Club Deportivo O'Higgins,p3_token_same_team,Chile
 426763,Mario Briceño,Huachipato,812144,Mario Cristian Osmin Briceño Portilla,Club Deportivo Huachipato,p3_token_same_team,Chile
 426738,Bruno Jáuregui,Unión Española,812750,Bruno Jauregui Sáez,Club de Deportes Unión Española,p3_token_same_team,Chile
 425872,Bianneider Tamayo,Unión Española,818103,Bianneider Nauj Tamayo Escalona,Club de Deportes Unión Española,p3_token_same_team,Chile
 431678,Francisco Romero,Palestino,819266,Francisco Tomas Montes Romero,Club Deportivo Palestino,p3_token_same_team,Chile
 463006,Lionel Altamirano,Huachipato,978270,Lionel Alejandro Altamirano,Club Deportivo Huachipato,p3_token_same_team,Chile
 462996,Gonzalo Tapia,Palestino,978275,Gonzalo Tapia Páez,Club Deportivo Palestino,p3_token_same_team,Chile
-463010,Rodrigo Tapia,O'Higgins,999797,Rodrigo Alejandro Godoy Tapia,Club Deportivo O'Higgins,p3_token_same_team,Chile
 463009,Lucas Velásquez,Huachipato,999815,Lucas Amaru Velásquez Tenorio,Club Deportivo Huachipato,p3_token_same_team,Chile
 463008,Juan Ignacio Figueroa,Huachipato,999816,Juan Ignacio Figueroa Araya,Club Deportivo Huachipato,p3_token_same_team,Chile
 34348,Ignacio Alejandro Jeraldino Jul,Unión Española,18292,Alejandro Ignacio Jeraldino Jil,Club de Deportes Unión Española,p4_fuzzy_0.11,Chile
 35922,Carlos Alberto Villanueva Fuentes,Huachipato,28403,Carlo Alberto Villanueva Fuentes,Club Deportivo Huachipato,p4_fuzzy_0.01,Chile
 35944,Bryan Alfonso Vejar Utreras,Unión Española,38362,Brayan Alfonso Véjar Utreras,Club de Deportes Unión Española,p4_fuzzy_0.16,Chile
+463040,M.Guzmán Carreño,Everton,1000788,Martín Ignacio Guzmán Carreño,Everton de Viña del Mar,p5_token_no_team,Chile
 36012,Daniel Castro,Deportes Limache,1002149,Daniel Esteban Castro Santibánez,Club Deportes Limache,p5_token_no_team,Chile
 8206,Arturo Vidal,Colo Colo,1091,Arturo Erasmo Vidal Pardo,CSD Colo Colo,p5_token_no_team,Chile
 36337,Diego Coelho,Cobresal,115087,Diego Martín Coelho Díaz,Club de Deportes Cobresal,p5_token_no_team,Chile
 35878,Álvaro Ramos,Deportes Iquique,115100,Álvaro Sebastián Ramos Sepúlveda,Club Deportes Iquique,p5_token_no_team,Chile
+194422,Felipe Ogaz,O'Higgins,115105,Felipe Andrés Ogaz Muñoz,Club Deportivo O'Higgins,p5_token_no_team,Chile
 195474,Esteban Matus,Audax Italiano,117205,Esteban Patricio Matus Castro,Audax Club Sportivo Italiano,p5_token_no_team,Chile
 37638,Kevin Méndez,Unión La Calera,118011,Alán Kevin Méndez Olivera,CD Unión La Calera,p5_token_no_team,Chile
+21172,Maximiliano Romero,O'Higgins,12653,Maximiliano Samuel Romero,Club Deportivo O'Higgins,p5_token_no_team,Chile
 195477,Daniel Piña,Audax Italiano,138190,Daniel Aldair Piña Torres,Audax Club Sportivo Italiano,p5_token_no_team,Chile
 197669,Pablo Ezequiel Calderón,Deportivo Ñublense SADP,142564,Pablo Ezeqiel Calderón,Nublense,p5_token_no_team,Chile
+27189,Bryan Rabello,O'Higgins,1544,Bryan Martín Rabello Mella,Club Deportivo O'Higgins,p5_token_no_team,Chile
 8210,Charles Aránguiz,Universidad de Chile,1736,Charles Mariano Aránguiz Sandoval,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
 31046,Eugenio Mena,Universidad Católica,18282,Eugenio Esteban Mena Reveco,CD Universidad Católica,p5_token_no_team,Chile
 29183,Alfonso Parot,Deportes Limache,18287,Alfonso Cristián Parot Rojas,Club Deportes Limache,p5_token_no_team,Chile
@@ -1856,6 +1878,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 8268,Cristián Cuevas,Universidad Católica,2040,Cristian Alejandro Cuevas Jara,CD Universidad Católica,p5_token_no_team,Chile
 36743,Juan Cornejo,Coquimbo Unido,23399,Juan Francisco Cornejo Palma,CD Coquimbo Unido,p5_token_no_team,Chile
 411916,Sebastián Gallegos,La Serena,23572,Sebastián Agustín Gallegos Berriel,CD La Serena,p5_token_no_team,Chile
+36535,Tomás Pablo Astaburuaga Montoya,Universidad Católica,23578,Tomás Pablo Asta-Buruaga Montoya,CD Universidad Católica,p5_token_no_team,Chile
 35791,Branco Ampuero,Universidad Católica,23580,Erwin Branco Ampuero Vera,CD Universidad Católica,p5_token_no_team,Chile
 35838,Osvaldo Bosso,Deportivo Ñublense SADP,23593,Osvaldo Javier Bosso Torres,Nublense,p5_token_no_team,Chile
 35804,Israel Poblete,Universidad de Chile,23609,Israel Elías Poblete Zúñiga,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
@@ -1867,11 +1890,13 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 35936,Leandro Benegas,Unión La Calera,23682,Leandro Iván Benegas,CD Unión La Calera,p5_token_no_team,Chile
 35815,Diego Oyarzún,Everton,23694,Diego Alejandro Oyarzún Carrasco,Everton de Viña del Mar,p5_token_no_team,Chile
 35940,Óscar Opazo,Colo Colo,23698,Óscar Mauricio  Opazo Lara,CSD Colo Colo,p5_token_no_team,Chile
+35890,Luis Pavez,O'Higgins,23701,Luis Alberto Pavez Muñoz,Club Deportivo O'Higgins,p5_token_no_team,Chile
 25099,Leonardo Valencia,Audax Italiano,25152,Leonardo Felipe Valencia Rossel,Audax Club Sportivo Italiano,p5_token_no_team,Chile
 28670,Leandro Fernández,Universidad de Chile,25441,Leandro Miguel Fernández,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
 43805,Ignacio Ramírez,Everton,25964,Juan Ignacio Ramírez Polero,Everton de Viña del Mar,p5_token_no_team,Chile
 33102,Franco Calderón,Universidad de Chile,26245,Franco Ezequiel Calderón,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
 27341,Marcelo Díaz,Universidad de Chile,26559,Marcelo Alfonso Díaz Rojas,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
+25406,Martín Sarrafiore,O'Higgins,28324,Martín Nicolás Sarrafiore,Club Deportivo O'Higgins,p5_token_no_team,Chile
 35785,Eduard Bello,Universidad Católica,28365,Eduard Alexander Bello Gil,CD Universidad Católica,p5_token_no_team,Chile
 35786,Salvador Cordero,Coquimbo Unido,28366,Salvador Eduardo Manuel Cordero Leiva,CD Coquimbo Unido,p5_token_no_team,Chile
 35788,Marco Collao,Audax Italiano,28367,Marco Antonio Collao Ramos,Audax Club Sportivo Italiano,p5_token_no_team,Chile
@@ -1896,6 +1921,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 35891,Misael Dávila,Deportes Iquique,28467,Misael Aldair Dávila Carvajal,Club Deportes Iquique,p5_token_no_team,Chile
 35893,Juan Pablo Gómez,Deportes Iquique,28470,Juan Pablo Gómez Vidal,Club Deportes Iquique,p5_token_no_team,Chile
 35888,Víctor Méndez,Colo Colo,28472,Víctor Felipe Méndez Obando,CSD Colo Colo,p5_token_no_team,Chile
+35758,Juan Leiva,O'Higgins,28477,Juan Andrés Leiva Mieres,Club Deportivo O'Higgins,p5_token_no_team,Chile
 35757,Esteban Valencia,Deportivo Ñublense SADP,28479,Esteban Cristóbal Valencia Reyes,Nublense,p5_token_no_team,Chile
 35759,Yonathan Andía,Deportes Limache,28481,Yonathan Wladimir Andía León,Club Deportes Limache,p5_token_no_team,Chile
 26261,Edson Puch,Deportes Iquique,28485,Edson Raúl Puch Cortés,Club Deportes Iquique,p5_token_no_team,Chile
@@ -1917,6 +1943,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 28420,Javier Correa,Colo Colo,34782,Marcelo Javier Correa,CSD Colo Colo,p5_token_no_team,Chile
 51857,Lucas Di Yorio,Universidad de Chile,35568,Lucas Gabriel Di Yorio,Corporación de Fútbol de la Universidad de Chile,p5_token_no_team,Chile
 22399,Emiliano Amor,Colo Colo,35584,Emiliano Javier Amor,CSD Colo Colo,p5_token_no_team,Chile
+31719,Francisco González,O'Higgins,35602,Francisco Agustín González,Club Deportivo O'Higgins,p5_token_no_team,Chile
 27176,Enrique Serje,Everton,35692,Enrique Carlos Serje Orozco,Everton de Viña del Mar,p5_token_no_team,Chile
 28434,Sebastián Vegas,Colo Colo,36179,Sebastián Ignacio Vegas Orellana,CSD Colo Colo,p5_token_no_team,Chile
 28525,Ramiro González,Everton,36255,Ramiro Gabriel González Hernández,Everton de Viña del Mar,p5_token_no_team,Chile
@@ -1960,6 +1987,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 363777,Francisco Salinas,Coquimbo Unido,521413,Francisco Antonio Salinas Concha,CD Coquimbo Unido,p5_token_no_team,Chile
 37536,Diego García Medina,Everton,522457,Diego Ignacio García Medina,Everton de Viña del Mar,p5_token_no_team,Chile
 364723,Yorman Zapata,Deportes Limache,522479,Yorman Zapata Mina,Club Deportes Limache,p5_token_no_team,Chile
+368623,Arnaldo Castillo,O'Higgins,531465,Arnaldo Castillo Benega,Club Deportivo O'Higgins,p5_token_no_team,Chile
 103217,Jovany Campusano,Deportivo Ñublense SADP,54606,Jovany Alberto Campusano Villega,Nublense,p5_token_no_team,Chile
 35950,Bernardo Cerezo,Deportivo Ñublense SADP,54609,Bernardo Humberto Cerezo Rojas,Nublense,p5_token_no_team,Chile
 103987,Joaquín Moya,Everton,54624,Joaquín Ignacio Moya Fuentes,Everton de Viña del Mar,p5_token_no_team,Chile
@@ -1980,9 +2008,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 36674,Bayron Oyarzo,Deportivo Ñublense SADP,69877,Bayron Andrés Oyarzo Muñoz,Nublense,p5_token_no_team,Chile
 37348,Enzo Ferrario,Audax Italiano,71332,Enzo Nicolás Ferrario Argüello,Audax Club Sportivo Italiano,p5_token_no_team,Chile
 131837,Lucas Cepeda,Colo Colo,71337,Lucas Antonio Cepeda Barturen,CSD Colo Colo,p5_token_no_team,Chile
+46345,Moisés González,O'Higgins,71383,Moises Alejandro González Torres,Club Deportivo O'Higgins,p5_token_no_team,Chile
 116296,Lucas Soto,Everton,71822,Lucas Sebastián Soto Olivares,Everton de Viña del Mar,p5_token_no_team,Chile
 404400,Diego Mauricio Sanhueza Hemmelmann,Deportivo Ñublense SADP,722254,Diego Sanhueza,Nublense,p5_token_no_team,Chile
 18874,Mauricio Isla,Colo Colo,7292,Mauricio Aníbal Isla Isla,CSD Colo Colo,p5_token_no_team,Chile
+426038,Esteban González,O'Higgins,811156,Esteban Alex Calderon Gonzalez,Club Deportivo O'Higgins,p5_token_no_team,Chile
 425970,César González,Deportes Iquique,811512,César Alejandro González Ramírez,Club Deportes Iquique,p5_token_no_team,Chile
 36462,Elvis Hernández,Coquimbo Unido,811934,Elvis Hernández Huenten,CD Coquimbo Unido,p5_token_no_team,Chile
 427941,Andrés Zanini,La Serena,812915,Raúl Andrés Zanini,CD La Serena,p5_token_no_team,Chile
@@ -1996,6 +2026,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 438106,Michael Maturana,Unión La Calera,967081,Michael Andrés Maturana Fredes,CD Unión La Calera,p5_token_no_team,Chile
 463064,Christopher Felipe Díaz Peña,Unión La Calera,978524,Cristopher Felipe Diaz Peña,CD Unión La Calera,p5_token_no_team,Chile
 463065,Javier Ignacio Saldías Cea,Unión La Calera,978526,Javier Saldías,CD Unión La Calera,p5_token_no_team,Chile
+463010,Rodrigo Tapia,O'Higgins,999797,Rodrigo Alejandro Godoy Tapia,Club Deportivo O'Higgins,p5_token_no_team,Chile
 463054,Matías D'Alessandro Pinto Álvarez,La Serena,999836,Matías Pinto Álvarez,CD La Serena,p5_token_no_team,Chile
 35737,Dylan Patricio Zúñiga Valenzuela,Palestino,28428,Dilan Patricio Zúñiga Espinoza Valenzuela,Club Deportivo Palestino,manual,Chile
 102512,Maicol Andrés León Muñoz,Huachipato,43535,Maicol Andrés León Muñoz,Club Deportivo Huachipato,manual,Chile
@@ -2151,6 +2182,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 146076,William Kumado,San Diego FC,70914,William Kumado,San Diego FC,p1_exact_name_team,MLS
 16546,Joseph Paintsil,LA Galaxy,14564,Joseph Paintsil,LA Galaxy,p1_exact_name_team,MLS
 334178,Omar Javier Valencia Arauz,New York Red Bulls,333692,Omar Javier Valencia Arauz,New York Red Bulls,p1_exact_name_team,MLS
+183768,Danley Jean Jacques,Philadelphia Union,103042,Danley Jean-Jacques,Philadelphia Union,p1_exact_name_team,MLS
 12752,Derrick Etienne Jr.,Toronto FC,18322,Derrick Etienne Jr.,Toronto FC,p1_exact_name_team,MLS
 31332,Giacomo Vrioni,CF Montreal,17480,Giacomo Vrioni,Montréal,p1_exact_name_team,MLS
 28374,Myrto Uzuni,Austin FC,17485,Myrto Uzuni,Austin,p1_exact_name_team,MLS
@@ -2160,7 +2192,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 4256,Jonathan Bamba,Chicago Fire,11150,Jonathan Bamba,Chicago Fire,p1_exact_name_team,MLS
 45506,Emmanuel Latte Lath,Atlanta United,63127,Emmanuel Latte Lath,Atlanta United FC,p1_exact_name_team,MLS
 3507,Wilfried Zaha,Charlotte,10848,Wilfried Zaha,Charlotte FC,p1_exact_name_team,MLS
-33600,Dag­ur Dan Þór­halls­son,Orlando City,110472,Dagur Dan Thórhallsson,Orlando City,p1_exact_name_team,MLS
 217285,Patrickson Luiggy Delgado Villa,FC Dallas,128540,Patrickson Luiggy Delgado Villa,FC Dallas,p1_exact_name_team,MLS
 108331,Adrian Alonso Martínez Batista,New York City FC,66806,Adrián Alonso Martínez Batista,New York City FC,p1_exact_name_team,MLS
 12570,Dominique Badji,DC United,31142,Dominique Badji,DC United,p1_exact_name_team,MLS
@@ -2200,6 +2231,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 226488,Kobe Franklin,Toronto FC,140217,Kobe Franklin,Toronto FC,p1_exact_name_team,MLS
 67779,Theo Corbeanu,Toronto FC,35326,Theo  Corbeanu,Toronto FC,p1_exact_name_team,MLS
 214812,Kosi Thompson,Toronto FC,128931,Kosi Thompson,Toronto FC,p1_exact_name_team,MLS
+16252,Mark Anthony Kaye,San Jose Earthquakes,17903,Mark-Anthony Kaye,San Jose Earthquakes,p1_exact_name_team,MLS
 42758,Jahkeele Marshall-Rutty,Charlotte,36571,Jahkeele Marshall-Rutty,Charlotte FC,p1_exact_name_team,MLS
 129291,Lukas MacNaughton,DC United,123138,Lukas MacNaughton,DC United,p1_exact_name_team,MLS
 386415,J.C. Ngando,Vancouver Whitecaps,592212,J.C. Ngando,Vancouver Whitecaps FC,p1_exact_name_team,MLS
@@ -2241,6 +2273,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 37289,Robert Voloder,Sporting Kansas City,24995,Robert Voloder,Sporting Kansas City,p1_exact_name_team,MLS
 12627,Erik Thommy,Sporting Kansas City,19060,Erik Thommy,Sporting Kansas City,p1_exact_name_team,MLS
 12403,Tim Leibold,Sporting Kansas City,19143,Tim Leibold,Sporting Kansas City,p1_exact_name_team,MLS
+13205,Prince-Osei Owusu,CF Montreal,19196,Prince Osei Owusu,Montréal,p1_exact_name_team,MLS
 15820,Fabian Herbers,CF Montreal,27090,Fabian Herbers,Montréal,p1_exact_name_team,MLS
 15847,Alexander Hack,New York Red Bulls,535,Alexander Hack,New York Red Bulls,p1_exact_name_team,MLS
 24451,Hany Mukhtar,Nashville SC,4206,Hany Mukhtar,Nashville,p1_exact_name_team,MLS
@@ -2456,6 +2489,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 6800,Carles Gil,New England Revolution,36450,Carles Gil de Pareja Vicent,New England Revolution,p3_token_same_team,MLS
 36754,Rodrigo Schlegel,Orlando City,36458,Rodrigo Adrián Schlegel,Orlando City,p3_token_same_team,MLS
 29371,Andrés Perea,New York City FC,36461,Andrés Felipe Perea Castañeda,New York City FC,p3_token_same_team,MLS
+50411,Ralph Priso,Vancouver Whitecaps,36476,Ralph-William Johnson Priso-Mbongue,Vancouver Whitecaps FC,p3_token_same_team,MLS
 29515,Felipe Mora,Portland Timbers,36478,Felipe Andrés Mora Aliaga,Portland Timbers,p3_token_same_team,MLS
 42515,James Tanner Beason,New England Revolution,36488,Tanner Beason,New England Revolution,p3_token_same_team,MLS
 16125,Franco Escobar,Houston Dynamo,36549,Franco Nicolás Escobar,Houston Dynamo,p3_token_same_team,MLS
@@ -2487,24 +2521,24 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 271512,Felipe Andrade,Houston Dynamo,689069,Felipe de Andrade Vieira,Houston Dynamo,p3_token_same_team,MLS
 162490,Antony,Portland Timbers,75760,Antony Alves Santos,Portland Timbers,p3_token_same_team,MLS
 424280,Dje D'avilla,Chicago Fire,809695,Dje Tah  D''Avilla,Chicago Fire,p3_token_same_team,MLS
+428798,I.James,Sporting Kansas City,817424,Ian James,Sporting Kansas City,p3_token_same_team,MLS
 16333,Andy Najar,Nashville SC,868,Andy Aryel Najar Rodríguez,Nashville,p3_token_same_team,MLS
 432116,Kaick,FC Dallas,997634,Kaick da Silva Ferreira,FC Dallas,p3_token_same_team,MLS
 8344,Manu García,Sporting Kansas City,12130,Manuel García Alonso,Sporting Kansas City,p3b_nickname_same_team,MLS
 224813,Christopher Donovan,Philadelphia Union,166529,Chris Donovan,Philadelphia Union,p3b_nickname_same_team,MLS
 20690,Matthew Ryan Polster,New England Revolution,25015,Matt Polster,New England Revolution,p3b_nickname_same_team,MLS
 384102,Chris Rindov,LA Galaxy,581147,Christopher Rindov,LA Galaxy,p3b_nickname_same_team,MLS
-183768,Danley Jean Jacques,Philadelphia Union,103042,Danley Jean-Jacques,Philadelphia Union,p4_fuzzy_0.018,MLS
+33600,Dag­ur Dan Þór­halls­son,Orlando City,110472,Dagur Dan Thórhallsson,Orlando City,p4_fuzzy_0.093,MLS
 205514,William Sands,New England Revolution,123140,Will Sands,New England Revolution,p4_fuzzy_0.127,MLS
+224439,Alexander Freeman,Orlando City,166528,Alex Freeman,Orlando City,p4_fuzzy_0.209,MLS
 33683,Samuel Rogers,Chicago Fire,174855,Sam Rogers,Chicago Fire,p4_fuzzy_0.16,MLS
-16252,Mark Anthony Kaye,San Jose Earthquakes,17903,Mark-Anthony Kaye,San Jose Earthquakes,p4_fuzzy_0.103,MLS
 12783,Marky Delgado,LAFC,17964,Mark Delgado,Los Angeles FC,p4_fuzzy_0.026,MLS
-13205,Prince-Osei Owusu,CF Montreal,19196,Prince Osei Owusu,Montréal,p4_fuzzy_0.072,MLS
 38212,Will Reilly,Atlanta United,334748,William Reilly,Atlanta United FC,p4_fuzzy_0.132,MLS
 34158,Daniel Musovski,Seattle Sounders,36577,Danny Musovski,Seattle Sounders,p4_fuzzy_0.114,MLS
+135811,William Agada,Real Salt Lake,39455,Willy Agada,Real Salt Lake,p4_fuzzy_0.207,MLS
 353866,Hennadiy Synchuk,CF Montreal,449625,Gennady Synchuk,Montréal,p4_fuzzy_0.064,MLS
 34434,Jake Davis,Sporting Kansas City,63447,Jacob Davis,Sporting Kansas City,p4_fuzzy_0.158,MLS
 426065,Femi Awodesu,Houston Dynamo,812190,Obafemi Awodesu,Houston Dynamo,p4_fuzzy_0.15,MLS
-428798,I.James,Sporting Kansas City,817424,Ian James,Sporting Kansas City,p4_fuzzy_0.167,MLS
 101850,Jeong Sang-Bin,Minnesota United,120296,Sang-Bin Jeong,St. Louis City Soccer Club,p5_token_no_team,MLS
 50055,Jaziel Orozco,St. Louis City,132620,Jaziel Alberto Orozco Landeros,St. Louis City Soccer Club,p5_token_no_team,MLS
 24477,Evander,Cincinnati,13540,Evander da Silva Ferreira,Football Club Cincinnati,p5_token_no_team,MLS
@@ -2777,6 +2811,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 47368,Jofre Carreras,Espanyol,32106,Jofre Carreras Pagès,RCD Espanyol,p3_token_same_team,LaLiga
 47653,Alberto Moleiro,Villarreal,32115,Alberto Moleiro Gonzalez,Villarreal CF,p3_token_same_team,LaLiga
 48647,Urko González,Espanyol,32120,Urko González de Zarate Quirós,RCD Espanyol,p3_token_same_team,LaLiga
+48600,Flavien Boyomo,Osasuna,32139,Flavien-Enzo Boyomo,CA Osasuna,p3_token_same_team,LaLiga
 49529,Aitor Paredes,Athletic Club,32276,Aitor Paredes Casamichana,Athletic Club de Bilbao,p3_token_same_team,LaLiga
 38905,Víctor Chust,Elche,32305,Víctor García Chust,Elche CF,p3_token_same_team,LaLiga
 50275,Arnau Martinez,Girona,32361,Arnau Martínez López,Girona FC,p3_token_same_team,LaLiga
@@ -2882,22 +2917,34 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 33339,Manu Sánchez,Levante UD,24453,Manuel Sánchez De La Peña,Levante UD,p3b_nickname_same_team,LaLiga
 24175,Dani Calvo,Real Oviedo,25639,Daniel Pedro Calvo San Román,Real Oviedo,p3b_nickname_same_team,LaLiga
 41115,Álex Baena,Atlético Madrid,25697,Alejandro Baena Rodríguez,Atlético Madrid,p3b_nickname_same_team,LaLiga
+30491,Isi Palazón,Rayo Vallecano,25892,Isaac Palazón Camacho,Rayo Vallecano,p3b_nickname_same_team,LaLiga
 24257,Toni Martínez,Deportivo Alavés,27263,Antonio Martínez López,Deportivo Alavés,p3b_nickname_same_team,LaLiga
 47516,Fran García,Real Madrid,31993,Francisco José García Torres,Real Madrid CF,p3b_nickname_same_team,LaLiga
 140556,Kike Salas,Sevilla,69391,Enrique Jesús Salas Valiente,Sevilla FC,p3b_nickname_same_team,LaLiga
 11675,Moi Gómez,Osasuna,7748,Moisés Gómez Bordonado,CA Osasuna,p3b_nickname_same_team,LaLiga
 47375,Robert Navarro,Athletic Club,13418,Roberto Navarro Muñoz,Athletic Club de Bilbao,p4_fuzzy_0.194,LaLiga
-48600,Flavien Boyomo,Osasuna,32139,Flavien-Enzo Boyomo,CA Osasuna,p4_fuzzy_0.157,LaLiga
 82674,Abdelkabir Abqar,Getafe,37823,Abdel kabir Abqar,Getafe CF,p4_fuzzy_0.082,LaLiga
 149714,Abde Ezzalzouli,Real Betis,69881,Abdessamad Ezzalzouli,Real Betis Balompié,p4_fuzzy_0.14,LaLiga
 4926,Isco,Real Betis,12456,Francisco Femenía Far,Getafe CF,p5b_nickname_no_team,LaLiga
 541313,Álex Sánchez,Elche,531625,Alejandro  San Cristóbal Sánchez,Getafe CF,p5b_nickname_no_team,LaLiga
 6697,Dani Ceballos,Real Madrid,2190,Daniel Ceballos Fernández,Real Madrid CF,manual,LaLiga
 12194,Santi Comesaña,Villarreal,13881,Santiago Comesaña Veiga,Villarreal CF,manual,LaLiga
-6596,José Gayá,Valencia,29176,José Luis García Vayá,Valencia CF,manual,LaLiga
+6596,José Gayá,Valencia,5398,José Luis Gayá Peña,Valencia CF,manual,LaLiga
 41084,Juanlu,Sevilla,69308,Juan Luis Sánchez Velasco,Sevilla FC,manual,LaLiga
 41084,Juanlu,Sevilla,69308,Juan Luis Sánchez Velasco,Sevilla FC,manual,LaLiga
 255811,Yusi,Deportivo Alavés,120550,Youssef Enriquez Lekhedim,Deportivo Alavés,manual,LaLiga
+5199,Koke,Atlético Madrid,5942,Jorge Resurrección Merodio,Atlético Madrid,manual,LaLiga
+10595,Raphinha,Barcelona,16062,Raphael Dias Belloli,FC Barcelona,manual,LaLiga
+30486,Pedri,Barcelona,25738,Pedro González López,FC Barcelona,manual,LaLiga
+68574,Nico Williams,Athletic Club,35342,Nicholas Williams Arthuer,Athletic Club de Bilbao,manual,LaLiga
+32122,Johnny,Atlético Madrid,31814,João Lucas De Souza Cardoso,Atlético Madrid,manual,LaLiga
+11166,Marcão Teixeira,Sevilla,16261,Marcos do Nascimento Teixeira,Sevilla FC,manual,LaLiga
+39073,Ilaix Moriba,Celta Vigo,35630,Moriba Kourouma Kourouma,RC Celta de Vigo,manual,LaLiga
+6802,Jonny Castro,Deportivo Alavés,12242,Jonathan Castro Otto,Deportivo Alavés,manual,LaLiga
+36728,Mate Morey,Mallorca,24084,Mateu Jaume Morey Bauzà,RCD Mallorca,manual,LaLiga
+49303,Pep Chavarría,Rayo Vallecano,32127,Josep María Chavarría Pérez,Rayo Vallecano,manual,LaLiga
+195724,Alemão,Rayo Vallecano,142458,Alexandre Zurawski,Rayo Vallecano,manual,LaLiga
+39469,Konrad De La Fuente,AD Ceuta FC,29803,Konrad de La Fuente,Agrupación Deportiva Ceuta FC,p1_exact_name_team,LaLiga 2
 31009,Víctor Hugo García Hernández,CyD Leonesa,10675,Víctor Hugo García Hernández,Cultural y Deportiva Leonesa,p1_exact_name_team,LaLiga 2
 319969,Youssouf Diarra,Cádiz,531571,Youssouf Diarra,Cadiz CF,p1_exact_name_team,LaLiga 2
 418471,Moussa Diakité,Cádiz,800105,Moussa  Diakité,Cadiz CF,p1_exact_name_team,LaLiga 2
@@ -2916,6 +2963,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 69251,Daijiro Chirino,Almería,35284,Daijiro Chirino,UD Almería,p1_exact_name_team,LaLiga 2
 30211,Zakaria Eddahchouri,RC Deportivo La Coruña,76058,Zakaria Eddahchouri,RC Deportivo de La Coruña,p1_exact_name_team,LaLiga 2
 133143,Justin Smith,Sporting Gijón,61961,Justin Smith,Real Sporting de Gijón,p1_exact_name_team,LaLiga 2
+30949,Marc Olivier Doue,CD Castellón,26760,Marc-Olivier Doué,CD Castellon,p1_exact_name_team,LaLiga 2
 28416,Jérémy Mellot,CD Castellón,23056,Jérémy Mellot,CD Castellon,p1_exact_name_team,LaLiga 2
 4836,Thomas Carrique,FC Andorra,12244,Thomas Carrique,FC Andorra,p1_exact_name_team,LaLiga 2
 131058,Théo Le Normand,FC Andorra,59960,Théo Le Normand,FC Andorra,p1_exact_name_team,LaLiga 2
@@ -2925,6 +2973,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 11811,Julien Ponceau,Real Valladolid,13171,Julien Ponceau,Real Valladolid,p1_exact_name_team,LaLiga 2
 24029,Kévin Appin,Burgos,14646,Kévin Appin,Burgos CF,p1_exact_name_team,LaLiga 2
 32028,Lucas Perrin,Sporting Gijón,12122,Lucas Perrin,Real Sporting de Gijón,p1_exact_name_team,LaLiga 2
+2961,Yann Bodiger,AD Ceuta FC,10952,Yann Bodiger,Agrupación Deportiva Ceuta FC,p1_exact_name_team,LaLiga 2
 38327,Fabrizio Brignani,CD Castellón,870542,Fabrizio Brignani,CD Castellon,p1_exact_name_team,LaLiga 2
 85670,Lorenzo Amatucci,Las Palmas,498827,Lorenzo Amatucci,UD Las Palmas,p1_exact_name_team,LaLiga 2
 32524,Federico Bonini,Almería,24924,Federico Bonini,UD Almería,p1_exact_name_team,LaLiga 2
@@ -2965,6 +3014,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 320563,Izan Gonzalez Muñoz,Granada,981758,Izan González Muñoz,Granada CF,p1_exact_name_team,LaLiga 2
 362372,Marino Illescas Montaño,Mirandés,512886,Marino Illescas Montaño,CD Mirandes,p1_exact_name_team,LaLiga 2
 365789,Mario García Alvear,Racing Santander,529003,Mario  García Alvear,Racing Santander,p1_exact_name_team,LaLiga 2
+42789,Íñigo Sainz Maza,Racing Santander,31279,Íñigo Sainz-Maza,Racing Santander,p1_exact_name_team,LaLiga 2
 315484,Mario Soberón Gutiérrez,Real Zaragoza,533031,Mario Soberón Gutiérrez,Real Zaragoza,p1_exact_name_team,LaLiga 2
 299061,Daniel Esmorís Tasende,Real Zaragoza,53336,Daniel Esmorís Tasende,Real Zaragoza,p1_exact_name_team,LaLiga 2
 378103,Enol Rodríguez Heres,Huesca,557571,Enol Rodríguez Heres,Sociedad Deportiva Huesca,p1_exact_name_team,LaLiga 2
@@ -2981,16 +3031,16 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 328226,Diego Murillo Domínguez,Málaga,274973,Diego Murillo Dominguez,Málaga CF,p1_exact_name_team,LaLiga 2
 315060,Adrián Niño Heredia,Málaga,752461,Adrián Niño Heredia,Málaga CF,p1_exact_name_team,LaLiga 2
 161987,Carlos Francisco Puga Medina,Málaga,531568,Carlos Francisco Puga Medina,Málaga CF,p1_exact_name_team,LaLiga 2
+356475,Albert Caparrós Guzmán,AD Ceuta FC,570197,Albert Caparrós Guzmán,Agrupación Deportiva Ceuta FC,p1_exact_name_team,LaLiga 2
+362372,Marino Illescas Montaño,AD Ceuta FC,512886,Marino Illescas Montaño,Agrupación Deportiva Ceuta FC,p1_exact_name_team,LaLiga 2
 326867,Juan Gutiérrez Martínez,Mirandés,570191,Juan Gutiérrez Martínez,CD Mirandes,p1_exact_name_team,LaLiga 2
-39469,Konrad De La Fuente,AD Ceuta FC,29803,Konrad de La Fuente,Agrupación Deportiva Ceuta FC,p2_exact_name_unique,LaLiga 2
-2961,Yann Bodiger,AD Ceuta FC,10952,Yann Bodiger,Agrupación Deportiva Ceuta FC,p2_exact_name_unique,LaLiga 2
-356475,Albert Caparrós Guzmán,AD Ceuta FC,570197,Albert Caparrós Guzmán,Agrupación Deportiva Ceuta FC,p2_exact_name_unique,LaLiga 2
 414745,Lander Astiazarán,Real Sociedad B,1000685,Lander Astiazarán Escabias,Real Sociedad San Sebastian B,p3_token_same_team,LaLiga 2
 468533,Amadou Coundoul,Sporting Gijón,1002204,Amadou Matar Coundoul,Real Sporting de Gijón,p3_token_same_team,LaLiga 2
 468490,Roger Hinojo,CyD Leonesa,1002456,Roger  Hinojo Estrada,Cultural y Deportiva Leonesa,p3_token_same_team,LaLiga 2
 178545,Alberto Dadie,Real Sociedad B,100341,Alberto Dadie Izagirre,Real Sociedad San Sebastian B,p3_token_same_team,LaLiga 2
 353761,Joaquín,Cádiz,10168,Jesús Joaquín Fernández Sáez de la Torre,Cadiz CF,p3_token_same_team,LaLiga 2
 518928,Hugo San Modesto,Real Valladolid,1024096,Hugo San Modesto Valdespino,Real Valladolid,p3_token_same_team,LaLiga 2
+534824,M.Calvo,Leganés,1036675,Marcos Leiva Calvo,CD Leganés,p3_token_same_team,LaLiga 2
 188263,Lucas Noubi Ngnokam,RC Deportivo La Coruña,108524,Lucas Dominique Noubi Ngnokam,RC Deportivo de La Coruña,p3_token_same_team,LaLiga 2
 11775,Jefté Betancor,Albacete,110519,Jefté Betancor Sánchez,Albacete Balompie,p3_token_same_team,LaLiga 2
 24622,Adam Emil Skaanning Jakobsen,CD Castellón,110988,Adam Jakobsen,CD Castellon,p3_token_same_team,LaLiga 2
@@ -3011,6 +3061,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 32953,Asier Villalibre,Racing Santander,13906,Asier Villalibre Molina,Racing Santander,p3_token_same_team,LaLiga 2
 11296,Óscar Plano,Leganés,13941,Óscar Plano Pedreño,CD Leganés,p3_token_same_team,LaLiga 2
 11300,Rubén Alcaraz,Granada,13943,Rubén Alcaraz Jiménez,Granada CF,p3_token_same_team,LaLiga 2
+11303,Anuar Tuhami,AD Ceuta FC,13947,Anuar Mohamed Tuhami,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 20735,Miguel De la Fuente,Almería,13949,Miguel De La Fuente Escudero,UD Almería,p3_token_same_team,LaLiga 2
 6873,Francisco Portillo,Huesca,13968,Francisco Portillo Soler,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
 6621,Amath Ndiaye,Real Valladolid,13969,Amath Ndiaye Diedhiou,Real Valladolid,p3_token_same_team,LaLiga 2
@@ -3044,6 +3095,8 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 41391,Julen Lobete,Málaga,24736,Julen Lobete Cienfuegos,Málaga CF,p3_token_same_team,LaLiga 2
 30593,Dani Gómez,Real Zaragoza,25591,Dani Gómez Alcón,Real Zaragoza,p3_token_same_team,LaLiga 2
 24265,Alberto Jiménez,CD Castellón,25599,Alberto Jiménez Benítez,CD Castellon,p3_token_same_team,LaLiga 2
+32324,Cristian Rodríguez,AD Ceuta FC,25649,Cristian Rodríguez Pérez,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
+24081,Carlos Hernández,AD Ceuta FC,25663,Carlos Hernández Alarcón,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 23796,Marco Sangalli,Racing Santander,25665,Marco Sangalli Fuentes,Racing Santander,p3_token_same_team,LaLiga 2
 26603,Óscar Sielva,Huesca,25679,Óscar Sielva Moreno,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
 41123,Paulino de la Fuente,Real Zaragoza,25695,Paulino De la Fuente Gómez,Real Zaragoza,p3_token_same_team,LaLiga 2
@@ -3125,9 +3178,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 315470,Jon Guruzeta,Eibar,533070,Jon Guruzeta Rodríguez,SD Eibar,p3_token_same_team,LaLiga 2
 38726,Mika Mármol,Las Palmas,53350,Mika Mármol Medina,UD Las Palmas,p3_token_same_team,LaLiga 2
 11677,Jorge Pulido,Huesca,5359,Jorge Pulido Mayoral,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
+23972,José Matos,AD Ceuta FC,5425,José Joaquín Matos García,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 24192,Miguel Loureiro,RC Deportivo La Coruña,54969,Miguel Loureiro Ameijenda,RC Deportivo de La Coruña,p3_token_same_team,LaLiga 2
 26978,Martí Vilà,FC Andorra,54977,Martí Vilà García,FC Andorra,p3_token_same_team,LaLiga 2
 382493,Alberto Mari,Mirandés,568925,Alberto Marí Sánchez,CD Mirandes,p3_token_same_team,LaLiga 2
+320261,Aisar,AD Ceuta FC,570196,Aisar Ahmed Ahmed,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 133133,Pablo Tomeo,Real Valladolid,61911,Pablo Tomeo Félez,Real Valladolid,p3_token_same_team,LaLiga 2
 133437,Pedro Ortiz,Córdoba CF,62107,Pedro Ortiz Bernat,Cordoba CF,p3_token_same_team,LaLiga 2
 133439,Jorge Moreno,Cádiz,62108,Jorge Moreno San Vidal,Cadiz CF,p3_token_same_team,LaLiga 2
@@ -3150,8 +3205,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 137636,Salim El Jebari,Mirandés,677196,Salim El Jebari El Hannouni,CD Mirandes,p3_token_same_team,LaLiga 2
 6709,Anaitz Arbilla,Eibar,679,Anaitz Arbilla Zabala,SD Eibar,p3_token_same_team,LaLiga 2
 36351,Ignacio Laquintana,Huesca,68782,Ignacio Jesús Laquintana Marsico,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
+353649,Gonzalo Francisco Almenara Hernández,AD Ceuta FC,69317,Gonzalo Almenara Hernández,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 38804,Adrià Altimira,RC Deportivo La Coruña,69330,Adrià Altimira Reynaldos,RC Deportivo de La Coruña,p3_token_same_team,LaLiga 2
+173380,Diego González,AD Ceuta FC,69332,Diego González Cabanes,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 174231,Cristian Carracedo,Córdoba CF,69348,Cristian Carracedo García,Cordoba CF,p3_token_same_team,LaLiga 2
+312252,Kialy Abdoul Koné,AD Ceuta FC,69382,Kialy Abdoul Kone Koné,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 407214,Álex Calatrava,CD Castellón,69392,Alex Calatrava Torrado,CD Castellon,p3_token_same_team,LaLiga 2
 439804,Ramón Martínez,Real Valladolid,69413,Ramón Martínez Gil,Real Valladolid,p3_token_same_team,LaLiga 2
 41647,Julio Alonso,Huesca,69813,Julio Alonso Sosa,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
@@ -3162,6 +3220,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 405355,Ander Madariaga,Eibar,731660,Ander Madariaga Susaeta,SD Eibar,p3_token_same_team,LaLiga 2
 405555,Javier Hernandez,Mirandés,732439,Francisco Javier Hernández Coarasa,CD Mirandes,p3_token_same_team,LaLiga 2
 405516,Selu Diallo,CyD Leonesa,733167,Mamadou Selu Diallo Diallo,Cultural y Deportiva Leonesa,p3_token_same_team,LaLiga 2
+405312,Youness Didi,AD Ceuta FC,735634,Youness Lachhab Didi,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 398264,Brian Cipenga,CD Castellón,737652,Brian Kibambe Cipenga,CD Castellon,p3_token_same_team,LaLiga 2
 407227,Arkaitz Mariezkurrena,Real Sociedad B,745077,Arkaitz Mariezkurrena Etxezarreta,Real Sociedad San Sebastian B,p3_token_same_team,LaLiga 2
 407225,Ekain Orobengoa,Real Sociedad B,745080,Ekain  Orobengoa Arbelaiz,Real Sociedad San Sebastian B,p3_token_same_team,LaLiga 2
@@ -3181,10 +3240,12 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 419614,Aingeru Olabarrieta,FC Andorra,801427,Aingeru Olabarrieta Capelo,FC Andorra,p3_token_same_team,LaLiga 2
 434066,Gonzalo Ezequiel Petit Abad,Granada,811738,Gonzalo Petit Abad,Granada CF,p3_token_same_team,LaLiga 2
 426936,Jorge Cabello,Mirandés,812836,Jorge Cabello Truijillo,CD Mirandes,p3_token_same_team,LaLiga 2
+428359,M.Rodríguez Paz,Sporting Gijón,813397,Manuel Rodríguez Paz,Real Sporting de Gijón,p3_token_same_team,LaLiga 2
 430762,Rafel Sureda,Mirandés,818281,Rafel Bauzà Sureda,CD Mirandes,p3_token_same_team,LaLiga 2
 21399,Pablo Ínsua,Real Zaragoza,8322,Pablo Ínsua Blanco,Real Zaragoza,p3_token_same_team,LaLiga 2
 440423,Jorge Salinas,Racing Santander,869607,Jorge Salinas Viadero,Racing Santander,p3_token_same_team,LaLiga 2
 441467,Ismael Barea,Mirandés,885728,Ismael Barea Fernández,CD Mirandes,p3_token_same_team,LaLiga 2
+438493,Marcos Fernández,AD Ceuta FC,885731,Marcos Fernández Sánchez,Agrupación Deportiva Ceuta FC,p3_token_same_team,LaLiga 2
 441465,Sergio Arribas,Huesca,885733,Sergio Arribas Prieto,Sociedad Deportiva Huesca,p3_token_same_team,LaLiga 2
 422396,Peio Canales,Racing Santander,889021,Peio Canales Urtasun,Racing Santander,p3_token_same_team,LaLiga 2
 354687,Iker Varela,Mirandés,889026,Iker Varela Parra,CD Mirandes,p3_token_same_team,LaLiga 2
@@ -3192,6 +3253,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 441462,Iker Córdoba,Mirandés,896291,Iker Córdoba Sánchez,CD Mirandes,p3_token_same_team,LaLiga 2
 251928,Jonathan Germán Gómez,Albacete,89663,Jonathan Germán Gómez Mendoza,Albacete Balompie,p3_token_same_team,LaLiga 2
 416262,Alex Garcia,Real Sociedad B,909043,Alex Marchal Garcia,Real Sociedad San Sebastian B,p3_token_same_team,LaLiga 2
+442090,Alvaro Pascual,Cádiz,913754,Alvaro Miguel Garcia-Pascual,Cadiz CF,p3_token_same_team,LaLiga 2
 6684,Roger Martí,Cádiz,9209,Roger Martí Salvador,Cadiz CF,p3_token_same_team,LaLiga 2
 443781,Kim Min-Su,FC Andorra,946213,Min-su Kim,FC Andorra,p3_token_same_team,LaLiga 2
 434106,Aarón,Mirandés,947965,Aarón Martin Luis,CD Mirandes,p3_token_same_team,LaLiga 2
@@ -3223,6 +3285,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 66936,Álex Millán,Leganés,35291,Alejandro Millán Iranzo,CD Leganés,p3b_nickname_same_team,LaLiga 2
 109912,Álex Suárez,Mirandés,42888,Alejandro Suárez Cardero,CD Mirandes,p3b_nickname_same_team,LaLiga 2
 320597,Manu Justo,CyD Leonesa,531556,Manuel Justo Román,Cultural y Deportiva Leonesa,p3b_nickname_same_team,LaLiga 2
+6761,Léo Baptistão,Almería,6140,Leonardo Carrilho Baptistão,UD Almería,p3b_nickname_same_team,LaLiga 2
 6771,Manu Trigueros,Granada,6639,Manuel Trigueros Muñoz,Granada CF,p3b_nickname_same_team,LaLiga 2
 34840,Sergi Maestre,CyD Leonesa,69815,Sergio Maestre García,Cultural y Deportiva Leonesa,p3b_nickname_same_team,LaLiga 2
 35433,Toni Abad,Huesca,69821,José Antonio Abad Martínez,Sociedad Deportiva Huesca,p3b_nickname_same_team,LaLiga 2
@@ -3233,21 +3296,11 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 437517,Dani Díaz,Real Sociedad B,909044,Daniel Diaz Gándara,Real Sociedad San Sebastian B,p3b_nickname_same_team,LaLiga 2
 6700,Sergi Enrich,Huesca,9733,Sergio Enrich Ametller,Sociedad Deportiva Huesca,p3b_nickname_same_team,LaLiga 2
 245812,Sergio Ortu,Cádiz,157305,Sergio Ortuño Díaz,Cadiz CF,p4_fuzzy_0.13,LaLiga 2
-30949,Marc Olivier Doue,CD Castellón,26760,Marc-Olivier Doué,CD Castellon,p4_fuzzy_0.103,LaLiga 2
+24577,Salva Ruiz,CD Castellón,25789,Salvador Ruiz Rodríguez,CD Castellon,p4_fuzzy_0.222,LaLiga 2
 261630,Gustavo Adolfo Puerta Molano,Racing Santander,301501,Gustavo Aldolfo Puerta Molano,Racing Santander,p4_fuzzy_0.107,LaLiga 2
-42789,Íñigo Sainz Maza,Racing Santander,31279,Íñigo Sainz-Maza,Racing Santander,p4_fuzzy_0.021,LaLiga 2
 133555,Jon Magunacelaya,Eibar,62165,Jon Magunazelaia Argoitia,SD Eibar,p4_fuzzy_0.188,LaLiga 2
 365867,Facu González,Racing Santander,699511,Facundo González Molino,Racing Santander,p4_fuzzy_0.196,LaLiga 2
-11303,Anuar Tuhami,AD Ceuta FC,13947,Anuar Mohamed Tuhami,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-32324,Cristian Rodríguez,AD Ceuta FC,25649,Cristian Rodríguez Pérez,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-24081,Carlos Hernández,AD Ceuta FC,25663,Carlos Hernández Alarcón,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-23972,José Matos,AD Ceuta FC,5425,José Joaquín Matos García,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-320261,Aisar,AD Ceuta FC,570196,Aisar Ahmed Ahmed,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-353649,Gonzalo Francisco Almenara Hernández,AD Ceuta FC,69317,Gonzalo Almenara Hernández,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-173380,Diego González,AD Ceuta FC,69332,Diego González Cabanes,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-312252,Kialy Abdoul Koné,AD Ceuta FC,69382,Kialy Abdoul Kone Koné,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-405312,Youness Didi,AD Ceuta FC,735634,Youness Lachhab Didi,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
-438493,Marcos Fernández,AD Ceuta FC,885731,Marcos Fernández Sánchez,Agrupación Deportiva Ceuta FC,p5_token_no_team,LaLiga 2
+405156,Silvi Clúa,Mirandés,731273,Selvi Clúa Oya,CD Mirandes,p4_fuzzy_0.208,LaLiga 2
 394211,Thiago Emanuel Helguera Merello,Mirandés,647233,Thiago Helguera Merello Volante,CD Mirandes,manual,LaLiga 2
 41603,Dani Villahermosa,FC Andorra,26157,Daniel Villahermosa Martínez,FC Andorra,manual,LaLiga 2
 25830,Grego Sierra,Burgos,11612,Gregorio Sierra Pérez,Burgos CF,manual,LaLiga 2
@@ -3256,13 +3309,12 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 39344,Xavi Sintes,Córdoba CF,41327,Xavier Sintes Egea,Cordoba CF,manual,LaLiga 2
 136328,Guille Bueno,Real Valladolid,66228,Guillermo Bueno López,Real Valladolid,manual,LaLiga 2
 39637,Juanmi Latasa,Real Valladolid,41319,Juan Miguel Latasa Fernández Layos,Real Valladolid,manual,LaLiga 2
-11669,Gonzalo Melero,Leganés,183562,Gonzalo Aguilar López,CD Leganés,manual,LaLiga 2
+11669,Gonzalo Melero,Leganés,14001,Gonzalo Julián Melero Manzanares,CD Leganés,manual,LaLiga 2
 406828,Alejandro Roldán,Albacete,69346,Alejandro Meléndez Ruiz,Albacete Balompie,manual,LaLiga 2
 140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2
 140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2
 140431,Javi Villar,Albacete,70530,Javier Villar del Fraile,Albacete Balompie,manual,LaLiga 2
-6908,Iván Alejo,Real Valladolid,759034,Iván San José Cantalejo,Real Valladolid,manual,LaLiga 2
-6908,Iván Alejo,Real Valladolid,759034,Iván San José Cantalejo,Real Valladolid,manual,LaLiga 2
+6908,Iván Alejo,Real Valladolid,11552,Iván Alejo Peralta,Real Valladolid,manual,LaLiga 2
 136414,Luis Nlavo,Leganés,35954,Luís Henrique de Barros Lopes,CD Leganés,manual,LaLiga 2
 8246,Christian Pulisic,AC Milan,1849,Christian Pulišić,Milan,p1_exact_name_team,Serie A
 3504,Ruben Loftus-Cheek,AC Milan,9342,Ruben Loftus-Cheek,Milan,p1_exact_name_team,Serie A
@@ -3300,7 +3352,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 344642,Zachary Athekame,AC Milan,769784,Zachary Athekame,Milan,p1_exact_name_team,Serie A
 20813,Alexis Saelemaekers,AC Milan,14543,Alexis Saelemaekers,Milan,p1_exact_name_team,Serie A
 39307,Koni De Winter,AC Milan,33992,Koni De Winter,Milan,p1_exact_name_team,Serie A
-104442,Abdoulaye Niakhate Ndiaye,Parma Calcio 1913,176523,Abdoulaye Niakhate N'Diaye,Parma,p2_exact_name_unique,Serie A
 164166,Alessandro Circati,Parma Calcio 1913,78428,Alessandro Circati,Parma,p2_exact_name_unique,Serie A
 39470,Gaetano Oristanio,Parma Calcio 1913,31196,Gaetano Oristanio,Parma,p2_exact_name_unique,Serie A
 49381,Emanuele Valeri,Parma Calcio 1913,33403,Emanuele Valeri,Parma,p2_exact_name_unique,Serie A
@@ -3325,10 +3376,12 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 18360,Rafael Leão,AC Milan,12840,Rafael Alexandre Conceição Leão,Milan,p3_token_same_team,Serie A
 30187,Torbjørn Heggem,Bologna,13528,Torbjørn Lysaker Heggem,Bologna,p3_token_same_team,Serie A
 24085,Pervis Estupiñán,AC Milan,23780,Pervis Josué Estupiñán Tenorio,Milan,p3_token_same_team,Serie A
+52324,Saúl Coco,Torino,34181,Saúl Basilio Coco-Bassey Oubiña,Torino,p3_token_same_team,Serie A
 30124,Marcus Pedersen,Torino,34400,Marcus Holmgren Pedersen,Torino,p3_token_same_team,Serie A
 31053,Santiago Giménez,AC Milan,36190,Santiago Tomás Giménez,Milan,p3_token_same_team,Serie A
 8331,Pablo Marí,Fiorentina,8324,Pablo Marí Villar,Fiorentina,p3_token_same_team,Serie A
 131858,Santiago Thomas Castro,Bologna,122277,Santiago Tomás Castro,Bologna,p4_fuzzy_0.015,Serie A
+104442,Abdoulaye Niakhate Ndiaye,Parma Calcio 1913,176523,Abdoulaye Niakhate N'Diaye,Parma,p5_token_no_team,Serie A
 31701,Gabriel Strefezza,Parma Calcio 1913,19833,Gabriel Tadeu Strefezza Rebelato,Parma,p5_token_no_team,Serie A
 28506,Lautaro Valenti,Parma Calcio 1913,28639,Lautaro Rodrigo Valenti,Parma,p5_token_no_team,Serie A
 28703,Nahuel Estévez,Parma Calcio 1913,28667,Nahuel Estévez Álvarez,Parma,p5_token_no_team,Serie A
@@ -3336,6 +3389,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 132960,Mathias Fjörtoft Lövik,Parma Calcio 1913,64400,Mathias Johan Fjörtoft Lövik,Parma,p5_token_no_team,Serie A
 39090,Adrian Bernabe,Parma Calcio 1913,68901,Adrián Bernabé García,Parma,p5_token_no_team,Serie A
 404060,Mariano Troilo,Parma Calcio 1913,728068,Mariano Emir Troilo,Parma,p5_token_no_team,Serie A
+10322,Dodô,Fiorentina,16057,Domilson Cordeiro dos Santos,Fiorentina,manual,Serie A
 6301,Youssef En-Nesyri,Fenerbahçe,11846,Youssef En-Nesyri,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig
 47593,Jayden Oosterwolde,Fenerbahçe,33507,Jayden Oosterwolde,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig
 24903,Anthony Musaba,Fenerbahçe,32778,Anthony Musaba,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig
@@ -3355,6 +3409,8 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 5719,Asensio,Fenerbahçe,6751,Marco Asensio Willemsen,Fenerbahce,p3_token_same_team,Turquía – Süper Lig
 39444,Archie Brown,Fenerbahçe,31221,Archibald Norman Brown,Fenerbahce,manual,Turquía – Süper Lig
 9904,Fred,Fenerbahçe,12008,Frederico Rodrigues de Paul Santos,Fenerbahce,manual,Turquía – Süper Lig
+43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig
+43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig
 4718,Harvey Barnes,Newcastle United,18650,Harvey Barnes,Newcastle United,p1_exact_name_team,UEFA Champions League
 134092,Lewis Hall,Newcastle United,68884,Lewis Hall,Newcastle United,p1_exact_name_team,UEFA Champions League
 3308,Kieran Trippier,Newcastle United,5907,Kieran Trippier,Newcastle United,p1_exact_name_team,UEFA Champions League
