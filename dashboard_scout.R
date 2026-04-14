@@ -16,11 +16,8 @@ library(lubridate)
 library(scales)
 library(fmsb)
 
-username = "echazaro@clubamerica.com.mx"
-password = "gXrDvovd"
-
-# username = Sys.getenv("SB_USERNAME")
-# password = Sys.getenv("SB_PASSWORD")
+username = Sys.getenv("SB_USERNAME")
+password = Sys.getenv("SB_PASSWORD")
 
 # comps <- competitions(username,password)
 
