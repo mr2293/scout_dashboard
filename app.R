@@ -1594,8 +1594,7 @@ server <- function(input, output, session) {
       return(data.frame(Jugador = character(), Equipo = character(),
                         Liga = character(), Posicion = character(),
                         Edad = integer(), Similitud = numeric()))
-    same_pos <- pool |> dplyr::filter(primary_position == ppos)
-    pool_use <- if (nrow(same_pos) >= 6) same_pos else pool
+    pool_use <- pool
     M   <- as.matrix(pool_use[, metrics, drop = FALSE])
     idx <- match(selected_player(), pool_use$player_name)
     req(!is.na(idx))
