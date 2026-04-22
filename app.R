@@ -1819,7 +1819,7 @@ server <- function(input, output, session) {
       options   = list(
         pageLength = 10,
         dom        = "tp",
-        order      = list(list(5L, "desc"))
+        order      = list(list(6L, "desc"))
       )
     ) |>
       DT::formatStyle(
