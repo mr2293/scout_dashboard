@@ -1620,7 +1620,8 @@ server <- function(input, output, session) {
         Posicion       = primary_position,
         Edad           = Edad,
         Similitud      = round(pmin(pmax(similarity, -1), 1), 3)
-      )
+      ) |>
+      dplyr::slice_head(n = 150)
   })
 
   # ---- Filtered similarity table ----
