@@ -1591,20 +1591,64 @@ server <- function(input, output, session) {
     built   <- build_similarity_pool(dat_all, pg)
     pool    <- built$pool; metrics <- built$metric_cols
     if (length(metrics) < 5 || nrow(pool) < 10)
-      return(data.frame(Jugador = character(), Equipo = character(), Similitud = numeric()))
+      return(data.frame(Jugador = character(), Equipo = character(),
+                        Liga = character(), Posicion = character(),
+                        Edad = integer(), Similitud = numeric()))
     same_pos <- pool |> dplyr::filter(primary_position == ppos)
     pool_use <- if (nrow(same_pos) >= 6) same_pos else pool
     M   <- as.matrix(pool_use[, metrics, drop = FALSE])
     idx <- match(selected_player(), pool_use$player_name)
     req(!is.na(idx))
     sims <- cosine_sim_to_i(M, idx)
+
+    meta <- dat_all |>
+      dplyr::distinct(player_name, .keep_all = TRUE) |>
+      dplyr::select(player_name, .league_label, birth_date)
+
     pool_use |>
       dplyr::mutate(similarity = sims) |>
-      dplyr::filter(player_name != selected_player(), similarity >= 0.45) |>
+      dplyr::filter(player_name != selected_player()) |>
+      dplyr::left_join(meta, by = "player_name") |>
+      dplyr::mutate(Edad = as.integer(compute_age_years(birth_date))) |>
       dplyr::arrange(dplyr::desc(similarity)) |>
-      dplyr::transmute(Jugador = player_name, Equipo = team_name,
-                       Similitud = round(pmin(pmax(similarity, -1), 1), 3)) |>
-      dplyr::slice_head(n = 5)
+      dplyr::transmute(
+        Jugador   = player_name,
+        Equipo    = team_name,
+        Liga      = .league_label,
+        Posicion  = primary_position,
+        Edad      = Edad,
+        Similitud = round(pmin(pmax(similarity, -1), 1), 3)
+      )
+  })
+
+  # ---- Filtered similarity table ----
+  similar_players_sc_filtered <- reactive({
+    df <- similar_players_sc()
+    if (nrow(df) == 0) return(df)
+
+    league_sel <- input$sim_league_filter
+    pos_sel    <- input$sim_pos_filter
+    age_range  <- input$sim_age_filter
+    min_sim    <- input$sim_min_similarity
+
+    if (length(league_sel) > 0 && !("" %in% league_sel))
+      df <- dplyr::filter(df, Liga %in% league_sel)
+    if (!is.null(pos_sel) && nzchar(pos_sel))
+      df <- dplyr::filter(df, Posicion == pos_sel)
+    if (!is.null(age_range) && length(age_range) == 2)
+      df <- dplyr::filter(df, Edad >= age_range[1], Edad <= age_range[2])
+    if (!is.null(min_sim) && is.numeric(min_sim))
+      df <- dplyr::filter(df, Similitud >= min_sim)
+
+    df
+  })
+
+  observe({
+    df <- similar_players_sc()
+    positions <- sort(unique(df$Posicion))
+    updateSelectInput(session, "sim_pos_filter",
+                      choices = c("Todas" = "", positions),
+                      selected = "")
   })
   
   output$second_row <- renderUI({
@@ -1614,13 +1658,29 @@ server <- function(input, output, session) {
                tags$h5("Jugadores más similares"),
                tags$p(style="color:#666;font-size:0.85em;margin:2px 0 4px;",
                       "Similitud calculada usando métricas de StatsBomb y datos físicos de SkillCorner."),
-               tableOutput("similar_players_sc_table"),
+               fluidRow(
+                 column(4, selectizeInput("sim_league_filter", "Liga",
+                                          choices  = names(league_map),
+                                          selected = NULL,
+                                          multiple = TRUE,
+                                          options  = list(placeholder = "Todas las ligas"))),
+                 column(4, selectInput("sim_pos_filter", "Posición",
+                                       choices  = c("Todas" = ""),
+                                       selected = "")),
+                 column(4, numericInput("sim_min_similarity", "Similitud mín.",
+                                        value = 0.45, min = -1, max = 1, step = 0.05))
+               ),
+               fluidRow(
+                 column(8, sliderInput("sim_age_filter", "Rango de edad",
+                                       min = 15, max = 45, value = c(15, 45),
+                                       step = 1, width = "100%"))
+               ),
+               DT::DTOutput("similar_players_sc_table"),
                tags$small(HTML(
                  "Interpretación (coseno):<br>
              <b>≥ 0.60</b> = Muy similares &nbsp;|&nbsp;
              <b>0.60–0.45</b> = Similares &nbsp;|&nbsp;
-             <b>< 0.45</b> = Baja similitud<br>
-             <b>NOTA:</b> Si no aparecen jugadores, no hay similitud ≥ 0.45."
+             <b>< 0.45</b> = Baja similitud"
                ))
              )
       ),
@@ -1742,10 +1802,32 @@ server <- function(input, output, session) {
     striped=TRUE, hover=TRUE, bordered=TRUE, align="lrr", width="100%"
   )
   
-  output$similar_players_sc_table <- renderTable(
-    { req(selected_player()); similar_players_sc() },
-    striped=TRUE, hover=TRUE, bordered=TRUE, align="lrr", width="100%"
-  )
+  output$similar_players_sc_table <- DT::renderDT({
+    req(selected_player())
+    df <- similar_players_sc_filtered()
+    if (nrow(df) == 0) {
+      return(DT::datatable(
+        data.frame(Mensaje = "No hay jugadores con los filtros seleccionados."),
+        options = list(dom = "t"), rownames = FALSE
+      ))
+    }
+    DT::datatable(
+      df,
+      rownames  = FALSE,
+      options   = list(
+        pageLength = 10,
+        dom        = "tp",
+        order      = list(list(5L, "desc"))
+      )
+    ) |>
+      DT::formatStyle(
+        "Similitud",
+        backgroundColor = DT::styleInterval(
+          c(0.45, 0.60),
+          c("#ffcccc", "#fff3cd", "#ccffcc")
+        )
+      )
+  })
   
   # ============================================================
   # SKILLCORNER TABLE
