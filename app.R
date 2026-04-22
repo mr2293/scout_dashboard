@@ -1593,8 +1593,9 @@ server <- function(input, output, session) {
     pool    <- built$pool; metrics <- built$metric_cols
     if (length(metrics) < 5 || nrow(pool) < 10)
       return(data.frame(Jugador = character(), Equipo = character(),
-                        Liga = character(), Posicion = character(),
-                        Edad = integer(), Similitud = numeric()))
+                        Liga = character(), Grupo_Posicion = character(),
+                        Posicion = character(), Edad = integer(),
+                        Similitud = numeric()))
     pool_use <- pool
     M   <- as.matrix(pool_use[, metrics, drop = FALSE])
     idx <- match(selected_player(), pool_use$player_name)
@@ -1612,12 +1613,13 @@ server <- function(input, output, session) {
       dplyr::mutate(Edad = as.integer(compute_age_years(birth_date))) |>
       dplyr::arrange(dplyr::desc(similarity)) |>
       dplyr::transmute(
-        Jugador   = player_name,
-        Equipo    = team_name,
-        Liga      = .league_label,
-        Posicion  = primary_position,
-        Edad      = Edad,
-        Similitud = round(pmin(pmax(similarity, -1), 1), 3)
+        Jugador        = player_name,
+        Equipo         = team_name,
+        Liga           = .league_label,
+        Grupo_Posicion = position_group,
+        Posicion       = primary_position,
+        Edad           = Edad,
+        Similitud      = round(pmin(pmax(similarity, -1), 1), 3)
       )
   })
 
@@ -1634,7 +1636,7 @@ server <- function(input, output, session) {
     if (length(league_sel) > 0 && !("" %in% league_sel))
       df <- dplyr::filter(df, Liga %in% league_sel)
     if (!is.null(pos_sel) && nzchar(pos_sel))
-      df <- dplyr::filter(df, Posicion == pos_sel)
+      df <- dplyr::filter(df, Grupo_Posicion == pos_sel)
     if (!is.null(age_range) && length(age_range) == 2)
       df <- dplyr::filter(df, Edad >= age_range[1], Edad <= age_range[2])
     if (!is.null(min_sim) && is.numeric(min_sim))
@@ -1645,7 +1647,7 @@ server <- function(input, output, session) {
 
   observe({
     df <- similar_players_sc()
-    positions <- sort(unique(df$Posicion))
+    positions <- sort(unique(df$Grupo_Posicion))
     updateSelectInput(session, "sim_pos_filter",
                       choices = c("Todas" = "", positions),
                       selected = "")
