@@ -1604,7 +1604,7 @@ server <- function(input, output, session) {
 
     meta <- dat_all |>
       dplyr::distinct(player_name, .keep_all = TRUE) |>
-      dplyr::select(player_name, .league_label, birth_date)
+      dplyr::select(player_name, .league_label, birth_date, position_group)
 
     pool_use |>
       dplyr::mutate(similarity = sims) |>
