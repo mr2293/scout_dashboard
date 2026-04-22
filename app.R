@@ -1546,8 +1546,9 @@ server <- function(input, output, session) {
   }, ignoreInit = TRUE)
 
   # ---- Similarity ----
-  build_similarity_pool <- function(dat, pg) {
-    df <- dplyr::filter(dat, position_group == pg)
+  build_similarity_pool <- function(dat, pg = NULL) {
+    df <- if (is.null(pg)) dplyr::filter(dat, position_group != "Portero")
+          else dplyr::filter(dat, position_group == pg)
     id_cols <- c("player_name","team_name","primary_position","position_group",
                  "player_season_90s_played","player_season_minutes",
                  "league","season","country","competition","birth_date",
@@ -1588,7 +1589,7 @@ server <- function(input, output, session) {
     req(nrow(sel_row) == 1)
     pg   <- sel_row$position_group[1]
     ppos <- sel_row$primary_position[1]
-    built   <- build_similarity_pool(dat_all, pg)
+    built   <- build_similarity_pool(dat_all)
     pool    <- built$pool; metrics <- built$metric_cols
     if (length(metrics) < 5 || nrow(pool) < 10)
       return(data.frame(Jugador = character(), Equipo = character(),
