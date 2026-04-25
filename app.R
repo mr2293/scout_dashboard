@@ -25,6 +25,7 @@ library(rlang)
 library(stringr)
 library(tidyr)
 library(shinythemes)
+library(bslib)
 library(fmsb)
 library(scales)
 library(DT)
@@ -1082,74 +1083,249 @@ all_players_df_from_cache <- function(scout_list, league_map) {
 # UI
 # ============================================================
 ui <- fluidPage(
-  theme = shinytheme("cerulean"),
+  theme = bslib::bs_theme(
+    version   = 5,
+    base_font = bslib::font_google("Inter"),
+    primary   = "#0d1b36",
+    secondary = "#6b7280",
+    bg        = "#eef0f4",
+    fg        = "#1e2533",
+    "link-color" = "#1a2f5a"
+  ),
+
   tags$head(tags$style(HTML("
+
+    /* ── GLOBAL ──────────────────────────────────────────── */
+    body { font-family: 'Inter', sans-serif !important; }
+
+    /* ── HEADER ──────────────────────────────────────────── */
+    #app-header {
+      background: linear-gradient(135deg, #0a1628 0%, #1a2f5a 100%);
+      margin: -15px -15px 0 -15px;
+      padding: 20px 28px 15px;
+      border-bottom: 3px solid #FFD100;
+      margin-bottom: 0;
+    }
+    #app-header h2 {
+      color: #ffffff !important;
+      font-weight: 700;
+      font-size: 1.55rem;
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    #app-header .app-subtitle {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.78rem;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── FILTER CARD ─────────────────────────────────────── */
+    #filter-panel {
+      background: #ffffff;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      padding: 18px 24px 10px;
+      margin-bottom: 20px;
+    }
+
+    /* ── FORM LABELS ─────────────────────────────────────── */
+    .control-label, label {
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.55px;
+      color: #9ca3af !important;
+      margin-bottom: 4px !important;
+    }
+
+    /* ── SELECT / SELECTIZE ──────────────────────────────── */
+    .selectize-input {
+      border: 1.5px solid #d1d5db !important;
+      border-radius: 7px !important;
+      box-shadow: none !important;
+      font-size: 0.87rem !important;
+      padding: 6px 10px !important;
+      background: #f9fafb !important;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .selectize-input.focus {
+      border-color: #1a2f5a !important;
+      box-shadow: 0 0 0 3px rgba(26,47,90,0.12) !important;
+      background: #ffffff !important;
+    }
+    select.form-control, select.form-select {
+      border: 1.5px solid #d1d5db !important;
+      border-radius: 7px !important;
+      font-size: 0.87rem !important;
+      background: #f9fafb !important;
+      padding: 6px 10px !important;
+    }
+    select.form-control:focus, select.form-select:focus {
+      border-color: #1a2f5a !important;
+      box-shadow: 0 0 0 3px rgba(26,47,90,0.12) !important;
+    }
+
+    /* ── SLIDERS ─────────────────────────────────────────── */
+    .irs--shiny .irs-bar {
+      background: #1a2f5a !important;
+      border-top: 1px solid #1a2f5a !important;
+      border-bottom: 1px solid #1a2f5a !important;
+    }
+    .irs--shiny .irs-from,
+    .irs--shiny .irs-to,
+    .irs--shiny .irs-single { background-color: #1a2f5a !important; }
+    .irs--shiny .irs-handle > i:first-child {
+      background-color: #ffffff !important;
+      border: 2px solid #1a2f5a !important;
+    }
+
+    /* ── SECTION DIVIDERS ────────────────────────────────── */
+    hr {
+      border: none !important;
+      border-top: 2px solid #e5e7eb !important;
+      margin: 22px 0 !important;
+      opacity: 1 !important;
+    }
+
+    /* ── SECTION HEADINGS ────────────────────────────────── */
+    h4 { color: #0a1628 !important; font-weight: 700 !important; }
+    h5 { color: #0a1628 !important; font-weight: 700 !important; }
+
+    /* ── TABS ────────────────────────────────────────────── */
+    .nav-tabs { border-bottom: 2px solid #e5e7eb !important; }
+    .nav-tabs .nav-link {
+      color: #6b7280 !important;
+      font-size: 0.83rem !important;
+      font-weight: 500 !important;
+      border: none !important;
+      border-bottom: 2px solid transparent !important;
+      padding: 8px 14px !important;
+      margin-bottom: -2px !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      transition: color 0.15s;
+    }
+    .nav-tabs .nav-link:hover { color: #1a2f5a !important; }
+    .nav-tabs .nav-link.active {
+      color: #0a1628 !important;
+      font-weight: 600 !important;
+      border-bottom: 2px solid #FFD100 !important;
+      background: transparent !important;
+    }
+
+    /* ── DATA TABLES ─────────────────────────────────────── */
     .dataTables_wrapper { width: 100% !important; }
-    table.dataTable       { width: 100% !important; }
-    .sc-section-header    { font-size: 1.1em; font-weight: bold;
-                            color: #1a5276; margin-top: 8px; }
+    table.dataTable      { width: 100% !important; }
+    table.dataTable thead th {
+      background-color: #0a1628 !important;
+      color: #ffffff !important;
+      font-size: 0.75rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none !important;
+    }
+    table.dataTable tbody tr:hover td { background-color: #f0f4ff !important; }
+
+    /* ── SKILLCORNER CARD ────────────────────────────────── */
+    #sc-section {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 20px 24px;
+      margin-top: 4px;
+    }
+
+    /* ── SC SECTION HEADER ───────────────────────────────── */
+    .sc-section-header {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: #0a1628;
+      margin-top: 8px;
+    }
+
+    /* ── NUMERIC INPUT ───────────────────────────────────── */
+    input[type='number'].form-control {
+      border: 1.5px solid #d1d5db !important;
+      border-radius: 7px !important;
+      font-size: 0.87rem !important;
+      background: #f9fafb !important;
+    }
   "))),
-  
-  titlePanel("Scouting Dashboard — Club América"),
-  
-  fluidRow(
-    column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
-    column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
-    column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
-    column(6, selectizeInput(
-      "player_search", "Buscar jugador", choices=NULL, multiple=FALSE,
-      options=list(placeholder="Escribe un nombre…", selectOnTab=TRUE,
-                   maxOptions=5000, openOnFocus=TRUE)
-    ))
+
+  # ── Header ────────────────────────────────────────────────
+  tags$div(
+    id = "app-header",
+    tags$h2("Scouting Dashboard — Club América"),
+    tags$div(class = "app-subtitle",
+             "Análisis de rendimiento · StatsBomb + SkillCorner")
   ),
-  
-  fluidRow(
-    column(2, selectInput("pos_filter", "Posición", choices="Todas", selected="Todas")),
-    column(2, selectInput("country_filter", "Nacionalidad", choices="Todas", selected="Todas")),
-    column(6,
-           sliderInput("min_minutes","Minutos jugados", min=0, max=4000,
-                       value=c(0,4000), step=50, width="100%"),
-           sliderInput("age_range","Rango de edad", min=15, max=45,
-                       value=c(17,45), step=1, width="100%")
+
+  # ── Filters ───────────────────────────────────────────────
+  tags$div(
+    id = "filter-panel",
+    fluidRow(
+      column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
+      column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
+      column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
+      column(6, selectizeInput(
+        "player_search", "Buscar jugador", choices=NULL, multiple=FALSE,
+        options=list(placeholder="Escribe un nombre…", selectOnTab=TRUE,
+                     maxOptions=5000, openOnFocus=TRUE)
+      ))
     ),
-    column(2, "")
+    fluidRow(
+      column(2, selectInput("pos_filter", "Posición", choices="Todas", selected="Todas")),
+      column(2, selectInput("country_filter", "Nacionalidad", choices="Todas", selected="Todas")),
+      column(6,
+             sliderInput("min_minutes","Minutos jugados", min=0, max=4000,
+                         value=c(0,4000), step=50, width="100%"),
+             sliderInput("age_range","Rango de edad", min=15, max=45,
+                         value=c(17,45), step=1, width="100%")
+      ),
+      column(2, "")
+    )
   ),
-  
+
   tags$hr(),
-  
+
   fluidRow(
     column(7, uiOutput("tabs_ui")),
     column(5, uiOutput("radar_panel"))
   ),
-  
+
   uiOutput("second_row"),
-  
+
   tags$hr(),
-  
-  # ---- SkillCorner section ----
+
+  # ── SkillCorner section ────────────────────────────────────
   fluidRow(
     column(12,
-           tags$h4("SkillCorner — Datos Físicos y de Game Intelligence"),
-           tags$p(
-             style="color:#555; font-size:0.9em; margin-bottom:4px;",
-             "Percentiles vs jugadores de la misma posición. ",
-             "Game Intelligence solo disponible para Liga MX. ",
-             "Porteros no incluidos en datos SkillCorner."
-           ),
-           tags$details(
-             style="margin-bottom:8px;",
-             tags$summary(
-               style="cursor:pointer; font-size:0.85em; color:#1a5276; font-weight:600;",
-               "Ligas con datos SkillCorner disponibles. (No todas las ligas incluyen todos los equipos ni todos los jugadores)"
-             ),
-             tags$ul(
-               style="margin:4px 0 0 16px; padding:0; font-size:0.85em; color:#333;
-                 columns:3; list-style-type:disc;",
-               lapply(sort(SC_LEAGUES), function(lg) tags$li(lg))
-             )
-           ),
-           uiOutput("sc_no_data_msg"),
-           uiOutput("skillcorner_ui")
+      tags$div(
+        id = "sc-section",
+        tags$h4("SkillCorner — Datos Físicos y de Game Intelligence"),
+        tags$p(
+          style = "color:#6b7280; font-size:0.88em; margin-bottom:6px;",
+          "Percentiles vs jugadores de la misma posición. ",
+          "Game Intelligence solo disponible para Liga MX. ",
+          "Porteros no incluidos en datos SkillCorner."
+        ),
+        tags$details(
+          style = "margin-bottom:10px;",
+          tags$summary(
+            style = "cursor:pointer; font-size:0.83em; color:#1a2f5a; font-weight:600;",
+            "Ligas con datos SkillCorner disponibles (no todas las ligas incluyen todos los equipos ni jugadores)"
+          ),
+          tags$ul(
+            style = "margin:6px 0 0 16px; padding:0; font-size:0.83em; color:#4b5563;
+                     columns:3; list-style-type:disc;",
+            lapply(sort(SC_LEAGUES), function(lg) tags$li(lg))
+          )
+        ),
+        uiOutput("sc_no_data_msg"),
+        uiOutput("skillcorner_ui")
+      )
     )
   )
 )
