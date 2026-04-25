@@ -1086,7 +1086,7 @@ ui <- fluidPage(
   theme = bslib::bs_theme(
     version      = 5,
     base_font    = bslib::font_google("DM Sans"),
-    heading_font = bslib::font_google("Playfair Display"),
+    heading_font = bslib::font_google("Space Grotesk"),
     primary      = "#0d1b36",
     secondary    = "#6b7280",
     bg           = "#eef0f4",
@@ -1099,7 +1099,7 @@ ui <- fluidPage(
     /* ── GLOBAL ──────────────────────────────────────────── */
     /* base_font/heading_font from bs_theme handle font-face loading */
     body { font-size: 0.92rem; letter-spacing: 0.01em; }
-    p, li, td, th, label, .control-label { font-family: 'DM Sans', sans-serif !important; }
+    p, li, td, th, label, .control-label { font-family: 'DM Sans', sans-sans-serif !important; }
 
     /* ── HEADER ──────────────────────────────────────────── */
     #app-header {
@@ -1110,13 +1110,12 @@ ui <- fluidPage(
       margin-bottom: 0;
     }
     #app-header h2 {
-      font-family: 'Playfair Display', serif !important;
+      font-family: 'Space Grotesk', sans-serif !important;
       color: #ffffff !important;
       font-weight: 700;
       font-size: 1.6rem;
-      font-style: italic;
       margin: 0;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.5px;
     }
     #app-header .app-subtitle {
       color: rgba(255,255,255,0.55);
@@ -1194,8 +1193,8 @@ ui <- fluidPage(
     }
 
     /* ── SECTION HEADINGS ────────────────────────────────── */
-    h4 { font-family: 'Playfair Display', serif !important; color: #0a1628 !important; font-weight: 700 !important; }
-    h5 { font-family: 'Playfair Display', serif !important; color: #0a1628 !important; font-weight: 700 !important; }
+    h4 { font-family: 'Space Grotesk', sans-serif !important; color: #0a1628 !important; font-weight: 700 !important; }
+    h5 { font-family: 'Space Grotesk', sans-serif !important; color: #0a1628 !important; font-weight: 700 !important; }
 
     /* ── TABS ────────────────────────────────────────────── */
     .nav-tabs { border-bottom: 2px solid #e5e7eb !important; }
