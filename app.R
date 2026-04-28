@@ -2005,9 +2005,16 @@ server <- function(input, output, session) {
       df,
       rownames  = FALSE,
       options   = list(
-        pageLength = 10,
-        dom        = "tp",
-        order      = list(list(7L, "desc"))
+        pageLength  = 10,
+        dom         = "tp",
+        scrollX     = TRUE,
+        order       = list(list(7L, "desc")),
+        columnDefs  = list(
+          list(visible = FALSE, targets = 3),   # hide Grupo_Posicion (shown in filter)
+          list(width = "90px",  targets = 5),   # Edad
+          list(width = "80px",  targets = 6),   # Minutos
+          list(width = "85px",  targets = 7)    # Similitud
+        )
       )
     ) |>
       DT::formatStyle(
