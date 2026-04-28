@@ -1775,7 +1775,7 @@ server <- function(input, output, session) {
       return(data.frame(Jugador = character(), Equipo = character(),
                         Liga = character(), Grupo_Posicion = character(),
                         Posicion = character(), Edad = integer(),
-                        Similitud = numeric()))
+                        Minutos = integer(), Similitud = numeric()))
     pool_use <- pool
     M   <- as.matrix(pool_use[, metrics, drop = FALSE])
     idx <- match(selected_player(), pool_use$player_name)
@@ -1799,6 +1799,7 @@ server <- function(input, output, session) {
         Grupo_Posicion = position_group,
         Posicion       = primary_position,
         Edad           = Edad,
+        Minutos        = as.integer(round(player_season_90s_played * 90)),
         Similitud      = round(pmin(pmax(similarity, -1), 1), 3)
       ) |>
       dplyr::slice_head(n = 150)
@@ -1809,10 +1810,11 @@ server <- function(input, output, session) {
     df <- similar_players_sc()
     if (nrow(df) == 0) return(df)
 
-    league_sel <- input$sim_league_filter
-    pos_sel    <- input$sim_pos_filter
-    age_range  <- input$sim_age_filter
-    min_sim    <- input$sim_min_similarity
+    league_sel  <- input$sim_league_filter
+    pos_sel     <- input$sim_pos_filter
+    age_range   <- input$sim_age_filter
+    min_sim     <- input$sim_min_similarity
+    min_minutes <- input$sim_min_minutes
 
     if (length(league_sel) > 0 && !("" %in% league_sel))
       df <- dplyr::filter(df, Liga %in% league_sel)
@@ -1820,6 +1822,8 @@ server <- function(input, output, session) {
       df <- dplyr::filter(df, Grupo_Posicion == pos_sel)
     if (!is.null(age_range) && length(age_range) == 2)
       df <- dplyr::filter(df, Edad >= age_range[1], Edad <= age_range[2])
+    if (!is.null(min_minutes) && is.numeric(min_minutes) && min_minutes > 0)
+      df <- dplyr::filter(df, Minutos >= min_minutes)
     if (!is.null(min_sim) && is.numeric(min_sim))
       df <- dplyr::filter(df, Similitud >= min_sim)
 
@@ -1854,9 +1858,12 @@ server <- function(input, output, session) {
                                         value = 0.45, min = -1, max = 1, step = 0.05))
                ),
                fluidRow(
-                 column(8, sliderInput("sim_age_filter", "Rango de edad",
+                 column(6, sliderInput("sim_age_filter", "Rango de edad",
                                        min = 15, max = 45, value = c(15, 45),
-                                       step = 1, width = "100%"))
+                                       step = 1, width = "100%")),
+                 column(6, sliderInput("sim_min_minutes", "Minutos mín. jugados",
+                                       min = 0, max = 3000, value = 0,
+                                       step = 100, width = "100%"))
                ),
                DT::DTOutput("similar_players_sc_table"),
                tags$small(HTML(
@@ -2000,7 +2007,7 @@ server <- function(input, output, session) {
       options   = list(
         pageLength = 10,
         dom        = "tp",
-        order      = list(list(6L, "desc"))
+        order      = list(list(7L, "desc"))
       )
     ) |>
       DT::formatStyle(
