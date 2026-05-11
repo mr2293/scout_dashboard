@@ -1874,7 +1874,20 @@ server <- function(input, output, session) {
                ))
              )
       ),
-      column(5, tableOutput("player_stats_table"))
+      column(5, {
+        has_compare <- !is.null(input$compare_player) && nzchar(input$compare_player)
+        if (has_compare) {
+          tagList(
+            tags$p(style = "font-weight:700; margin-bottom:4px;", selected_player()),
+            tableOutput("player_stats_table"),
+            tags$hr(style = "margin:12px 0;"),
+            tags$p(style = "font-weight:700; margin-bottom:4px;", input$compare_player),
+            tableOutput("compare_stats_table")
+          )
+        } else {
+          tableOutput("player_stats_table")
+        }
+      })
     )
   })
   
@@ -1991,6 +2004,42 @@ server <- function(input, output, session) {
     { req(selected_player()); player_stats_tbl() },
     striped=TRUE, hover=TRUE, bordered=TRUE, align="lrr", width="100%"
   )
+
+  compare_stats_tbl <- reactive({
+    req(input$compare_player, nzchar(input$compare_player))
+    dat_all <- all_players_df()
+    row <- dat_all |> dplyr::filter(player_name == input$compare_player) |> dplyr::slice_head(n = 1)
+    req(nrow(row) == 1)
+
+    age_val  <- compute_age_years(row$birth_date)
+    age_str  <- if (is.finite(age_val) && age_val <= 100) paste0(age_val, " años") else "–"
+    lg_lbl   <- if (".league_label" %in% names(row)) as.character(row$.league_label[1]) else "–"
+    mins_val <- if ("player_season_minutes" %in% names(row)) fmt_num(row$player_season_minutes, 0) else "–"
+
+    meta <- tibble::tribble(
+      ~Métrica,          ~Valor,                                      ~Percentil,
+      "Nombre",          as.character(row$player_name),               "",
+      "Equipo",          as.character(row$team_name),                 "",
+      "Liga",            lg_lbl,                                      "",
+      "Nacimiento",      as.character(row$birth_date),                "",
+      "Edad",            age_str,                                     "",
+      "90s Jugados",     fmt_num(row$player_season_90s_played, 1),    "",
+      "Minutos Jugados", mins_val,                                    ""
+    )
+
+    stat_rows <- build_position_stat_rows_with_percentiles(row, dat_all) |>
+      dplyr::mutate(Valor = as.character(Valor), Percentil = as.character(Percentil))
+
+    dplyr::bind_rows(
+      meta |> dplyr::mutate(Valor = as.character(Valor), Percentil = as.character(Percentil)),
+      stat_rows
+    )
+  })
+
+  output$compare_stats_table <- renderTable(
+    { req(input$compare_player, nzchar(input$compare_player)); compare_stats_tbl() },
+    striped=TRUE, hover=TRUE, bordered=TRUE, align="lrr", width="100%"
+  )
   
   output$similar_players_sc_table <- DT::renderDT({
     req(selected_player())
@@ -2003,6 +2052,7 @@ server <- function(input, output, session) {
     }
     DT::datatable(
       df,
+      selection = "single",
       rownames  = FALSE,
       options   = list(
         pageLength  = 10,
@@ -2025,6 +2075,18 @@ server <- function(input, output, session) {
         )
       )
   })
+
+  observeEvent(input$similar_players_sc_table_rows_selected, {
+    row_idx <- input$similar_players_sc_table_rows_selected
+    if (!length(row_idx)) return()
+    df <- similar_players_sc_filtered()
+    if (row_idx > nrow(df)) return()
+    clicked <- df$Jugador[row_idx]
+    if (!is.null(clicked) && nzchar(clicked)) {
+      selected_player(clicked)
+      updateSelectizeInput(session, "player_search", selected = clicked)
+    }
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
   
   # ============================================================
   # SKILLCORNER TABLE
