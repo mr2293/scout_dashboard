@@ -1080,6 +1080,75 @@ all_players_df_from_cache <- function(scout_list, league_map) {
 }
 
 # ============================================================
+# TRANSFER DEDUPLICATION
+# Players who changed teams mid-season appear as two rows in the
+# bound data. For radar / stats table / similarity we merge them
+# into one row using a minutes-weighted average of per-90 stats.
+# Scatter plots read directly from the raw league catalog so they
+# keep both stints as separate data points (intentional).
+# ============================================================
+dedup_transfers <- function(df) {
+  if (!"player_id" %in% names(df)) return(df)
+
+  id_col <- "player_id"
+  counts <- table(df[[id_col]])
+  dup_ids <- names(counts[counts > 1])
+  if (length(dup_ids) == 0) return(df)
+
+  minutes_col <- if ("player_season_minutes"  %in% names(df)) "player_season_minutes"  else NULL
+  nineties_col <- if ("player_season_90s_played" %in% names(df)) "player_season_90s_played" else NULL
+
+  numeric_cols <- names(df)[sapply(df, is.numeric)]
+  # Don't average ID-like columns
+  skip_cols <- c("player_id", "sc_player_id", "country_id", "season_id", "competition_id")
+  numeric_cols <- setdiff(numeric_cols, skip_cols)
+
+  singles <- df[!df[[id_col]] %in% dup_ids, ]
+
+  merged_list <- lapply(dup_ids, function(pid) {
+    rows <- df[df[[id_col]] == pid, ]
+
+    # Weights = minutes played per stint; fall back to equal weight
+    weights <- if (!is.null(minutes_col) && minutes_col %in% names(rows)) {
+      w <- rows[[minutes_col]]
+      w[is.na(w)] <- 0
+      if (sum(w) == 0) rep(1, nrow(rows)) else w
+    } else {
+      rep(1, nrow(rows))
+    }
+
+    # Metadata: take from the row with the most minutes
+    base_row <- rows[which.max(weights), , drop = FALSE]
+
+    # Weighted-average all numeric stats
+    for (col in numeric_cols) {
+      vals <- rows[[col]]
+      if (all(is.na(vals))) next
+      w_valid <- weights
+      w_valid[is.na(vals)] <- 0
+      if (sum(w_valid) == 0) next
+      base_row[[col]] <- sum(vals * w_valid, na.rm = TRUE) / sum(w_valid)
+    }
+
+    # Sum minutes and 90s across all stints
+    if (!is.null(minutes_col)  && minutes_col  %in% names(rows))
+      base_row[[minutes_col]]  <- sum(rows[[minutes_col]],  na.rm = TRUE)
+    if (!is.null(nineties_col) && nineties_col %in% names(rows))
+      base_row[[nineties_col]] <- sum(rows[[nineties_col]], na.rm = TRUE)
+
+    # Concatenate team names and leagues so provenance is visible
+    teams   <- unique(rows$team_name[!is.na(rows$team_name)])
+    leagues <- unique(rows$.league_label[!is.na(rows$.league_label)])
+    base_row$team_name    <- paste(teams,   collapse = " / ")
+    base_row$.league_label <- paste(leagues, collapse = " / ")
+
+    base_row
+  })
+
+  dplyr::bind_rows(singles, dplyr::bind_rows(merged_list))
+}
+
+# ============================================================
 # METRIC PERCENTILES (computed once at startup)
 # Used by chatbot to translate scouting terms into data thresholds.
 # ============================================================
@@ -1409,7 +1478,7 @@ server <- function(input, output, session) {
   })
   
   # ---- All players across all leagues (for radar, similarity) ----
-  all_players_df <- reactive(all_players_df_from_cache(scout, league_map))
+  all_players_df <- reactive(dedup_transfers(all_players_df_from_cache(scout, league_map)))
   
   # ---- All players enriched with SC physical cols (for SC-based similarity) ----
   # Merges physical SC columns from joined_leagues onto the SB player rows by name.

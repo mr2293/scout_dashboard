@@ -249,7 +249,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 48307,Carlos Valenzuela,Querétaro,33625,Carlos Fernando Valenzuela,Querétaro Fútbol Club,p3_token_same_team,Liga MX
 30024,Alejandro Gómez,Tijuana,33627,Jesús Alejandro Gómez Molina,Xoloitcuintles Club Tijuana,p3_token_same_team,Liga MX
 51969,Jackson Porozo,Tijuana,34258,Jackson Gabriel Porozo Vernaza,Xoloitcuintles Club Tijuana,p3_token_same_team,Liga MX
-37360,Federico Pereira,Toluca,34352,Andrés Federico Pereira Castelnoble,Deportivo Toluca Fútbol Club,p3_token_same_team,Liga MX
 44850,Jhojan Julio,Querétaro,34399,Jhojan Esmaides  Julio Palacios,Querétaro Fútbol Club,p3_token_same_team,Liga MX
 28207,Sebastián Córdova,Tigres UANL,34764,Francisco Sebastián Córdova Reyes,Club de Fútbol Tigres de la UNAL,p3_token_same_team,Liga MX
 36167,Ramón Juárez,América,34766,Ramón Juárez Del Castillo,Club América,p3_token_same_team,Liga MX
@@ -453,6 +452,16 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 33360,Morad,Tijuana,25644,Mourad Daoudi El Ghezouani,Xoloitcuintles Club Tijuana,manual,Liga MX
 482805,D.Ramírez Castillo,Pumas UNAM,1018107,Dennis Yael Ramírez Castillo,Club Universidad Nacional,manual,Liga MX
 195724,Alemão,Pachuca,142458,Alexandre Zurawski,Club de Fútbol Pachuca,manual,Liga MX
+37360,Federico Pereira,Toluca,1018138,Andres Pereira,Deportivo Toluca Fútbol Club,manual,Liga MX
+37360,Federico Pereira,Toluca,34352,Andrés Federico Pereira Castelnoble,Deportivo Toluca Fútbol Club,manual,Liga MX
+43478,Edgar López,Tigres UANL,34835,Edgar Iván López,Club de Fútbol Tigres de la UNAL,manual,Liga MX
+43622,Erik Lira,Cruz Azul,36149,Erick Antonio Lira Méndez,Cruz Azul Fútbol Club,manual,Liga MX
+29237,Robson Bambu,Atlético San Luis,30948,Robson Alves de Barros,Atlético de San Luis,manual,Liga MX
+25342,Helinho,Toluca,28353,Helio Júnio Nunes de Castro,Deportivo Toluca Fútbol Club,manual,Liga MX
+18784,Paulinho,Toluca,8496,João Paulo Dias Fernandes,Deportivo Toluca Fútbol Club,manual,Liga MX
+114730,Dudu,Mazatlán,43279,Luiz Eduardo Teodora da Silva,Mazatlán FC,manual,Liga MX
+44068,Nathan Silva,Pumas UNAM,25260,Nathanael Ananias da Silva,Club Universidad Nacional,manual,Liga MX
+123690,Vitinho,Tijuana,49308,Vitor Samuel Ferreira Arantes,Xoloitcuintles Club Tijuana,manual,Liga MX
 424480,Luis Ignacio Abraham,Banfield,843008,Luis Ignacio Abraham,CA Banfield,p1_exact_name_team,Argentina
 30803,Matko Mijael Miljevic,Huracán,28519,Matko Mijael Miljevic,Club Atlético Huracán,p1_exact_name_team,Argentina
 5521,Luis Jan Piers Advíncula Castrillón,Boca Juniors,6413,Luis Jan Piers Advíncula Castrillón,Club Atlético Boca Juniors,p1_exact_name_team,Argentina
@@ -1062,6 +1071,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 438317,Lautaro Godoy,Atlético Tucumán,840520,Lautaro Agustin Godoy,CA Tucuman,p5_token_no_team,Argentina
 424379,Rodrigo Agustín Colazo,Unión,843692,Rodrigo Augustin Colazo,Club Atlético Unión,p5_token_no_team,Argentina
 452624,Luca Regiardo,Newell's Old Boys,971399,Luca Reggiardo,Club Atlético Newell's Old Boys,p6_fuzzy_noTeam_0.024,Argentina
+424342,Jeremías Ezequiel	Lázaro,Instituto,810207,Jeremías Lázaro,Instituto AC Córdoba,manual,Argentina
 64207,José Andrés Hurtado Cheme,Red Bull Bragantino,38209,José Andrés Hurtado Cheme,Red Bull Bragantino,p1_exact_name_team,Brasil – Série A
 2988,Memphis Depay,Corinthians,7387,Memphis Depay,Sport Club Corinthians Paulista,p1_exact_name_team,Brasil – Série A
 7002,Rafael Tolói,São Paulo,8812,Rafael Tolói,São Paulo FC,p1_exact_name_team,Brasil – Série A
@@ -1385,7 +1395,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 17183,Allan,Flamengo,618,Allan Rodrigues de Souza,CR Flamengo,p3_token_same_team,Brasil – Série A
 122739,João Basso,Santos,61960,João Othavio Basso,Santos Futebol Clube,p3_token_same_team,Brasil – Série A
 271873,Deivid Washington,Santos,620543,Deivid Washington de Souza Eugênio,Santos Futebol Clube,p3_token_same_team,Brasil – Série A
-25159,Erick,Bahia,631808,Erick Da Costa Farias,Esporte Clube Bahia,p3_token_same_team,Brasil – Série A
 392795,Abner,EC Juventude,632549,Abner Salles da Silva,Juventude RS,p3_token_same_team,Brasil – Série A
 392971,Cristian,Mirassol Futebol Clube,632560,Cristian Renato Gonçalves Riquelme,Mirassol Futebol Clube,p3_token_same_team,Brasil – Série A
 392190,Janderson,EC Vitória,632573,Janderson de Carvalho Costa,EC Vitória,p3_token_same_team,Brasil – Série A
@@ -1461,6 +1470,47 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 11299,Chris Ramos,Botafogo,13942,Christopher Ramos De la Flor,Botafogo de Futebol e Regatas,manual,Brasil – Série A
 129800,Matheus Alexandre,Sc Do Recife,122012,Matheus Leonardo Sales Cardoso,SC do Recife,manual,Brasil – Série A
 44092,Léo Ortiz,Flamengo,24843,Leonardo Rech Ortiz,CR Flamengo,manual,Brasil – Série A
+25764,Nenê,EC Juventude,31535,Anderson Luis de Carvalho,Juventude RS,manual,Brasil – Série A
+25245,Caio Paulista,Atlético Mineiro,31671,Caio Fernando de Oliveira,Clube Atlético Mineiro,manual,Brasil – Série A
+27118,Gil,Santos,3921,Carlos Gilberto Nascimento Silva,Santos Futebol Clube,manual,Brasil – Série A
+27701,Cacá,Corinthians,31591,Carlos de Menezes Júnior,Sport Club Corinthians Paulista,manual,Brasil – Série A
+126449,Claudinho,EC Vitória,172955,Claudio Coelho Salvático,EC Vitória,manual,Brasil – Série A
+26473,Guga,Fluminense,31634,Claudio Rodrigues Gomes,Fluminense FC,manual,Brasil – Série A
+232339,Camutanga,EC Vitória,174160,Cleidson Andrade de Souza Silva,EC Vitória,manual,Brasil – Série A
+20824,Tchê Tchê,Vasco da Gama,12397,Danilo das Neves Pinheiro,CR Vasco da Gama,manual,Brasil – Série A
+31954,Dodi,Grêmio,31704,Douglas Moreira Fagundes,Grêmio FB Porto Alegrense,manual,Brasil – Série A
+25123,Dudu,Atlético Mineiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A
+25123,Dudu,Atlético Mineiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A
+25123,Dudu,Cruzeiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A
+25123,Dudu,Cruzeiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A
+25327,Ramires,Red Bull Bragantino,23980,Eric dos Santos Rodrigues,Red Bull Bragantino,manual,Brasil – Série A
+25159,Erick,Bahia,25176,Erick Luis Conrado Carvalho,Esporte Clube Bahia,manual,Brasil – Série A
+26557,Chico,Mirassol Futebol Clube,31644,Felipe Costa,Mirassol Futebol Clube,manual,Brasil – Série A
+18977,Tiquinho,Santos,13476,Francisco das Chagas Soares dos Santos,Santos Futebol Clube,manual,Brasil – Série A
+25178,Yago Pikachu,Fortaleza,25184,Glaybson Yago Souza Lisboa,Fortaleza EC,manual,Brasil – Série A
+435294,Gui Negão,Corinthians,828621,Guilherme William Silva Inacio,Sport Club Corinthians Paulista,manual,Brasil – Série A
+44723,Gustavo Mosquito,EC Vitória,32891,Gustavo Henric da Silva,EC Vitória,manual,Brasil – Série A
+436677,Gustavo Mancha,Fortaleza,978489,Gustavo Teixeira Lopes da Conceição,Fortaleza EC,manual,Brasil – Série A
+113297,Igor Cariús,Sc Do Recife,43397,Igor Aquino da Silva,SC do Recife,manual,Brasil – Série A
+170305,Jhon Jhon,Red Bull Bragantino,142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,manual,Brasil – Série A
+170305,Jhon Jhon,Red Bull Bragantino,142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,manual,Brasil – Série A
+473805,Zé Lucas,Sc Do Recife,1005311,José Lucas Gomes da Silva,SC do Recife,manual,Brasil – Série A
+25171,Romarinho,Sc Do Recife,28283,José Romário Silva de Souza,SC do Recife,manual,Brasil – Série A
+21236,Pepê,EC Vitória,31767,João Pedro Vilardi Pinto,EC Vitória,manual,Brasil – Série A
+271717,Tchoca,Corinthians,439492,João Pedro de Sousa Rodrigues,Sport Club Corinthians Paulista,manual,Brasil – Série A
+25259,Juninho Capixaba,Red Bull Bragantino,31657,Luis Antonio da Rocha Júnior,Red Bull Bragantino,manual,Brasil – Série A
+271556,Cuiabano,Botafogo,301488,Luis Eduardo Soares da Silva,Botafogo de Futebol e Regatas,manual,Brasil – Série A
+395580,Mateus Cocão,Vasco da Gama,181600,Mateus Carvalho dos Santos,CR Vasco da Gama,manual,Brasil – Série A
+129800,Matheus Alexandre,Sc Do Recife,25264,Matheus Alexandre Anastácio de Souza,SC do Recife,manual,Brasil – Série A
+211232,Matheus Bidu,Corinthians,175854,Matheus Lima Beltrão Oliveira,Sport Club Corinthians Paulista,manual,Brasil – Série A
+196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A
+196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A
+196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A
+25527,Marinho,Fortaleza,28342,Mário Sérgio Santos Costa,Fortaleza EC,manual,Brasil – Série A
+24016,Vitinho,Botafogo,29932,Victor Alexander da Silva,Botafogo de Futebol e Regatas,manual,Brasil – Série A
+405042,Vinicinho,Red Bull Bragantino,748003,Vinicius Mendonça Pereira,Red Bull Bragantino,manual,Brasil – Série A
+44089,Vitão,Internacional,30705,Vitor Eduardo da Silva Matos,SC Internacional,manual,Brasil – Série A
+26923,Vitinho,Internacional,25174,Vitor Hugo Naum dos Santos,SC Internacional,manual,Brasil – Série A
 444502,Sebastián Ramírez Maya,Fortaleza CEIF,927730,Sebastian Ramírez Maya,Fortaleza CEIF FC,p1_exact_name_team,Colombia
 407508,José Eduardo Bernal Chong,Deportivo Pasto,751436,José Eduardo Bernal Chong,AD Pasto,p1_exact_name_team,Colombia
 367202,Diego Hernández,Águilas Doradas,531854,Diego Hernández,Rionegro Aguilas,p1_exact_name_team,Colombia
@@ -2030,6 +2080,9 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 463054,Matías D'Alessandro Pinto Álvarez,La Serena,999836,Matías Pinto Álvarez,CD La Serena,p5_token_no_team,Chile
 35737,Dylan Patricio Zúñiga Valenzuela,Palestino,28428,Dilan Patricio Zúñiga Espinoza Valenzuela,Club Deportivo Palestino,manual,Chile
 102512,Maicol Andrés León Muñoz,Huachipato,43535,Maicol Andrés León Muñoz,Club Deportivo Huachipato,manual,Chile
+443560,F.González,O'Higgins,922030,Felipe Faúndez,Club Deportivo O'Higgins,manual,Chile
+443560,F.González,O'Higgins,922030,Felipe Faúndez,Club Deportivo O'Higgins,manual,Chile
+463019,L.Molina Canto,Deportivo Ñublense SADP,741346,Lucas Molina,Nublense,manual,Chile
 29826,Jon Gallagher,Austin FC,29296,Jon Gallagher,Austin,p1_exact_name_team,MLS
 3657,Kevin Long,Toronto FC,11601,Kevin Long,Toronto FC,p1_exact_name_team,MLS
 3870,Connor Ronan,Colorado Rapids,68557,Connor Ronan,Colorado Rapids,p1_exact_name_team,MLS
@@ -2582,6 +2635,15 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 429014,Harbor Tarczynski-Miller,LA Galaxy,817415,Harbor Michael  Miller,LA Galaxy,manual,MLS
 47159,Guilherme Biro,Austin FC,32940,Guilherme da Trindade Dubas,Austin,manual,MLS
 47159,Guilherme Biro,Austin FC,32940,Guilherme da Trindade Dubas,Austin,manual,MLS
+16761,Alex Roldán,Seattle Sounders,31171,Alexander Roldán Leon,Seattle Sounders,manual,MLS
+12573,Memo Rodríguez,Sporting Kansas City,31134,José Guillermo Rodríguez,Sporting Kansas City,manual,MLS
+13449,Kim Ki-Hee,Seattle Sounders,25477,Kee-Hee Kim,Seattle Sounders,manual,MLS
+3027,Zanka,LA Galaxy,7157,Mathias Jattah-Njie Jørgensen,LA Galaxy,manual,MLS
+25349,Júnior Urso,Houston Dynamo,31520,Ocimar de Almeida Júnior,Houston Dynamo,manual,MLS
+271465,Pedrinho,FC Dallas,171787,Pedro Henrique Fonseca de Araújo Martins,FC Dallas,manual,MLS
+230617,Rwan Seco,Real Salt Lake,141706,Rwan Philipe Rodrigues de Souza Cruz,Real Salt Lake,manual,MLS
+18242,Tim Ream,Charlotte,10373,Timothy Michael Ream,Charlotte FC,manual,MLS
+18242,Tim Ream,Charlotte,10373,Timothy Michael Ream,Charlotte FC,manual,MLS
 3864,Dan Burn,Newcastle United,2184,Dan Burn,Newcastle United,p1_exact_name_team,Premier League
 4625,Joe Willock,Newcastle United,20206,Joe Willock,Newcastle United,p1_exact_name_team,Premier League
 3308,Kieran Trippier,Newcastle United,5907,Kieran Trippier,Newcastle United,p1_exact_name_team,Premier League
@@ -2599,6 +2661,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 13291,Joelinton,Newcastle United,12759,Joelinton Cassio Apolinário de Lira,Newcastle United,p3_token_same_team,Premier League
 25142,Bruno Guimarães,Newcastle United,24870,Bruno Guimarães Rodriguez Moura,Newcastle United,p3_token_same_team,Premier League
 50991,Anthony Elanga,Newcastle United,45590,Anthony David  Junior  Elanga,Newcastle United,p3_token_same_team,Premier League
+39241,Tino Livramento,Newcastle United,44869,Valentino Francisco  Livramento,Newcastle United,manual,Premier League
 113450,Jon Mikel Aramburu Mejías,Real Sociedad,43874,Jon Mikel Aramburu Mejías,Real Sociedad,p1_exact_name_team,LaLiga
 265309,Abdel Rahim Alhassane Bonkano,Real Oviedo,285343,Abdel Rahim Alhassane Bonkano,Real Oviedo,p1_exact_name_team,LaLiga
 3664,Trent Alexander-Arnold,Real Madrid,11746,Trent Alexander-Arnold,Real Madrid CF,p1_exact_name_team,LaLiga
@@ -2944,6 +3007,13 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 36728,Mate Morey,Mallorca,24084,Mateu Jaume Morey Bauzà,RCD Mallorca,manual,LaLiga
 49303,Pep Chavarría,Rayo Vallecano,32127,Josep María Chavarría Pérez,Rayo Vallecano,manual,LaLiga
 195724,Alemão,Rayo Vallecano,142458,Alexandre Zurawski,Rayo Vallecano,manual,LaLiga
+359115,Andrés Castrin,Sevilla,117268,Andrés  López Gallo,Sevilla FC,manual,LaLiga
+6587,Toni Lato,Mallorca,13519,Antonio Latorre Grueso,RCD Mallorca,manual,LaLiga
+39538,Peque,Sevilla,53346,Gerard Fernández Castellano,Sevilla FC,manual,LaLiga
+419557,Oso,Sevilla,892503,Joaquin Martínez Gauna,Sevilla FC,manual,LaLiga
+30054,Pepelu,Valencia,29176,José Luis García Vayá,Valencia CF,manual,LaLiga
+11671,Cucho Hernández,Real Betis,14002,Juan Camilo Hernández Suárez,Real Betis Balompié,manual,LaLiga
+24499,Brugui,Levante UD,62275,Roger Brugué Ayguadé,Levante UD,manual,LaLiga
 39469,Konrad De La Fuente,AD Ceuta FC,29803,Konrad de La Fuente,Agrupación Deportiva Ceuta FC,p1_exact_name_team,LaLiga 2
 31009,Víctor Hugo García Hernández,CyD Leonesa,10675,Víctor Hugo García Hernández,Cultural y Deportiva Leonesa,p1_exact_name_team,LaLiga 2
 319969,Youssouf Diarra,Cádiz,531571,Youssouf Diarra,Cadiz CF,p1_exact_name_team,LaLiga 2
