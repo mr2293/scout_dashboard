@@ -1,7 +1,14 @@
 .Rproj.user
 .Rhistory
 .RData
+.RDataTmp
 .Ruserdata
+
+# Claude Code local session config/state
+.claude/
+
+# Stale backup copy of app.R, superseded by the current app.R
+correct_app_code.R
 
 # Secrets / credentials
 .env
