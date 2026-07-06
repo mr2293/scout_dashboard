@@ -2236,7 +2236,7 @@ server <- function(input, output, session) {
     { req(selected_player(), input$compare_player, nzchar(input$compare_player))
       combined_stats_tbl() },
     striped = TRUE, hover = TRUE, bordered = TRUE,
-    align   = "lrrrrr", width = "100%"
+    align   = "lrrrr", width = "100%"
   )
 
   output$similar_players_sc_table <- DT::renderDT({
