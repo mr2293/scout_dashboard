@@ -44,6 +44,24 @@ joined_cache  <- readRDS(cache_path)
 scout         <- joined_cache$league_catalog   # named list, all 27 leagues
 
 # ============================================================
+# TRANSFERMARKT CROSSWALK (market value / contract expiry / agent)
+# Static file built by transfermarkt_scraper.R. Refreshed manually every
+# few months -- never re-scraped as part of app startup/deploy.
+# ============================================================
+tm_crosswalk_path <- "data/transfermarkt_crosswalk.csv"
+tm_crosswalk <- if (file.exists(tm_crosswalk_path)) {
+  read.csv(tm_crosswalk_path, stringsAsFactors = FALSE, colClasses = "character") |>
+    dplyr::filter(status == "matched") |>
+    dplyr::select(player_name, team_name, market_value_raw, contract_expires, player_agent) |>
+    dplyr::distinct(player_name, team_name, .keep_all = TRUE)
+} else {
+  data.frame(
+    player_name = character(), team_name = character(), market_value_raw = character(),
+    contract_expires = character(), player_agent = character(), stringsAsFactors = FALSE
+  )
+}
+
+# ============================================================
 # LEAGUE MAP
 # Keys  = display names shown in UI selectInput
 # Values = names(scout) keys — now match league_catalog names directly
@@ -409,6 +427,27 @@ compute_age_years <- function(birth_date_chr) {
   age <- floor(as.numeric(difftime(Sys.Date(), bd, units = "days")) / 365.25)
   age[is.na(age)] <- 10^6
   age
+}
+
+# Looks up Transfermarkt market value / contract expiry / agent for a
+# player+team and returns them as three Métrica/Valor/Percentil rows,
+# falling back to "–" when there's no match in the crosswalk.
+build_transfermarkt_rows <- function(player_name, team_name) {
+  tm_row <- tm_crosswalk |>
+    dplyr::filter(player_name == !!player_name, team_name == !!team_name) |>
+    dplyr::slice_head(n = 1)
+
+  field <- function(col) {
+    if (nrow(tm_row) != 1 || is.na(tm_row[[col]]) || !nzchar(tm_row[[col]])) return("–")
+    tm_row[[col]]
+  }
+
+  tibble::tribble(
+    ~Métrica,          ~Valor,                        ~Percentil,
+    "Valor de Mercado", field("market_value_raw"),    "",
+    "Fin de Contrato",  field("contract_expires"),    "",
+    "Agente",           field("player_agent"),        ""
+  )
 }
 
 apply_scatter_filters <- function(df, minutes_range = c(0, Inf), age_range = c(0, 100)) {
@@ -2111,15 +2150,18 @@ server <- function(input, output, session) {
       "Minutos Jugados", fmt_num(row$player_season_minutes,0),   ""
     )
     
+    tm_rows <- build_transfermarkt_rows(as.character(row$player_name), as.character(row$team_name))
+
     stat_rows <- build_position_stat_rows_with_percentiles(row, dat) |>
       dplyr::mutate(Valor=as.character(Valor), Percentil=as.character(Percentil))
-    
+
     dplyr::bind_rows(
       meta |> dplyr::mutate(Valor=as.character(Valor), Percentil=as.character(Percentil)),
+      tm_rows,
       stat_rows
     )
   })
-  
+
   output$player_stats_table <- renderTable(
     { req(selected_player()); player_stats_tbl() },
     striped=TRUE, hover=TRUE, bordered=TRUE, align="lrr", width="100%"
@@ -2147,11 +2189,14 @@ server <- function(input, output, session) {
       "Minutos Jugados", mins_val,                                    ""
     )
 
+    tm_rows <- build_transfermarkt_rows(as.character(row$player_name), as.character(row$team_name))
+
     stat_rows <- build_position_stat_rows_with_percentiles(row, dat_all) |>
       dplyr::mutate(Valor = as.character(Valor), Percentil = as.character(Percentil))
 
     dplyr::bind_rows(
       meta |> dplyr::mutate(Valor = as.character(Valor), Percentil = as.character(Percentil)),
+      tm_rows,
       stat_rows
     )
   })

@@ -35,3 +35,7 @@ data/ALL_combined_name_team_universe.csv
 
 # ShinyApps.io deployment metadata (no secrets, but not needed in repo)
 rsconnect/
+
+# Transfermarkt scraper: cached HTML (resumability only, ~GBs) and run logs
+data/transfermarkt_cache/
+data/transfermarkt_full_run.log
