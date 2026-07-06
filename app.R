@@ -2492,5 +2492,5 @@ shinyApp(ui, server)
 # glimpse(final_scout)
 
 # rsconnect::deployApp(
-#   appFiles = c("app.R", "radars.R", "data/scout_joined.rds")
+#   appFiles = c("app.R", "radars.R", "data/scout_joined.rds", "data/transfermarkt_crosswalk.csv")
 # )
