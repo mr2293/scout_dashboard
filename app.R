@@ -1244,6 +1244,71 @@ lower_is_better_metrics <- c(
 
 metric_percentiles <- .compute_metric_percentiles(scout, league_map)
 
+# ---- All players across all leagues (for radar, similarity) ----
+# Computed once per app process (not per session) -- these are pure
+# functions of the static scout/joined_cache data, so recomputing them
+# for every new browser session was pure wasted work.
+all_players_df <- dedup_transfers(all_players_df_from_cache(scout, league_map))
+
+# ---- All players enriched with SC physical cols (for SC-based similarity) ----
+# Merges physical SC columns from joined_leagues onto the SB player rows by name.
+# Only players in SC leagues will have SC values; the rest get NA (handled by
+# the 60% NA-rate filter inside build_similarity_pool).
+all_players_sc_df <- local({
+  base <- all_players_df
+
+  # Bind all joined_leagues into one SC reference table (physical cols only)
+  sc_cols_keep <- c("player_name", physical_vars)
+  sc_dfs <- lapply(SC_LEAGUES, function(lname) {
+    df <- joined_cache$joined_leagues[[lname]]
+    if (is.null(df) || nrow(df) == 0) return(NULL)
+    available <- intersect(sc_cols_keep, names(df))
+    if (!"player_name" %in% available) return(NULL)
+    df[, available, drop = FALSE]
+  })
+  sc_ref <- dplyr::bind_rows(sc_dfs) |>
+    dplyr::distinct(player_name, .keep_all = TRUE)
+
+  # Left-join SC cols onto SB base; prefix cols with "sc_" to avoid clashes
+  phys_in_sc <- intersect(physical_vars, names(sc_ref))
+  if (length(phys_in_sc) == 0) {
+    base
+  } else {
+    sc_ref_renamed <- sc_ref |>
+      dplyr::rename_with(~ paste0("sc_", .), dplyr::all_of(phys_in_sc))
+    dplyr::left_join(base, sc_ref_renamed, by = "player_name")
+  }
+})
+
+# ---- SC reference pool: all 13 joined leagues, NO row filtering ----
+# Bind all rows from every joined league as-is. Lookup is by player_name.
+# Filtering risks dropping players we need; let resolve_sc_col handle missing cols.
+all_sc_df <- local({
+  dfs <- lapply(SC_LEAGUES, function(lname) {
+    df <- joined_cache$joined_leagues[[lname]]
+    if (is.null(df) || nrow(df) == 0) return(NULL)
+    if ("player_id"    %in% names(df)) df$player_id    <- as.character(df$player_id)
+    if ("sc_player_id" %in% names(df)) df$sc_player_id <- as.character(df$sc_player_id)
+    df$.league_label <- lname
+    df
+  })
+  dplyr::bind_rows(dfs)
+})
+
+# ---- Liga MX SC pool — raw joined_leagues[["Liga MX"]], NO filtering ----
+# Return every row as-is. The GI columns live here and we look up players
+# by name. Any filtering risks dropping rows we need.
+liga_mx_sc_df <- local({
+  df <- joined_cache$joined_leagues[["Liga MX"]]
+  if (is.null(df) || nrow(df) == 0) {
+    data.frame()
+  } else {
+    if ("player_id"    %in% names(df)) df$player_id    <- as.character(df$player_id)
+    if ("sc_player_id" %in% names(df)) df$sc_player_id <- as.character(df$sc_player_id)
+    df
+  }
+})
+
 # ============================================================
 # UI
 # ============================================================
@@ -1516,64 +1581,6 @@ server <- function(input, output, session) {
     df
   })
   
-  # ---- All players across all leagues (for radar, similarity) ----
-  all_players_df <- reactive(dedup_transfers(all_players_df_from_cache(scout, league_map)))
-  
-  # ---- All players enriched with SC physical cols (for SC-based similarity) ----
-  # Merges physical SC columns from joined_leagues onto the SB player rows by name.
-  # Only players in SC leagues will have SC values; the rest get NA (handled by
-  # the 60% NA-rate filter inside build_similarity_pool).
-  all_players_sc_df <- reactive({
-    base <- all_players_df()
-    
-    # Bind all joined_leagues into one SC reference table (physical cols only)
-    sc_cols_keep <- c("player_name", physical_vars)
-    sc_dfs <- lapply(SC_LEAGUES, function(lname) {
-      df <- joined_cache$joined_leagues[[lname]]
-      if (is.null(df) || nrow(df) == 0) return(NULL)
-      available <- intersect(sc_cols_keep, names(df))
-      if (!"player_name" %in% available) return(NULL)
-      df[, available, drop = FALSE]
-    })
-    sc_ref <- dplyr::bind_rows(sc_dfs) |>
-      dplyr::distinct(player_name, .keep_all = TRUE)
-    
-    # Left-join SC cols onto SB base; prefix cols with "sc_" to avoid clashes
-    phys_in_sc <- intersect(physical_vars, names(sc_ref))
-    if (length(phys_in_sc) == 0) return(base)
-    
-    sc_ref_renamed <- sc_ref |>
-      dplyr::rename_with(~ paste0("sc_", .), dplyr::all_of(phys_in_sc))
-    
-    dplyr::left_join(base, sc_ref_renamed, by = "player_name")
-  })
-  
-  # ---- SC reference pool: all 13 joined leagues, NO row filtering ----
-  # Bind all rows from every joined league as-is. Lookup is by player_name.
-  # Filtering risks dropping players we need; let resolve_sc_col handle missing cols.
-  all_sc_df <- reactive({
-    dfs <- lapply(SC_LEAGUES, function(lname) {
-      df <- joined_cache$joined_leagues[[lname]]
-      if (is.null(df) || nrow(df) == 0) return(NULL)
-      if ("player_id"    %in% names(df)) df$player_id    <- as.character(df$player_id)
-      if ("sc_player_id" %in% names(df)) df$sc_player_id <- as.character(df$sc_player_id)
-      df$.league_label <- lname
-      df
-    })
-    dplyr::bind_rows(dfs)
-  })
-  
-  # ---- Liga MX SC pool — raw joined_leagues[["Liga MX"]], NO filtering ----
-  # Return every row as-is. The GI columns live here and we look up players
-  # by name. Any filtering risks dropping rows we need.
-  liga_mx_sc_df <- reactive({
-    df <- joined_cache$joined_leagues[["Liga MX"]]
-    if (is.null(df) || nrow(df) == 0) return(data.frame())
-    if ("player_id"    %in% names(df)) df$player_id    <- as.character(df$player_id)
-    if ("sc_player_id" %in% names(df)) df$sc_player_id <- as.character(df$sc_player_id)
-    df
-  })
-  
   # ---- Sync sliders with league ----
   observeEvent(league_df(), {
     df <- league_df()
@@ -1704,7 +1711,7 @@ server <- function(input, output, session) {
         tags$em("Selecciona un jugador (click en un punto o usa el buscador) para ver el radar.")
       )
     } else {
-      all_players <- all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+      all_players <- all_players_df |> arrange(player_name) |> distinct(player_name) |> pull()
       tagList(
         h4("Radar del jugador seleccionado"),
         fluidRow(
@@ -1929,7 +1936,7 @@ server <- function(input, output, session) {
   # ---- Similarity using SB + SC data ----
   similar_players_sc <- reactive({
     req(selected_player())
-    dat_all <- all_players_sc_df()
+    dat_all <- all_players_sc_df
     sel_row <- dat_all |> dplyr::filter(player_name == selected_player()) |> dplyr::slice_head(n = 1)
     req(nrow(sel_row) == 1)
     pg   <- sel_row$position_group[1]
@@ -2126,7 +2133,7 @@ server <- function(input, output, session) {
     compare_to <- if (!is.null(input$compare_player) && nzchar(input$compare_player))
       input$compare_player else NULL
     draw_radar_for_player_plotly(player=selected_player(), compare_to=compare_to,
-                                 dat_all=all_players_df())
+                                 dat_all=all_players_df)
   })
   
   # ---- Player stats table (StatsBomb percentiles within league) ----
@@ -2169,7 +2176,7 @@ server <- function(input, output, session) {
 
   compare_stats_tbl <- reactive({
     req(input$compare_player, nzchar(input$compare_player))
-    dat_all <- all_players_df()
+    dat_all <- all_players_df
     row <- dat_all |> dplyr::filter(player_name == input$compare_player) |> dplyr::slice_head(n = 1)
     req(nrow(row) == 1)
 
@@ -2297,7 +2304,7 @@ server <- function(input, output, session) {
     message(sprintf("[SC_REACTIVE] triggered for player='%s' league='%s'",
                     selected_player(), input$league))
     message(sprintf("[SC_REACTIVE] liga_mx_sc_df rows=%d  all_sc_df rows=%d",
-                    nrow(liga_mx_sc_df()), nrow(all_sc_df())))
+                    nrow(liga_mx_sc_df), nrow(all_sc_df)))
     
     player_row <- league_df() |>
       dplyr::filter(player_name == selected_player()) |>
@@ -2312,8 +2319,8 @@ server <- function(input, output, session) {
     
     result <- tryCatch(
       build_skillcorner_table(
-        all_sc_df    = all_sc_df(),
-        liga_mx_df   = liga_mx_sc_df(),
+        all_sc_df    = all_sc_df,
+        liga_mx_df   = liga_mx_sc_df,
         player_row   = player_row,
         league_label = input$league
       ),
