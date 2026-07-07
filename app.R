@@ -1281,14 +1281,30 @@ get_liga_mx_sc_df <- function() {
 ui <- fluidPage(
   theme = bslib::bs_theme(
     version      = 5,
-    base_font    = bslib::font_google("DM Sans"),
-    heading_font = bslib::font_google("Space Grotesk"),
+    base_font    = "'DM Sans', sans-serif",
+    heading_font = "'Space Grotesk', sans-serif",
     primary      = "#0d1b36",
     secondary    = "#6b7280",
     bg           = "#eef0f4",
     fg           = "#1e2533",
     "link-color" = "#1a2f5a"
   ),
+
+  # Fonts are loaded client-side via this <link>, not by bslib::font_google()
+  # server-side at app startup. font_google() fetches and caches font files
+  # over the network the first time each fresh shinyapps.io container starts
+  # (the cache doesn't persist across restarts) -- if that network call is
+  # slow, it can hang the whole app past shinyapps.io's 60s startup timeout.
+  # A plain <link> tag defers font loading to the browser, which is fast,
+  # standard, and never blocks the R process from starting.
+  tags$head(tags$link(
+    rel  = "preconnect",
+    href = "https://fonts.googleapis.com"
+  )),
+  tags$head(tags$link(
+    rel  = "stylesheet",
+    href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+  )),
 
   tags$head(tags$style(HTML("
 
