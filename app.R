@@ -1187,63 +1187,6 @@ dedup_transfers <- function(df) {
   dplyr::bind_rows(singles, dplyr::bind_rows(merged_list))
 }
 
-# ============================================================
-# METRIC PERCENTILES (computed once at startup)
-# Used by chatbot to translate scouting terms into data thresholds.
-# ============================================================
-
-# Metrics where a lower value is better (e.g. turnovers, fouls, errors).
-lower_is_better_metrics <- c(
-  "miscontrols_p90",
-  "dispossessions_p90",
-  "errors_p90",
-  "fouls_p90",
-  "yellow_cards_p90",
-  "red_cards_p90",
-  "dribbled_past_p90",
-  "goals_against_gk_p90",
-  "psxg_minus_goals_against_gk_p90"
-)
-
-.compute_metric_percentiles <- function(scout_list, lmap) {
-  all_df <- all_players_df_from_cache(scout_list, lmap)
-
-  numeric_cols <- names(all_df)[sapply(all_df, is.numeric)]
-  # Drop internal/metadata numeric cols
-  exclude_pat <- "^(player_id|sc_player_id|country_id|season_id|competition_id)$"
-  numeric_cols <- numeric_cols[!grepl(exclude_pat, numeric_cols)]
-
-  pct_wide <- all_df |>
-    dplyr::select(dplyr::all_of(numeric_cols)) |>
-    dplyr::summarise(dplyr::across(
-      dplyr::everything(),
-      list(
-        p10 = ~quantile(.x, 0.10, na.rm = TRUE),
-        p30 = ~quantile(.x, 0.30, na.rm = TRUE),
-        p50 = ~quantile(.x, 0.50, na.rm = TRUE),
-        p70 = ~quantile(.x, 0.70, na.rm = TRUE),
-        p90 = ~quantile(.x, 0.90, na.rm = TRUE)
-      ),
-      .names = "{.col}__{.fn}"
-    ))
-
-  tidyr::pivot_longer(pct_wide, dplyr::everything(),
-                      names_to  = c("metric", "stat"),
-                      names_sep = "__") |>
-    tidyr::pivot_wider(names_from = "stat", values_from = "value") |>
-    dplyr::mutate(
-      direction = dplyr::if_else(
-        metric %in% lower_is_better_metrics, "lower_better", "higher_better"
-      ),
-      # For higher_better: alto >= p70, bajo <= p30
-      # For lower_better:  alto (good) <= p30, bajo (bad) >= p70
-      alto_threshold = dplyr::if_else(direction == "higher_better", p70, p30),
-      bajo_threshold = dplyr::if_else(direction == "higher_better", p30, p70)
-    )
-}
-
-metric_percentiles <- .compute_metric_percentiles(scout, league_map)
-
 # ---- All players across all leagues (for radar, similarity) ----
 # Lazily computed once per app PROCESS (not per session, and not at
 # startup) -- these are pure functions of the static scout/joined_cache
