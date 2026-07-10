@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "Sys.setenv(ANTHROPIC_API_KEY = \"$ANTHROPIC_API_KEY\")" > secrets.R
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.scout_dashboard_chatbot }}
+          ANTHROPIC_API_KEY: ${{ secrets.SCOUT_DASHBOARD_CHATBOT }}
 
       - name: Deploy to ShinyApps.io
         run: |
