@@ -111,6 +111,15 @@ SC_LEAGUES <- names(joined_cache$joined_leagues)
 # ============================================================
 # COUNTRY ID → NAME LOOKUP
 # StatsBomb internal country_id → Spanish display name
+#
+# NOTE on the 3 IDs marked "inferred": StatsBomb doesn't expose a public
+# country reference table, and this dataset has no local file with one. IDs
+# 64/93/164 were inferred by finding a domestic club from that country in the
+# data (Cibao FC = Dominican Republic, Antigua GFC = Guatemala, Real Estelí
+# FC = Nicaragua) and taking the dominant country_id on that club's roster --
+# validated against Motagua (Honduras), where this method correctly recovers
+# country_id 101 for 15/22 players. El Salvador has no club anywhere in the
+# 27-league dataset, so its ID could not be inferred and remains unmapped.
 # ============================================================
 country_id_names <- c(
   "11"  = "Argentina",
@@ -121,10 +130,12 @@ country_id_names <- c(
   "45"  = "Chile",
   "49"  = "Colombia",
   "54"  = "Costa Rica",
+  "64"  = "República Dominicana",  # inferred, see note above
   "65"  = "Ecuador",
   "68"  = "Inglaterra",
   "78"  = "Francia",
   "85"  = "Alemania",
+  "93"  = "Guatemala",             # inferred, see note above
   "101" = "Honduras",
   "109" = "Rep. Irlanda",
   "112" = "Italia",
@@ -133,6 +144,7 @@ country_id_names <- c(
   "152" = "Serbia",
   "154" = "Marruecos",
   "160" = "Países Bajos",
+  "164" = "Nicaragua",             # inferred, see note above
   "166" = "Nigeria",
   "176" = "Panamá",
   "178" = "Paraguay",

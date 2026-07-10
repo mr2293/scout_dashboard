@@ -147,6 +147,9 @@ scout_build_extraction_prompt <- function(question) {
     '  "market_value_min_eur": null,\n',
     '  "contract_year_min": null,\n',
     '  "contract_year_max": null,\n',
+    '  "hispanohablante": null,\n',
+    '  "top5_europa": null,\n',
+    '  "sudamerica_principal": null,\n',
     '  "n_results": 10,\n',
     '  "notes": ""\n',
     "}\n\n",
@@ -165,6 +168,12 @@ scout_build_extraction_prompt <- function(question) {
     "- market_value_max_eur / market_value_min_eur: números en euros (ver nota de datos de mercado) si el scout ",
     "menciona valor de mercado; null si no aplica.\n",
     "- contract_year_min / contract_year_max: años (enteros) si el scout menciona fin de contrato; null si no aplica.\n",
+    "- hispanohablante: true si el scout usa \"hispanohablante\", \"habla español\", \"hispano\" o equivalente ",
+    "(ver sección del diccionario); null en cualquier otro caso.\n",
+    "- top5_europa: true si el scout pide las 5 grandes ligas europeas (ver sección \"Grupos de ligas por región\" ",
+    "del diccionario); null en cualquier otro caso.\n",
+    "- sudamerica_principal: true si el scout pide las ligas principales de Sudamérica (ver misma sección); null ",
+    "en cualquier otro caso.\n",
     "- n_results: entero, 10 por defecto; si el scout pide explícitamente un número distinto de jugadores, úsalo ",
     "(máximo 30).\n",
     "- notes: una frase breve en español explicando tu interpretación de la pregunta.\n\n",
@@ -231,6 +240,19 @@ get_scout_chat_player_pool <- function() {
       base$contract_expires_date <- as.Date(NA)
       base$player_agent <- NA_character_
     }
+
+    # Nationality, via the same country_id -> name lookup app.R uses for the
+    # "Nacionalidad" filter dropdown (built once here instead of per-session).
+    if ("country_id" %in% names(base) && exists("country_id_names", inherits = TRUE)) {
+      id_str <- as.character(base$country_id)
+      cin <- get("country_id_names", inherits = TRUE)
+      mapped <- cin[id_str]
+      mapped[is.na(mapped)] <- paste0("Otro (", id_str[is.na(mapped)], ")")
+      base$player_country <- mapped
+    } else {
+      base$player_country <- NA_character_
+    }
+
     .scout_chat_pool_cache <<- base
   }
   .scout_chat_pool_cache
@@ -240,6 +262,24 @@ fmt_market_value_eur <- function(x) {
   ifelse(is.na(x), "–",
     ifelse(x >= 1e6, sprintf("€%.2fm", x / 1e6), sprintf("€%.0fk", x / 1e3)))
 }
+
+# See scout_chat_system_prompt.md "### Hispanohablante" -- El Salvador is
+# listed there too but has no known country_id (no Salvadoran club appears
+# anywhere in the 27-league dataset to infer it from), so it's omitted here;
+# a real Salvadoran player would just never match this filter today.
+HISPANIC_NATIONS <- c(
+  "México", "España", "Colombia", "Venezuela", "Ecuador", "Perú", "Bolivia",
+  "Argentina", "Uruguay", "Paraguay", "Costa Rica", "Panamá", "Guatemala",
+  "Honduras", "República Dominicana", "Nicaragua"
+)
+
+# See scout_chat_system_prompt.md "### Grupos de ligas por región". These
+# are `.league_label` values (the top-level 27-league catalog names set in
+# all_players_df_from_cache / league_map in app.R) -- NOT the `competition_name`
+# column values documented earlier in the dictionary, which is a different,
+# narrower field scoped within a single league's rows.
+TOP5_EUROPA_LEAGUES <- c("Premier League", "LaLiga", "Bundesliga", "Serie A", "Ligue 1")
+SUDAMERICA_PRINCIPAL_LEAGUES <- c("Argentina", "Brasil", "Colombia", "Uruguay", "Ecuador", "Paraguay", "Chile")
 
 # ---- Stage 2: filter spec -> full ranked player pool ------------------------
 # df must be the combined all-leagues player pool (get_scout_chat_player_pool()).
@@ -293,6 +333,8 @@ scout_rank_players_full <- function(df, spec, all_cols) {
   }
 
   leagues <- .as_chr_vec(spec$leagues)
+  if (isTRUE(spec$top5_europa)) leagues <- union(leagues, TOP5_EUROPA_LEAGUES)
+  if (isTRUE(spec$sudamerica_principal)) leagues <- union(leagues, SUDAMERICA_PRINCIPAL_LEAGUES)
   if (length(leagues) && ".league_label" %in% names(d)) {
     d <- d |> dplyr::filter(.league_label %in% leagues)
   }
@@ -323,6 +365,10 @@ scout_rank_players_full <- function(df, spec, all_cols) {
       d <- d[!is.na(contract_year) & contract_year <= as.integer(spec$contract_year_max), , drop = FALSE]
       show_contract <- TRUE
     }
+  }
+
+  if (isTRUE(spec$hispanohablante) && "player_country" %in% names(d)) {
+    d <- d[d$player_country %in% HISPANIC_NATIONS, , drop = FALSE]
   }
 
   # Minimum minutes so single-match spikes don't dominate the ranking.
@@ -385,6 +431,7 @@ scout_rank_players_full <- function(df, spec, all_cols) {
   if (show_market_value) out[["Valor de Mercado"]] <- fmt_market_value_eur(d$market_value_eur)
   if (show_contract) out[["Fin de Contrato"]] <- ifelse(is.na(d$contract_expires_date), "–",
     format(d$contract_expires_date, "%d/%m/%Y"))
+  if (isTRUE(spec$hispanohablante)) out[["Nacionalidad"]] <- d$player_country
 
   list(table = out, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = nrow(d))
 }

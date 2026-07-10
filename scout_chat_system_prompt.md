@@ -77,6 +77,28 @@ Ligas disponibles en el dataset. Usar el string exacto en filtros:
 - `Copa MX` — Copa nacional de México (cuando aplica).
 - `MLS` — Major League Soccer (referencia comparativa para mercado norteamericano).
 
+### Grupos de ligas por región
+
+El dataset completo cubre 27 ligas/competencias (no solo las 6 competencias de México listadas arriba). Cuando el scout pida una de estas dos agrupaciones predefinidas, filtrar exclusivamente por las ligas listadas:
+
+**Top 5 ligas europeas** — activado por "top 5 europeas", "las 5 grandes de Europa", "big five" o equivalente:
+- `Premier League` (Inglaterra)
+- `LaLiga` (España)
+- `Bundesliga` (Alemania)
+- `Serie A` (Italia)
+- `Ligue 1` (Francia)
+
+**Ligas principales sudamericanas** — activado por "ligas principales de Sudamérica", "Sudamérica", "ligas top de Sudamérica" o equivalente:
+- `Argentina`
+- `Brasil`
+- `Colombia`
+- `Uruguay`
+- `Ecuador`
+- `Paraguay`
+- `Chile`
+
+Nota: no incluye las competencias continentales (CONMEBOL Libertadores) salvo que el scout las pida explícitamente por separado.
+
 ### Temporadas (`season_name`)
 
 Formato split-year usado por Liga MX (un Apertura + un Clausura por temporada):
@@ -86,6 +108,32 @@ Formato split-year usado por Liga MX (un Apertura + un Clausura por temporada):
 - `2023/2024` — Apertura 2023 + Clausura 2024.
 
 Cuando el usuario pida "esta temporada" o "actual", usar la más reciente. Para "último torneo" o "torneo pasado", aclarar si se refiere a Apertura o Clausura específicamente.
+
+### Hispanohablante (nacionalidad del jugador)
+
+Cuando el scout use "hispanohablante", "habla español", "hispano", o una frase equivalente, **filtrar exclusivamente por jugadores cuya nacionalidad pertenezca a una de estas naciones hispanohablantes**:
+
+- México
+- España
+- Colombia
+- Venezuela
+- Ecuador
+- Perú
+- Bolivia
+- Argentina
+- Uruguay
+- Paraguay
+- Costa Rica
+- Panamá
+- El Salvador
+- Guatemala
+- Honduras
+- República Dominicana
+- Nicaragua
+
+No incluir jugadores de otras nacionalidades (brasileños, estadounidenses, europeos no hispanohablantes, etc.) en estos resultados, incluso si juegan en una liga hispanohablante como Liga MX — el filtro es sobre la nacionalidad del jugador, no sobre la liga en la que compite.
+
+**Limitación conocida:** la nacionalidad de un jugador salvadoreño no se puede identificar todavía en los datos (ningún club de El Salvador aparece en las 27 ligas de la base, así que no fue posible inferir su `country_id`). Un jugador salvadoreño real no aparecerá en resultados filtrados por "hispanohablante" hasta que se resuelva este mapeo. Si el scout pregunta específicamente por jugadores salvadoreños, acláralo en la respuesta en vez de devolver una lista vacía sin explicación.
 
 ---
 
