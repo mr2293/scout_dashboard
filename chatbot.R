@@ -46,9 +46,29 @@ SCOUT_CHAT_COVERAGE_NOTE <- paste(
   collapse = ""
 )
 
+# Transfermarkt fields (market value, contract expiry) aren't in the
+# dictionary at all -- it only documents StatsBomb/SkillCorner performance
+# metrics. This note tells the extraction model those fields exist, how to
+# express them in the JSON spec, and that coverage is partial (only players
+# Transfermarkt could be matched to).
+SCOUT_CHAT_TRANSFERMARKT_NOTE <- paste0(
+  "\n\n---\n\n",
+  "## Datos de mercado (Transfermarkt, fuera del diccionario original)\n\n",
+  "Ademas de las metricas de rendimiento hay dos campos de mercado disponibles:\n",
+  "- Valor de mercado en euros (numero exacto: \"5 millones\"/\"5M\" = 5000000, \"500k\"/\"medio millon\" = 500000).\n",
+  "- Fecha de fin de contrato (se filtra por año).\n\n",
+  "Cobertura parcial: estos datos solo existen para los jugadores que Transfermarkt pudo emparejar. ",
+  "Un jugador sin dato no aparecera en busquedas filtradas por valor de mercado o contrato.\n\n",
+  "Hoy es ", format(Sys.Date(), "%Y-%m-%d"), ". Usa esto para expresiones relativas como ",
+  "\"contrato por vencer\" o \"le queda poco contrato\" (interpreta como dentro de los proximos 12 meses).\n\n",
+  "Cuando el scout mencione valor de mercado o contrato, completa los campos market_value_max_eur, ",
+  "market_value_min_eur, contract_year_min y/o contract_year_max del JSON de salida (ver esquema)."
+)
+
 SCOUT_CHAT_SYSTEM_PROMPT <- paste0(
   paste(readLines("scout_chat_system_prompt.md", warn = FALSE, encoding = "UTF-8"), collapse = "\n"),
-  SCOUT_CHAT_COVERAGE_NOTE
+  SCOUT_CHAT_COVERAGE_NOTE,
+  SCOUT_CHAT_TRANSFERMARKT_NOTE
 )
 
 SCOUT_CHAT_MODEL <- "claude-sonnet-5"
@@ -123,6 +143,10 @@ scout_build_extraction_prompt <- function(question) {
     '  "leagues": [],\n',
     '  "metrics": [],\n',
     '  "lower_is_better_metrics": [],\n',
+    '  "market_value_max_eur": null,\n',
+    '  "market_value_min_eur": null,\n',
+    '  "contract_year_min": null,\n',
+    '  "contract_year_max": null,\n',
     '  "n_results": 10,\n',
     '  "notes": ""\n',
     "}\n\n",
@@ -138,6 +162,9 @@ scout_build_extraction_prompt <- function(question) {
     "(usa el mapeo de palabras clave y los perfiles de posición del diccionario).\n",
     "- lower_is_better_metrics: el subconjunto de `metrics` donde menor = mejor, según las reglas de interpretación ",
     "direccional del diccionario.\n",
+    "- market_value_max_eur / market_value_min_eur: números en euros (ver nota de datos de mercado) si el scout ",
+    "menciona valor de mercado; null si no aplica.\n",
+    "- contract_year_min / contract_year_max: años (enteros) si el scout menciona fin de contrato; null si no aplica.\n",
     "- n_results: entero, 10 por defecto; si el scout pide explícitamente un número distinto de jugadores, úsalo ",
     "(máximo 30).\n",
     "- notes: una frase breve en español explicando tu interpretación de la pregunta.\n\n",
@@ -176,8 +203,46 @@ scout_is_more_request <- function(question) {
   q %in% .SCOUT_MORE_PHRASES
 }
 
+# ---- Player pool used by the chatbot, with Transfermarkt fields joined in --
+# get_all_players_df() (defined in app.R) is the StatsBomb/SkillCorner pool
+# shared with the rest of the dashboard; left-joining tm_crosswalk here
+# (rather than inside get_all_players_df itself) keeps that change scoped to
+# the chatbot instead of affecting the radar/similarity features that also
+# use get_all_players_df(). Cached once per app process, same pattern as
+# get_all_players_df().
+.scout_chat_pool_cache <- NULL
+get_scout_chat_player_pool <- function() {
+  if (is.null(.scout_chat_pool_cache)) {
+    base <- get_all_players_df()
+    has_tm <- exists("tm_crosswalk", inherits = TRUE) &&
+      is.data.frame(get("tm_crosswalk", inherits = TRUE)) &&
+      nrow(get("tm_crosswalk", inherits = TRUE)) > 0
+    if (has_tm) {
+      tm <- get("tm_crosswalk", inherits = TRUE) |>
+        dplyr::transmute(
+          player_name, team_name,
+          market_value_eur,
+          contract_expires_date = as.Date(contract_expires, format = "%d/%m/%Y"),
+          player_agent
+        )
+      base <- dplyr::left_join(base, tm, by = c("player_name", "team_name"))
+    } else {
+      base$market_value_eur <- NA_real_
+      base$contract_expires_date <- as.Date(NA)
+      base$player_agent <- NA_character_
+    }
+    .scout_chat_pool_cache <<- base
+  }
+  .scout_chat_pool_cache
+}
+
+fmt_market_value_eur <- function(x) {
+  ifelse(is.na(x), "–",
+    ifelse(x >= 1e6, sprintf("€%.2fm", x / 1e6), sprintf("€%.0fk", x / 1e3)))
+}
+
 # ---- Stage 2: filter spec -> full ranked player pool ------------------------
-# df must be the combined all-leagues player pool (get_all_players_df()).
+# df must be the combined all-leagues player pool (get_scout_chat_player_pool()).
 # Returns the FULL sorted pool (not just one page) so pagination is free.
 scout_rank_players_full <- function(df, spec, all_cols) {
   d <- df
@@ -230,6 +295,34 @@ scout_rank_players_full <- function(df, spec, all_cols) {
   leagues <- .as_chr_vec(spec$leagues)
   if (length(leagues) && ".league_label" %in% names(d)) {
     d <- d |> dplyr::filter(.league_label %in% leagues)
+  }
+
+  # Transfermarkt fields have partial coverage (only matched players) --
+  # filtering on them necessarily drops unmatched players, same as any other
+  # column with missing data.
+  show_market_value <- FALSE
+  if ("market_value_eur" %in% names(d)) {
+    if (!is.null(spec$market_value_max_eur) && !is.na(spec$market_value_max_eur)) {
+      d <- d |> dplyr::filter(!is.na(market_value_eur), market_value_eur <= as.numeric(spec$market_value_max_eur))
+      show_market_value <- TRUE
+    }
+    if (!is.null(spec$market_value_min_eur) && !is.na(spec$market_value_min_eur)) {
+      d <- d |> dplyr::filter(!is.na(market_value_eur), market_value_eur >= as.numeric(spec$market_value_min_eur))
+      show_market_value <- TRUE
+    }
+  }
+  show_contract <- FALSE
+  if ("contract_expires_date" %in% names(d)) {
+    contract_year <- as.integer(format(d$contract_expires_date, "%Y"))
+    if (!is.null(spec$contract_year_min) && !is.na(spec$contract_year_min)) {
+      d <- d[!is.na(contract_year) & contract_year >= as.integer(spec$contract_year_min), , drop = FALSE]
+      contract_year <- as.integer(format(d$contract_expires_date, "%Y"))
+      show_contract <- TRUE
+    }
+    if (!is.null(spec$contract_year_max) && !is.na(spec$contract_year_max)) {
+      d <- d[!is.na(contract_year) & contract_year <= as.integer(spec$contract_year_max), , drop = FALSE]
+      show_contract <- TRUE
+    }
   }
 
   # Minimum minutes so single-match spikes don't dominate the ranking.
@@ -289,6 +382,9 @@ scout_rank_players_full <- function(df, spec, all_cols) {
     Score    = round(.composite_score, 1)
   )
   for (col in metrics) out[[col]] <- round(suppressWarnings(as.numeric(d[[col]])), 3)
+  if (show_market_value) out[["Valor de Mercado"]] <- fmt_market_value_eur(d$market_value_eur)
+  if (show_contract) out[["Fin de Contrato"]] <- ifelse(is.na(d$contract_expires_date), "–",
+    format(d$contract_expires_date, "%d/%m/%Y"))
 
   list(table = out, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = nrow(d))
 }
@@ -320,7 +416,7 @@ scout_chat_query <- function(question, prior = NULL) {
     ))
   }
 
-  df <- get_all_players_df()
+  df <- get_scout_chat_player_pool()
   all_cols <- names(df)
 
   extraction_resp <- call_claude_chat(

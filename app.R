@@ -59,12 +59,14 @@ tm_crosswalk_path <- "data/transfermarkt_crosswalk.csv"
 tm_crosswalk <- if (file.exists(tm_crosswalk_path)) {
   read.csv(tm_crosswalk_path, stringsAsFactors = FALSE, colClasses = "character") |>
     dplyr::filter(status == "matched") |>
-    dplyr::select(player_name, team_name, market_value_raw, contract_expires, player_agent) |>
+    dplyr::select(player_name, team_name, market_value_raw, market_value_eur, contract_expires, player_agent) |>
+    dplyr::mutate(market_value_eur = suppressWarnings(as.numeric(market_value_eur))) |>
     dplyr::distinct(player_name, team_name, .keep_all = TRUE)
 } else {
   data.frame(
     player_name = character(), team_name = character(), market_value_raw = character(),
-    contract_expires = character(), player_agent = character(), stringsAsFactors = FALSE
+    market_value_eur = numeric(), contract_expires = character(), player_agent = character(),
+    stringsAsFactors = FALSE
   )
 }
 
