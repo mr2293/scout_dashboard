@@ -68,6 +68,12 @@ jobs:
       - name: Join StatsBomb + SkillCorner datasets
         run: Rscript join_scout_data.R
 
+      - name: Write secrets.R for the scouting chatbot
+        run: |
+          echo "Sys.setenv(ANTHROPIC_API_KEY = \"$ANTHROPIC_API_KEY\")" > secrets.R
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.scout_dashboard_chatbot }}
+
       - name: Deploy to ShinyApps.io
         run: |
           Rscript -e "
@@ -78,7 +84,8 @@ jobs:
             )
             rsconnect::deployApp(
               appName     = 'club-america-scouting_dashboard',
-              appFiles    = c('app.R', 'radars.R', 'data/scout_joined.rds'),
+              appFiles    = c('app.R', 'radars.R', 'chatbot.R', 'scout_chat_system_prompt.md',
+                               'secrets.R', 'data/scout_joined.rds'),
               forceUpdate = TRUE
             )
           "

@@ -29,8 +29,15 @@ library(bslib)
 library(fmsb)
 library(scales)
 library(DT)
+library(httr)
+library(jsonlite)
+
+# Local-only; gitignored. Sets ANTHROPIC_API_KEY for the scouting chatbot.
+# On shinyapps.io it's written at deploy time by the GitHub Actions workflow.
+if (file.exists("secrets.R")) source("secrets.R")
 
 source("radars.R")
+source("chatbot.R", local = TRUE)
 
 options(scipen = 999)
 
@@ -1461,6 +1468,57 @@ ui <- fluidPage(
       margin-top: 8px;
     }
 
+    /* ── SCOUT CHAT WIDGET ───────────────────────────────── */
+    #chat_toggle {
+      position: fixed; top: 18px; right: 24px; z-index: 10000;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #FFD100 !important; color: #0a1628 !important;
+      border: none !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
+      padding: 0 !important;
+    }
+    #scout-chat-panel {
+      position: fixed; top: 80px; right: 24px; z-index: 9999;
+      width: 380px; max-width: calc(100vw - 48px); max-height: 72vh;
+      background: #ffffff; border-radius: 12px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+      display: flex; flex-direction: column; overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    .scout-chat-header {
+      background: linear-gradient(135deg, #0a1628 0%, #1a2f5a 100%);
+      color: #fff; padding: 12px 16px; font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;
+      border-bottom: 3px solid #FFD100;
+    }
+    .scout-chat-subtitle {
+      color: rgba(255,255,255,0.6); font-weight: 400; font-size: 0.72rem; margin-top: 2px;
+    }
+    #scout-chat-messages {
+      flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 6px;
+      background: #f8f9fa; min-height: 140px;
+    }
+    .scout-chat-empty { color: #9ca3af; font-size: 0.82rem; line-height: 1.5; }
+    .scout-chat-bubble {
+      font-size: 0.85rem; line-height: 1.55; white-space: pre-wrap;
+      padding: 9px 12px; border-radius: 9px; margin-bottom: 10px; max-width: 92%;
+    }
+    .scout-chat-bubble.user {
+      background: #1a2f5a; color: #fff; margin-left: auto;
+    }
+    .scout-chat-bubble.assistant {
+      background: #ffffff; color: #1e2533; border: 1px solid #e5e7eb;
+    }
+    .scout-chat-input-row {
+      padding: 10px 12px 12px; border-top: 1px solid #e5e7eb; background: #fff;
+    }
+    .scout-chat-input-row textarea {
+      font-size: 0.85rem !important; border-radius: 7px !important;
+      border: 1.5px solid #d1d5db !important; resize: none;
+    }
+    #chat_send { background: #C1121F !important; color: #fff !important; border: none !important;
+      font-weight: 700; border-radius: 7px; margin-top: 6px; width: 100%; }
+
     /* ── NUMERIC INPUT ───────────────────────────────────── */
     input[type='number'].form-control {
       border: 1.5px solid #d1d5db !important;
@@ -1541,6 +1599,26 @@ ui <- fluidPage(
         ),
         uiOutput("sc_no_data_msg"),
         uiOutput("skillcorner_ui")
+      )
+    )
+  ),
+
+  # ── Scouting chatbot (floating widget, top right) ──────────
+  actionButton(inputId = "chat_toggle", label = NULL, icon = icon("comments")),
+  conditionalPanel(
+    condition = "input.chat_toggle % 2 == 1",
+    tags$div(
+      id = "scout-chat-panel",
+      tags$div(class = "scout-chat-header",
+        "Asistente de Scouting",
+        tags$div(class = "scout-chat-subtitle",
+                 "Pregunta por un perfil de jugador en lenguaje natural")
+      ),
+      tags$div(id = "scout-chat-messages", uiOutput("chat_messages")),
+      tags$div(class = "scout-chat-input-row",
+        textAreaInput("chat_question", NULL, width = "100%", rows = 2,
+                      placeholder = "Ej. Busco un extremo joven, zurdo, rápido y buen regateador"),
+        actionButton("chat_send", "Enviar")
       )
     )
   )
@@ -2468,7 +2546,48 @@ server <- function(input, output, session) {
   #   presiones_labels <- sapply(gi_vars_presiones, clean_sc_col_name)
   #   make_sc_dt(tbl |> dplyr::filter(Métrica %in% presiones_labels))
   # }, server=FALSE)
-  
+
+  # ---- Scouting chatbot ----
+  chat_history <- reactiveVal(list())
+  chat_busy    <- reactiveVal(FALSE)
+
+  observeEvent(input$chat_send, {
+    q <- trimws(input$chat_question %||% "")
+    req(nzchar(q))
+    if (isTRUE(chat_busy())) return(invisible())
+    chat_busy(TRUE)
+    on.exit(chat_busy(FALSE))
+
+    hist <- chat_history()
+    hist[[length(hist) + 1]] <- list(role = "user", text = q)
+    chat_history(hist)
+    updateTextAreaInput(session, "chat_question", value = "")
+
+    answer <- tryCatch(
+      scout_chat_answer(q),
+      error = function(e) paste0("Error inesperado: ", conditionMessage(e))
+    )
+
+    hist <- chat_history()
+    hist[[length(hist) + 1]] <- list(role = "assistant", text = answer)
+    chat_history(hist)
+  })
+
+  output$chat_messages <- renderUI({
+    hist <- chat_history()
+    if (!length(hist)) {
+      return(tags$div(
+        class = "scout-chat-empty",
+        "Pregúntame por un perfil de jugador, por ejemplo: ",
+        tags$em("\"busco un extremo joven, zurdo, rápido y buen regateador\".")
+      ))
+    }
+    lapply(hist, function(m) {
+      cls <- if (m$role == "user") "scout-chat-bubble user" else "scout-chat-bubble assistant"
+      tags$div(class = cls, m$text)
+    })
+  })
+
 }
 
 shinyApp(ui, server)
