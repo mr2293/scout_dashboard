@@ -1479,7 +1479,7 @@ ui <- fluidPage(
     }
     #scout-chat-panel {
       position: fixed; top: 80px; right: 24px; z-index: 9999;
-      width: 380px; max-width: calc(100vw - 48px); max-height: 72vh;
+      width: 560px; max-width: calc(100vw - 48px); max-height: 78vh;
       background: #ffffff; border-radius: 12px;
       box-shadow: 0 8px 28px rgba(0,0,0,0.28);
       display: flex; flex-direction: column; overflow: hidden;
@@ -1506,9 +1506,36 @@ ui <- fluidPage(
     .scout-chat-bubble.user {
       background: #1a2f5a; color: #fff; margin-left: auto;
     }
-    .scout-chat-bubble.assistant {
-      background: #ffffff; color: #1e2533; border: 1px solid #e5e7eb;
+    .scout-chat-answer { margin-bottom: 14px; }
+    .scout-chat-caption {
+      font-size: 0.83rem; color: #1e2533; margin-bottom: 6px; line-height: 1.5;
     }
+    .scout-chat-meta {
+      font-size: 0.7rem; color: #9ca3af; margin-bottom: 8px; line-height: 1.4;
+    }
+    .scout-chat-hint {
+      font-size: 0.72rem; color: #6b7280; margin-top: 6px; font-style: italic;
+    }
+    .scout-chat-note {
+      font-size: 0.85rem; color: #1e2533; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 9px; padding: 9px 12px;
+    }
+    .scout-chat-note-error { color: #C1121F; border-color: #f3c6c6; background: #fdf3f3; }
+    .scout-chat-table-wrap {
+      overflow-x: auto; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: #fff;
+    }
+    .scout-chat-table {
+      border-collapse: collapse; font-size: 0.72rem; white-space: nowrap; width: 100%;
+    }
+    .scout-chat-table th, .scout-chat-table td {
+      padding: 5px 8px; border-bottom: 1px solid #eef0f4; text-align: left;
+    }
+    .scout-chat-table th {
+      background: #f8f9fa; color: #6b7280; text-transform: uppercase;
+      font-size: 0.62rem; letter-spacing: 0.4px; position: sticky; top: 0;
+    }
+    .scout-chat-table tbody tr:nth-child(even) { background: #fafbfc; }
     .scout-chat-input-row {
       padding: 10px 12px 12px; border-top: 1px solid #e5e7eb; background: #fff;
     }
@@ -1516,8 +1543,10 @@ ui <- fluidPage(
       font-size: 0.85rem !important; border-radius: 7px !important;
       border: 1.5px solid #d1d5db !important; resize: none;
     }
+    .scout-chat-input-row textarea:disabled { background: #f3f4f6 !important; color: #9ca3af; }
     #chat_send { background: #C1121F !important; color: #fff !important; border: none !important;
       font-weight: 700; border-radius: 7px; margin-top: 6px; width: 100%; }
+    #chat_send:disabled { opacity: 0.6; }
 
     /* ── NUMERIC INPUT ───────────────────────────────────── */
     input[type='number'].form-control {
@@ -1604,6 +1633,15 @@ ui <- fluidPage(
   ),
 
   # ── Scouting chatbot (floating widget, top right) ──────────
+  tags$script(HTML("
+    Shiny.addCustomMessageHandler('scout_chat_busy', function(busy) {
+      var box = document.getElementById('chat_question');
+      var btn = document.getElementById('chat_send');
+      if (box) box.disabled = busy;
+      if (btn) { btn.disabled = busy; btn.innerText = busy ? 'Enviando…' : 'Enviar'; }
+      if (!busy && box) { box.focus(); }
+    });
+  ")),
   actionButton(inputId = "chat_toggle", label = NULL, icon = icon("comments")),
   conditionalPanel(
     condition = "input.chat_toggle % 2 == 1",
@@ -2549,6 +2587,7 @@ server <- function(input, output, session) {
 
   # ---- Scouting chatbot ----
   chat_history <- reactiveVal(list())
+  chat_prior   <- reactiveVal(NULL)  # last query's result, for "más" pagination
   chat_busy    <- reactiveVal(FALSE)
 
   observeEvent(input$chat_send, {
@@ -2556,20 +2595,25 @@ server <- function(input, output, session) {
     req(nzchar(q))
     if (isTRUE(chat_busy())) return(invisible())
     chat_busy(TRUE)
-    on.exit(chat_busy(FALSE))
+    session$sendCustomMessage("scout_chat_busy", TRUE)
+    on.exit({
+      chat_busy(FALSE)
+      session$sendCustomMessage("scout_chat_busy", FALSE)
+    })
 
     hist <- chat_history()
     hist[[length(hist) + 1]] <- list(role = "user", text = q)
     chat_history(hist)
     updateTextAreaInput(session, "chat_question", value = "")
 
-    answer <- tryCatch(
-      scout_chat_answer(q),
-      error = function(e) paste0("Error inesperado: ", conditionMessage(e))
+    res <- tryCatch(
+      scout_chat_query(q, chat_prior()),
+      error = function(e) list(kind = "error", text = paste0("Error inesperado: ", conditionMessage(e)))
     )
+    if (res$kind %in% c("results", "more", "no_more")) chat_prior(res)
 
     hist <- chat_history()
-    hist[[length(hist) + 1]] <- list(role = "assistant", text = answer)
+    hist[[length(hist) + 1]] <- list(role = "assistant", res = res)
     chat_history(hist)
   })
 
@@ -2583,8 +2627,11 @@ server <- function(input, output, session) {
       ))
     }
     lapply(hist, function(m) {
-      cls <- if (m$role == "user") "scout-chat-bubble user" else "scout-chat-bubble assistant"
-      tags$div(class = cls, m$text)
+      if (m$role == "user") {
+        tags$div(class = "scout-chat-bubble user", m$text)
+      } else {
+        tags$div(class = "scout-chat-answer", scout_render_result(m$res))
+      }
     })
   })
 

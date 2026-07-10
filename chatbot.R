@@ -7,22 +7,61 @@
 #      metric columns relevant to the question), using the metrics glossary
 #      in scout_chat_system_prompt.md as the system prompt.
 #   2. R computes a composite percentile score across those metrics for the
-#      filtered player pool (all 27 leagues) and takes the top N players.
-#   3. ANSWER call to Claude: turn that computed table into a natural-language
-#      Spanish response that names specific players with their numbers.
+#      filtered player pool (all 27 leagues) and sorts the whole pool.
+#   3. The top page (10 players) is rendered as a table. If the scout asks
+#      for more ("más", "otros", ...), the next page is sliced from the same
+#      sorted pool with no extra API call.
 #
 # The markdown dictionary is read once at source time and kept in
 # SCOUT_CHAT_SYSTEM_PROMPT for the life of the app process -- it's the system
-# prompt on both calls, so metric selection and interpretation ("alto"/"bajo",
-# context-dependent metrics, etc.) stay grounded in that reference.
+# prompt on the extraction call, so metric selection stays grounded in that
+# reference.
 # ============================================================
 
-SCOUT_CHAT_SYSTEM_PROMPT <- paste(
-  readLines("scout_chat_system_prompt.md", warn = FALSE, encoding = "UTF-8"),
-  collapse = "\n"
+# Runtime correction appended to the dictionary (not edited into the source
+# file itself): the dictionary implies SkillCorner's `position_group`/`group`
+# categories and Game Intelligence vars (off-ball runs, passing-to-runs,
+# pressure resistance -- i.e. most `count_*_per_30_tip` / `*_percentage`
+# columns) are broadly available, but in the actual data they only exist for
+# Liga MX. SkillCorner physical vars (distance, HSR, sprint, accel/decel,
+# COD, psv99) cover 13 leagues. Every `player_season_*` StatsBomb column
+# covers all 27. Without this note the model reaches for Liga MX-only
+# columns by default and results collapse to Liga MX even for searches meant
+# to span all 27 leagues.
+SCOUT_CHAT_COVERAGE_NOTE <- paste(
+  "\n\n---\n\n",
+  "## Nota de cobertura por liga (correccion en tiempo de ejecucion)\n\n",
+  "Las columnas `position_group` y `group` (categorias SkillCorner en ingles como \"Wide Attacker\") ",
+  "y las variables de Game Intelligence de SkillCorner (carreras sin balon, pases a carreras, ",
+  "resistencia a la presion -- en general cualquier columna `count_*_per_30_tip` o su `*_percentage` ",
+  "asociado) SOLO existen para Liga MX; no existen en absoluto en las otras 26 ligas.\n\n",
+  "Las variables fisicas de SkillCorner (distancia, HSR, sprint, aceleraciones/desaceleraciones, ",
+  "cambios de direccion, psv99) cubren 13 ligas.\n\n",
+  "Las columnas `player_season_*` de StatsBomb cubren las 27 ligas.\n\n",
+  "Por defecto la busqueda debe considerar las 27 ligas por igual. Por lo tanto: no uses ",
+  "`position_groups` salvo que el scout pida explicitamente un sub-perfil SkillCorner y acepte ",
+  "limitarse a Liga MX; y prefiere metricas `player_season_*` (o fisicas SkillCorner de las 13 ligas) ",
+  "sobre variables de Game Intelligence, salvo que el scout mencione explicitamente Liga MX o pida ",
+  "algo que solo Game Intelligence puede responder (en ese caso está bien usarlas, pero acláralo en 'notes').",
+  collapse = ""
+)
+
+SCOUT_CHAT_SYSTEM_PROMPT <- paste0(
+  paste(readLines("scout_chat_system_prompt.md", warn = FALSE, encoding = "UTF-8"), collapse = "\n"),
+  SCOUT_CHAT_COVERAGE_NOTE
 )
 
 SCOUT_CHAT_MODEL <- "claude-sonnet-5"
+SCOUT_CHAT_PAGE_SIZE <- 10
+SCOUT_CHAT_MAX_RESULTS <- 30
+# A metric only counts toward the composite score if at least this fraction
+# of the (already position/age/foot/league-filtered) pool has data for it.
+# Without this, metrics that only exist for a handful of leagues -- e.g. the
+# dictionary notes SkillCorner Game Intelligence vars are Liga MX-only --
+# give every non-Liga-MX player an undefined (NaN) composite score, which
+# gets dropped, so results collapse to almost entirely Liga MX regardless of
+# how broadly the scout searched.
+SCOUT_CHAT_MIN_METRIC_COVERAGE <- 0.15
 
 # ---- Low-level API call ----------------------------------------------------
 call_claude_chat <- function(system_text, user_text, max_tokens = 1000) {
@@ -84,7 +123,7 @@ scout_build_extraction_prompt <- function(question) {
     '  "leagues": [],\n',
     '  "metrics": [],\n',
     '  "lower_is_better_metrics": [],\n',
-    '  "n_results": 5,\n',
+    '  "n_results": 10,\n',
     '  "notes": ""\n',
     "}\n\n",
     "Donde:\n",
@@ -93,12 +132,14 @@ scout_build_extraction_prompt <- function(question) {
     "- age_min / age_max: números si el scout pide 'joven' (usar el corte de 23 años), 'experimentado' (24+), ",
     "o un rango explícito; null si no aplica.\n",
     "- foot: uno de \"zurdo\", \"diestro\", \"ambidiestro\", o null si no se menciona el pie.\n",
-    "- leagues: nombres EXACTOS de `competition_name` si el scout menciona una liga específica; [] si busca en todas.\n",
+    "- leagues: nombres EXACTOS de `competition_name` si el scout menciona una liga específica; [] si busca en todas ",
+    "las 27 ligas disponibles (comportamiento por defecto -- no restrinjas a Liga MX salvo que se pida explícitamente).\n",
     "- metrics: entre 3 y 8 nombres EXACTOS de columnas del diccionario, las más relevantes para evaluar la pregunta ",
     "(usa el mapeo de palabras clave y los perfiles de posición del diccionario).\n",
     "- lower_is_better_metrics: el subconjunto de `metrics` donde menor = mejor, según las reglas de interpretación ",
     "direccional del diccionario.\n",
-    "- n_results: entero entre 3 y 10.\n",
+    "- n_results: entero, 10 por defecto; si el scout pide explícitamente un número distinto de jugadores, úsalo ",
+    "(máximo 30).\n",
     "- notes: una frase breve en español explicando tu interpretación de la pregunta.\n\n",
     "Usa EXCLUSIVAMENTE nombres de columnas que aparezcan en el diccionario de arriba. No inventes columnas."
   )
@@ -116,9 +157,29 @@ scout_parse_json_response <- function(text) {
   as.character(x)
 }
 
-# ---- Stage 2: filter spec -> ranked player table ---------------------------
+# ---- "Give me more" detection (no API call needed) --------------------------
+# Deliberately a whitelist of short canonical phrasings rather than "contains
+# the word más anywhere" -- a real question like "busco un central más
+# físico que técnico" also contains "más" but is a brand new search, not a
+# request to paginate the previous one.
+.SCOUT_MORE_PHRASES <- c(
+  "mas", "más", "dame mas", "dame más", "quiero mas", "quiero más",
+  "muestrame mas", "muéstrame más", "otros", "otras", "mas jugadores",
+  "más jugadores", "mas opciones", "más opciones", "siguientes",
+  "dame mas opciones", "dame más opciones", "ver mas", "ver más",
+  "mas por favor", "más por favor", "more", "give me more", "show me more",
+  "muestra mas", "muestra más", "amplia", "amplía", "ampliar"
+)
+scout_is_more_request <- function(question) {
+  q <- tolower(trimws(question))
+  q <- gsub("[¿?¡!.]", "", q)
+  q %in% .SCOUT_MORE_PHRASES
+}
+
+# ---- Stage 2: filter spec -> full ranked player pool ------------------------
 # df must be the combined all-leagues player pool (get_all_players_df()).
-scout_rank_players <- function(df, spec, all_cols) {
+# Returns the FULL sorted pool (not just one page) so pagination is free.
+scout_rank_players_full <- function(df, spec, all_cols) {
   d <- df
 
   primary_positions <- .as_chr_vec(spec$primary_positions)
@@ -131,18 +192,21 @@ scout_rank_players <- function(df, spec, all_cols) {
   # NOTE: the markdown dictionary documents SkillCorner's English position
   # groups (e.g. "Wide Attacker") under the name `position_group`, but in
   # the actual data those English labels live in the `group` column --
-  # `position_group` holds a separate Spanish taxonomy. Match on whichever
-  # column actually has them until the dictionary is corrected.
+  # `position_group` holds a separate Spanish taxonomy. Worse, `group` is
+  # only populated for Liga MX -- it doesn't exist at all for the other 26
+  # leagues -- so applying it as a hard filter silently collapses the whole
+  # search to Liga MX. Only apply it when it actually has broad-enough
+  # coverage in the current (position-filtered) pool; otherwise skip it and
+  # rely on `primary_position`, which StatsBomb populates for all 27 leagues.
   position_groups <- .as_chr_vec(spec$position_groups)
   if (length(position_groups)) {
-    has_pg <- "position_group" %in% names(d)
-    has_gp <- "group" %in% names(d)
-    if (has_pg && has_gp) {
-      d <- d |> dplyr::filter(position_group %in% position_groups | group %in% position_groups)
-    } else if (has_pg) {
-      d <- d |> dplyr::filter(position_group %in% position_groups)
-    } else if (has_gp) {
-      d <- d |> dplyr::filter(group %in% position_groups)
+    candidate_cols <- intersect(c("position_group", "group"), names(d))
+    usable_col <- Filter(function(col) {
+      mean(d[[col]] %in% position_groups) >= SCOUT_CHAT_MIN_METRIC_COVERAGE
+    }, candidate_cols)
+    if (length(usable_col)) {
+      match_any <- Reduce(`|`, lapply(usable_col, function(col) d[[col]] %in% position_groups))
+      d <- d[match_any, , drop = FALSE]
     }
   }
 
@@ -175,7 +239,20 @@ scout_rank_players <- function(df, spec, all_cols) {
 
   metrics <- intersect(.as_chr_vec(spec$metrics), all_cols)
   if (!length(metrics) || nrow(d) == 0) {
-    return(list(table = NULL, metrics = metrics, pool_n = nrow(d)))
+    return(list(table = NULL, metrics = character(0), dropped_metrics = character(0), pool_n = nrow(d)))
+  }
+
+  # Drop metrics with too little coverage in this pool (see constant comment
+  # above) so scoring doesn't silently collapse to whichever leagues happen
+  # to have that metric populated.
+  coverage <- sapply(metrics, function(col) {
+    mean(!is.na(suppressWarnings(as.numeric(d[[col]]))))
+  })
+  kept_metrics <- names(coverage)[coverage >= SCOUT_CHAT_MIN_METRIC_COVERAGE]
+  dropped_metrics <- setdiff(metrics, kept_metrics)
+  metrics <- kept_metrics
+  if (!length(metrics)) {
+    return(list(table = NULL, metrics = character(0), dropped_metrics = dropped_metrics, pool_n = nrow(d)))
   }
 
   lower_better <- intersect(.as_chr_vec(spec$lower_is_better_metrics), metrics)
@@ -199,15 +276,11 @@ scout_rank_players <- function(df, spec, all_cols) {
 
   d$.composite_score <- rowMeans(pct_mat, na.rm = TRUE)
   d <- d[is.finite(d$.composite_score), , drop = FALSE]
-  if (nrow(d) == 0) return(list(table = NULL, metrics = metrics, pool_n = 0))
+  if (nrow(d) == 0) return(list(table = NULL, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = 0))
 
-  n_results <- suppressWarnings(as.integer(spec$n_results %||% 5))
-  if (is.na(n_results)) n_results <- 5
-  n_results <- max(3, min(10, n_results))
+  d <- d |> dplyr::arrange(dplyr::desc(.composite_score))
 
-  top <- d |> dplyr::arrange(dplyr::desc(.composite_score)) |> dplyr::slice_head(n = n_results)
-
-  out <- top |> dplyr::transmute(
+  out <- d |> dplyr::transmute(
     Jugador  = player_name,
     Equipo   = team_name,
     Liga     = .league_label,
@@ -215,71 +288,128 @@ scout_rank_players <- function(df, spec, all_cols) {
     Edad     = round(.age),
     Score    = round(.composite_score, 1)
   )
-  for (col in metrics) out[[col]] <- round(suppressWarnings(as.numeric(top[[col]])), 3)
+  for (col in metrics) out[[col]] <- round(suppressWarnings(as.numeric(d[[col]])), 3)
 
-  list(table = out, metrics = metrics, pool_n = nrow(d))
+  list(table = out, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = nrow(d))
 }
 
-# ---- Stage 3: ranked table -> natural-language answer -----------------------
-scout_build_answer_prompt <- function(question, spec, rank_result) {
-  notes <- spec$notes
-  if (is.null(notes) || is.na(notes)) notes <- "N/A"
+scout_slice_page <- function(full_table, skip, n) {
+  if (is.null(full_table)) return(NULL)
+  total <- nrow(full_table)
+  if (skip >= total) return(NULL)
+  full_table[(skip + 1):min(skip + n, total), , drop = FALSE]
+}
 
-  if (is.null(rank_result$table) || nrow(rank_result$table) == 0) {
-    return(paste0(
-      "Un scout preguntó: \"", question, "\"\n\n",
-      "Interpretación aplicada: ", notes, "\n",
-      "La búsqueda con esos filtros no encontró jugadores (o no hay suficientes minutos jugados / datos).\n\n",
-      "Responde en español, brevemente, explicando que no se encontraron resultados y sugiere cómo ampliar ",
-      "la búsqueda (edad, liga, minutos, posición). No inventes jugadores ni cifras."
+# ---- Entry point used by the server -----------------------------------------
+# `prior` is the previous query's result list (or NULL), used to serve
+# "give me more" follow-ups without another extraction call.
+scout_chat_query <- function(question, prior = NULL) {
+  if (!is.null(prior) && !is.null(prior$full_table) && scout_is_more_request(question)) {
+    page <- scout_slice_page(prior$full_table, prior$shown, SCOUT_CHAT_PAGE_SIZE)
+    if (is.null(page)) {
+      return(list(
+        kind = "no_more", spec = prior$spec, metrics = prior$metrics,
+        dropped_metrics = prior$dropped_metrics, pool_n = prior$pool_n,
+        table = NULL, shown = prior$shown, full_table = prior$full_table
+      ))
+    }
+    return(list(
+      kind = "more", spec = prior$spec, metrics = prior$metrics,
+      dropped_metrics = prior$dropped_metrics, pool_n = prior$pool_n,
+      table = page, shown = prior$shown + nrow(page), full_table = prior$full_table
     ))
   }
 
-  tbl_txt <- paste(capture.output(print(rank_result$table, row.names = FALSE)), collapse = "\n")
-
-  paste0(
-    "Un scout del Club América preguntó: \"", question, "\"\n\n",
-    "Interpretación aplicada de la pregunta: ", notes, "\n",
-    "Métricas evaluadas: ", paste(rank_result$metrics, collapse = ", "), "\n",
-    "Tamaño del universo de jugadores tras aplicar filtros: ", rank_result$pool_n, "\n\n",
-    "Jugadores mejor evaluados (Score = percentil promedio compuesto de las métricas evaluadas, 0-100, ",
-    "ya calculado dentro del universo filtrado):\n\n",
-    tbl_txt, "\n\n",
-    "Con esta información, escribe una respuesta en español para el scout. Reglas:\n",
-    "- Menciona a los jugadores por nombre con su equipo y liga.\n",
-    "- Usa los valores numéricos exactos de la tabla; no inventes cifras ni jugadores fuera de la tabla.\n",
-    "- Interpreta los valores usando las reglas de direccionalidad e interpretación contextual del diccionario ",
-    "(por ejemplo, no digas simplemente 'alto es bueno' en métricas contexto-dependientes; aclara el contexto).\n",
-    "- Sé conciso: un párrafo breve de contexto, seguido de un jugador por línea con una justificación corta.\n",
-    "- No repitas la tabla completa ni respondas en JSON."
-  )
-}
-
-# ---- Entry point used by the server ----------------------------------------
-scout_chat_answer <- function(question) {
   df <- get_all_players_df()
   all_cols <- names(df)
 
   extraction_resp <- call_claude_chat(
     SCOUT_CHAT_SYSTEM_PROMPT,
     scout_build_extraction_prompt(question),
-    max_tokens = 700
+    max_tokens = 3000
   )
-  if (!extraction_resp$ok) return(extraction_resp$text)
+  if (!extraction_resp$ok) return(list(kind = "error", text = extraction_resp$text))
 
   spec <- scout_parse_json_response(extraction_resp$text)
   if (is.null(spec)) {
-    return("No pude interpretar la pregunta como una búsqueda de jugadores. ¿Puedes reformularla con más detalle (posición, edad, características)?")
+    return(list(
+      kind = "error",
+      text = "No pude interpretar la pregunta como una búsqueda de jugadores. ¿Puedes reformularla con más detalle (posición, edad, características)?"
+    ))
   }
 
-  rank_result <- scout_rank_players(df, spec, all_cols)
+  rank_result <- scout_rank_players_full(df, spec, all_cols)
+  if (is.null(rank_result$table)) {
+    return(list(
+      kind = "empty", spec = spec, metrics = rank_result$metrics,
+      dropped_metrics = rank_result$dropped_metrics, pool_n = rank_result$pool_n
+    ))
+  }
 
-  answer_resp <- call_claude_chat(
-    SCOUT_CHAT_SYSTEM_PROMPT,
-    scout_build_answer_prompt(question, spec, rank_result),
-    max_tokens = 900
+  n_first <- suppressWarnings(as.integer(spec$n_results %||% SCOUT_CHAT_PAGE_SIZE))
+  if (is.na(n_first)) n_first <- SCOUT_CHAT_PAGE_SIZE
+  n_first <- max(3, min(SCOUT_CHAT_MAX_RESULTS, n_first))
+
+  page <- scout_slice_page(rank_result$table, 0, n_first)
+
+  list(
+    kind = "results", spec = spec, metrics = rank_result$metrics,
+    dropped_metrics = rank_result$dropped_metrics, pool_n = rank_result$pool_n,
+    table = page, shown = nrow(page), full_table = rank_result$table
   )
-  if (!answer_resp$ok) return(answer_resp$text)
+}
 
-  answer_resp$text
+# ---- Rendering a query result as UI -----------------------------------------
+scout_html_table <- function(df) {
+  if (is.null(df) || nrow(df) == 0) return(NULL)
+  header <- tags$tr(lapply(names(df), function(nm) tags$th(nm)))
+  body_rows <- lapply(seq_len(nrow(df)), function(i) {
+    tags$tr(lapply(names(df), function(nm) tags$td(as.character(df[[nm]][i]))))
+  })
+  tags$div(
+    class = "scout-chat-table-wrap",
+    tags$table(class = "scout-chat-table", tags$thead(header), tags$tbody(body_rows))
+  )
+}
+
+scout_render_result <- function(res) {
+  switch(res$kind,
+    "error" = tags$div(class = "scout-chat-note scout-chat-note-error", res$text),
+    "empty" = tags$div(
+      class = "scout-chat-note",
+      "No se encontraron jugadores con los filtros interpretados",
+      if (!is.null(res$spec$notes) && nzchar(res$spec$notes)) paste0(" (", res$spec$notes, ")"),
+      ". Prueba ampliando la edad, los minutos jugados o las ligas.",
+      if (length(res$dropped_metrics)) {
+        tags$div(
+          class = "scout-chat-meta", style = "margin-top: 6px;",
+          sprintf(
+            "Nota: las métricas más relevantes para esta pregunta (%s) solo tienen datos en Liga MX, así que no se pudieron evaluar en el resto de las ligas. Menciona \"en Liga MX\" si quieres buscar solo ahí con estas métricas.",
+            paste(res$dropped_metrics, collapse = ", ")
+          )
+        )
+      }
+    ),
+    "no_more" = tags$div(class = "scout-chat-note", "Ya se mostraron todos los jugadores que cumplen estos filtros."),
+    "results" = ,
+    "more" = tagList(
+      if (!is.null(res$spec$notes) && nzchar(res$spec$notes)) {
+        tags$div(class = "scout-chat-caption", res$spec$notes)
+      },
+      tags$div(
+        class = "scout-chat-meta",
+        sprintf(
+          "%d jugadores (de %d en el universo filtrado) · métricas: %s%s",
+          res$shown, res$pool_n, paste(res$metrics, collapse = ", "),
+          if (length(res$dropped_metrics)) {
+            paste0(" · excluidas por baja cobertura fuera de su liga: ", paste(res$dropped_metrics, collapse = ", "))
+          } else ""
+        )
+      ),
+      scout_html_table(res$table),
+      if (res$shown < res$pool_n) {
+        tags$div(class = "scout-chat-hint", "Escribe \"más\" para ver más resultados.")
+      }
+    )
+  )
 }
