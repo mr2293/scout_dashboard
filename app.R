@@ -1482,20 +1482,11 @@ ui <- fluidPage(
       margin-top: 8px;
     }
 
-    /* ── SCOUT CHAT WIDGET ───────────────────────────────── */
-    #chat_toggle {
-      position: fixed; top: 18px; right: 24px; z-index: 10000;
-      width: 52px; height: 52px; border-radius: 50%;
-      background: #FFD100 !important; color: #0a1628 !important;
-      border: none !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-      font-size: 1.3rem; display: flex; align-items: center; justify-content: center;
-      padding: 0 !important;
-    }
+    /* ── SCOUT CHAT TAB ──────────────────────────────────── */
     #scout-chat-panel {
-      position: fixed; top: 80px; right: 24px; z-index: 9999;
-      width: 560px; max-width: calc(100vw - 48px); max-height: 78vh;
+      width: 100%; max-width: 900px; margin: 20px auto 0; max-height: 75vh;
       background: #ffffff; border-radius: 12px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
       display: flex; flex-direction: column; overflow: hidden;
       border: 1px solid #e5e7eb;
     }
@@ -1579,74 +1570,6 @@ ui <- fluidPage(
              "Análisis de rendimiento · StatsBomb + SkillCorner")
   ),
 
-  # ── Filters ───────────────────────────────────────────────
-  tags$div(
-    id = "filter-panel",
-    fluidRow(
-      column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
-      column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
-      column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
-      column(6, selectizeInput(
-        "player_search", "Buscar jugador", choices=NULL, multiple=FALSE,
-        options=list(placeholder="Escribe un nombre…", selectOnTab=TRUE,
-                     maxOptions=5000, openOnFocus=TRUE)
-      ))
-    ),
-    fluidRow(
-      column(2, selectInput("pos_filter", "Posición", choices="Todas", selected="Todas")),
-      column(2, selectInput("country_filter", "Nacionalidad", choices="Todas", selected="Todas")),
-      column(6,
-             sliderInput("min_minutes","Minutos jugados", min=0, max=4000,
-                         value=c(0,4000), step=50, width="100%"),
-             sliderInput("age_range","Rango de edad", min=15, max=45,
-                         value=c(17,45), step=1, width="100%")
-      ),
-      column(2, "")
-    )
-  ),
-
-  tags$hr(),
-
-  fluidRow(
-    column(7, uiOutput("tabs_ui")),
-    column(5, uiOutput("radar_panel"))
-  ),
-
-  uiOutput("second_row"),
-
-  tags$hr(),
-
-  # ── SkillCorner section ────────────────────────────────────
-  fluidRow(
-    column(12,
-      tags$div(
-        id = "sc-section",
-        tags$h4("SkillCorner — Datos Físicos y de Game Intelligence"),
-        tags$p(
-          style = "color:#6b7280; font-size:0.88em; margin-bottom:6px;",
-          "Percentiles vs jugadores de la misma posición. ",
-          "Game Intelligence solo disponible para Liga MX. ",
-          "Porteros no incluidos en datos SkillCorner."
-        ),
-        tags$details(
-          style = "margin-bottom:10px;",
-          tags$summary(
-            style = "cursor:pointer; font-size:0.83em; color:#1a2f5a; font-weight:600;",
-            "Ligas con datos SkillCorner disponibles (no todas las ligas incluyen todos los equipos ni jugadores)"
-          ),
-          tags$ul(
-            style = "margin:6px 0 0 16px; padding:0; font-size:0.83em; color:#4b5563;
-                     columns:3; list-style-type:disc;",
-            lapply(sort(SC_LEAGUES), function(lg) tags$li(lg))
-          )
-        ),
-        uiOutput("sc_no_data_msg"),
-        uiOutput("skillcorner_ui")
-      )
-    )
-  ),
-
-  # ── Scouting chatbot (floating widget, top right) ──────────
   tags$script(HTML("
     Shiny.addCustomMessageHandler('scout_chat_busy', function(busy) {
       var box = document.getElementById('chat_question');
@@ -1656,21 +1579,98 @@ ui <- fluidPage(
       if (!busy && box) { box.focus(); }
     });
   ")),
-  actionButton(inputId = "chat_toggle", label = NULL, icon = icon("comments")),
-  conditionalPanel(
-    condition = "input.chat_toggle % 2 == 1",
-    tags$div(
-      id = "scout-chat-panel",
-      tags$div(class = "scout-chat-header",
-        "Asistente de Scouting",
-        tags$div(class = "scout-chat-subtitle",
-                 "Pregunta por un perfil de jugador en lenguaje natural")
+
+  tabsetPanel(
+    id = "app_main_tabs",
+    type = "tabs",
+
+    tabPanel(
+      "Dashboard",
+
+      # ── Filters ─────────────────────────────────────────
+      tags$div(
+        id = "filter-panel",
+        fluidRow(
+          column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
+          column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
+          column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
+          column(6, selectizeInput(
+            "player_search", "Buscar jugador", choices=NULL, multiple=FALSE,
+            options=list(placeholder="Escribe un nombre…", selectOnTab=TRUE,
+                         maxOptions=5000, openOnFocus=TRUE)
+          ))
+        ),
+        fluidRow(
+          column(2, selectInput("pos_filter", "Posición", choices="Todas", selected="Todas")),
+          column(2, selectInput("country_filter", "Nacionalidad", choices="Todas", selected="Todas")),
+          column(6,
+                 sliderInput("min_minutes","Minutos jugados", min=0, max=4000,
+                             value=c(0,4000), step=50, width="100%"),
+                 sliderInput("age_range","Rango de edad", min=15, max=45,
+                             value=c(17,45), step=1, width="100%")
+          ),
+          column(2, "")
+        )
       ),
-      tags$div(id = "scout-chat-messages", uiOutput("chat_messages")),
-      tags$div(class = "scout-chat-input-row",
-        textAreaInput("chat_question", NULL, width = "100%", rows = 2,
-                      placeholder = "Ej. Busco un extremo joven, zurdo, rápido y buen regateador"),
-        actionButton("chat_send", "Enviar")
+
+      tags$hr(),
+
+      fluidRow(
+        column(7, uiOutput("tabs_ui")),
+        column(5, uiOutput("radar_panel"))
+      ),
+
+      uiOutput("second_row"),
+
+      tags$hr(),
+
+      # ── SkillCorner section ──────────────────────────────
+      fluidRow(
+        column(12,
+          tags$div(
+            id = "sc-section",
+            tags$h4("SkillCorner — Datos Físicos y de Game Intelligence"),
+            tags$p(
+              style = "color:#6b7280; font-size:0.88em; margin-bottom:6px;",
+              "Percentiles vs jugadores de la misma posición. ",
+              "Game Intelligence solo disponible para Liga MX. ",
+              "Porteros no incluidos en datos SkillCorner."
+            ),
+            tags$details(
+              style = "margin-bottom:10px;",
+              tags$summary(
+                style = "cursor:pointer; font-size:0.83em; color:#1a2f5a; font-weight:600;",
+                "Ligas con datos SkillCorner disponibles (no todas las ligas incluyen todos los equipos ni jugadores)"
+              ),
+              tags$ul(
+                style = "margin:6px 0 0 16px; padding:0; font-size:0.83em; color:#4b5563;
+                         columns:3; list-style-type:disc;",
+                lapply(sort(SC_LEAGUES), function(lg) tags$li(lg))
+              )
+            ),
+            uiOutput("sc_no_data_msg"),
+            uiOutput("skillcorner_ui")
+          )
+        )
+      )
+    ),
+
+    # ── Scouting chatbot ────────────────────────────────────
+    tabPanel(
+      "Asistente de Scouting",
+      tags$div(
+        id = "scout-chat-panel",
+        tags$div(class = "scout-chat-header",
+          "Asistente de Scouting",
+          tags$div(class = "scout-chat-subtitle",
+                   "Pregunta por un perfil de jugador en lenguaje natural")
+        ),
+        tags$div(id = "scout-chat-messages", uiOutput("chat_messages")),
+        tags$div(class = "scout-chat-input-row",
+          textAreaInput("chat_question", NULL, width = "100%", rows = 2,
+                        placeholder = "Ej. Busco un extremo joven, zurdo, rápido y buen regateador"),
+          actionButton("chat_send", "Enviar")
+        )
       )
     )
   )
