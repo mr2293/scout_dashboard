@@ -150,6 +150,7 @@ scout_build_extraction_prompt <- function(question) {
     '  "hispanohablante": null,\n',
     '  "top5_europa": null,\n',
     '  "sudamerica_principal": null,\n',
+    '  "scout_persona": null,\n',
     '  "n_results": 10,\n',
     '  "notes": ""\n',
     "}\n\n",
@@ -174,6 +175,10 @@ scout_build_extraction_prompt <- function(question) {
     "del diccionario); null en cualquier otro caso.\n",
     "- sudamerica_principal: true si el scout pide las ligas principales de Sudamérica (ver misma sección); null ",
     "en cualquier otro caso.\n",
+    "- scout_persona: uno de \"nacho\", \"ferrat\", \"jaime\" si el scout se identifica como esa persona o pide ",
+    "explícitamente las ligas de esa persona (ver sección \"Ligas por scout\" del diccionario); null en cualquier ",
+    "otro caso. Cuando se usa scout_persona, IGNORA leagues/top5_europa/sudamerica_principal -- las ligas de la ",
+    "persona reemplazan cualquier otro filtro de liga o región.\n",
     "- n_results: entero, 10 por defecto; si el scout pide explícitamente un número distinto de jugadores, úsalo ",
     "(máximo 30).\n",
     "- notes: una frase breve en español explicando tu interpretación de la pregunta.\n\n",
@@ -281,6 +286,23 @@ HISPANIC_NATIONS <- c(
 TOP5_EUROPA_LEAGUES <- c("Premier League", "LaLiga", "Bundesliga", "Serie A", "Ligue 1")
 SUDAMERICA_PRINCIPAL_LEAGUES <- c("Argentina", "Brasil", "Colombia", "Uruguay", "Ecuador", "Paraguay", "Chile")
 
+# See scout_chat_system_prompt.md "### Ligas por scout (Nacho / Ferrat / Jaime)".
+# "Ligas Europeas" here means ALL European leagues in the dataset (domestic +
+# UCL/UEL), not just the top-5 group above -- a broader remit than the generic
+# region filter.
+ALL_EUROPA_LEAGUES <- c(
+  "Premier League", "Championship", "LaLiga", "LaLiga 2", "Serie A", "Serie B",
+  "Bundesliga", "2. Bundesliga", "Ligue 1", "Eredivisie", "Bélgica", "Portugal",
+  "Turquía", "Escocia", "UEFA Champions League", "UEFA Europa League"
+)
+NACHO_LEAGUES  <- c("Argentina", "Uruguay", "Paraguay", "Chile", ALL_EUROPA_LEAGUES)
+FERRAT_LEAGUES <- c("Brasil", "Colombia", "Ecuador", ALL_EUROPA_LEAGUES)
+JAIME_LEAGUES  <- c("MLS", "Liga MX", ALL_EUROPA_LEAGUES)
+# Venezuela and Perú have no domestic league in this dataset, so Jaime's
+# remit for those two countries is expressed as player nationality instead
+# (unioned with JAIME_LEAGUES, not intersected) -- see scout_rank_players_full.
+JAIME_NATIONALITIES <- c("Venezuela", "Perú")
+
 # ---- Stage 2: filter spec -> full ranked player pool ------------------------
 # df must be the combined all-leagues player pool (get_scout_chat_player_pool()).
 # Returns the FULL sorted pool (not just one page) so pagination is free.
@@ -332,11 +354,30 @@ scout_rank_players_full <- function(df, spec, all_cols) {
     d <- d[keep, , drop = FALSE]
   }
 
-  leagues <- .as_chr_vec(spec$leagues)
-  if (isTRUE(spec$top5_europa)) leagues <- union(leagues, TOP5_EUROPA_LEAGUES)
-  if (isTRUE(spec$sudamerica_principal)) leagues <- union(leagues, SUDAMERICA_PRINCIPAL_LEAGUES)
-  if (length(leagues) && ".league_label" %in% names(d)) {
-    d <- d |> dplyr::filter(.league_label %in% leagues)
+  # scout_persona (Nacho/Ferrat/Jaime) replaces any other league/region
+  # filter rather than combining with it -- see scout_chat_system_prompt.md
+  # "### Ligas por scout".
+  persona <- spec$scout_persona
+  persona_key <- if (!is.null(persona) && !is.na(persona)) tolower(trimws(persona)) else NA_character_
+
+  if (!is.na(persona_key) && persona_key %in% c("nacho", "ferrat", "jaime") && ".league_label" %in% names(d)) {
+    persona_leagues <- switch(persona_key,
+      "nacho"  = NACHO_LEAGUES,
+      "ferrat" = FERRAT_LEAGUES,
+      "jaime"  = JAIME_LEAGUES
+    )
+    match_league <- d$.league_label %in% persona_leagues
+    if (persona_key == "jaime" && "player_country" %in% names(d)) {
+      match_league <- match_league | d$player_country %in% JAIME_NATIONALITIES
+    }
+    d <- d[match_league, , drop = FALSE]
+  } else {
+    leagues <- .as_chr_vec(spec$leagues)
+    if (isTRUE(spec$top5_europa)) leagues <- union(leagues, TOP5_EUROPA_LEAGUES)
+    if (isTRUE(spec$sudamerica_principal)) leagues <- union(leagues, SUDAMERICA_PRINCIPAL_LEAGUES)
+    if (length(leagues) && ".league_label" %in% names(d)) {
+      d <- d |> dplyr::filter(.league_label %in% leagues)
+    }
   }
 
   # Transfermarkt fields have partial coverage (only matched players) --

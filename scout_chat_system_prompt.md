@@ -99,6 +99,25 @@ El dataset completo cubre 27 ligas/competencias (no solo las 6 competencias de M
 
 Nota: no incluye las competencias continentales (CONMEBOL Libertadores) salvo que el scout las pida explícitamente por separado.
 
+### Ligas por scout (Nacho / Ferrat / Jaime)
+
+Cuando el scout se identifique por uno de estos nombres, o pida explícitamente "las ligas de [nombre]" (ej. "enséñame solo jugadores de las ligas de Nacho"), **restringir la búsqueda exclusivamente al conjunto de ligas de esa persona** (reemplaza cualquier otro filtro de liga o región, no se combina con ellos):
+
+**Nacho:**
+- `Argentina`, `Uruguay`, `Paraguay`, `Chile`
+- Ligas Europeas (todas las ligas europeas del dataset, ver abajo)
+
+**Ferrat:**
+- `Brasil`, `Colombia`, `Ecuador`
+- Ligas Europeas
+
+**Jaime:**
+- `MLS`, `Liga MX`
+- Ligas Europeas
+- Adicionalmente, jugadores de **nacionalidad** venezolana o peruana en cualquier liga — no existe liga doméstica de Venezuela ni de Perú en el dataset, así que para estos dos países el filtro es por nacionalidad del jugador, no por liga.
+
+**Ligas Europeas** (para los tres scouts) = todas las ligas europeas del dataset: `Premier League`, `Championship`, `LaLiga`, `LaLiga 2`, `Serie A`, `Serie B`, `Bundesliga`, `2. Bundesliga`, `Ligue 1`, `Eredivisie`, `Bélgica`, `Portugal`, `Turquía`, `Escocia`, `UEFA Champions League`, `UEFA Europa League`.
+
 ### Temporadas (`season_name`)
 
 Formato split-year usado por Liga MX (un Apertura + un Clausura por temporada):
