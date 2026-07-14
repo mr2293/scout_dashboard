@@ -1518,6 +1518,23 @@ ui <- fluidPage(
     .scout-chat-meta {
       font-size: 0.7rem; color: #9ca3af; margin-bottom: 8px; line-height: 1.4;
     }
+    .scout-chat-methodology {
+      font-size: 0.78rem; color: #1e2533; background: #f5f7fb;
+      border: 1px solid #dde3ee; border-radius: 8px; padding: 9px 12px;
+      margin-bottom: 10px; line-height: 1.5;
+    }
+    .scout-chat-methodology-title {
+      font-weight: 600; font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.4px; color: #1a2f5a; margin-bottom: 4px;
+    }
+    .scout-chat-methodology-body { color: #4b5563; margin-bottom: 6px; }
+    .scout-chat-methodology-metrics {
+      margin: 0; padding-left: 18px; columns: 2; column-gap: 18px;
+    }
+    .scout-chat-methodology-metrics li { font-size: 0.75rem; break-inside: avoid; }
+    .scout-chat-methodology-metrics code {
+      font-size: 0.72rem; background: #eef1f7; padding: 1px 4px; border-radius: 4px;
+    }
     .scout-chat-hint {
       font-size: 0.72rem; color: #6b7280; margin-top: 6px; font-style: italic;
     }

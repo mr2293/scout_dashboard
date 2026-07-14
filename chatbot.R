@@ -84,6 +84,14 @@ SCOUT_CHAT_MAX_RESULTS <- 30
 SCOUT_CHAT_MIN_METRIC_COVERAGE <- 0.15
 
 # ---- Low-level API call ----------------------------------------------------
+# temperature is pinned low (not 0 -- Anthropic doesn't guarantee bit-identical
+# output even at 0) so that the same question reliably extracts the same
+# metric/filter spec run to run. At the previous default (unset -> 1.0), the
+# same free-text prompt could have the model pick a different subset of the
+# "3 a 8" scoring metrics on each call, silently producing a different
+# composite score and ranking for what looked like an identical query.
+SCOUT_CHAT_TEMPERATURE <- 0.1
+
 call_claude_chat <- function(system_text, user_text, max_tokens = 1000) {
   api_key <- Sys.getenv("ANTHROPIC_API_KEY")
   if (nchar(trimws(api_key)) == 0) {
@@ -99,10 +107,11 @@ call_claude_chat <- function(system_text, user_text, max_tokens = 1000) {
         "content-type"      = "application/json"
       ),
       body = jsonlite::toJSON(list(
-        model      = SCOUT_CHAT_MODEL,
-        max_tokens = max_tokens,
-        system     = system_text,
-        messages   = list(list(role = "user", content = user_text))
+        model       = SCOUT_CHAT_MODEL,
+        max_tokens  = max_tokens,
+        temperature = SCOUT_CHAT_TEMPERATURE,
+        system      = system_text,
+        messages    = list(list(role = "user", content = user_text))
       ), auto_unbox = TRUE),
       encode = "raw"
     ),
@@ -474,7 +483,7 @@ scout_rank_players_full <- function(df, spec, all_cols) {
     format(d$contract_expires_date, "%d/%m/%Y"))
   if (isTRUE(spec$hispanohablante)) out[["Nacionalidad"]] <- d$player_country
 
-  list(table = out, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = nrow(d))
+  list(table = out, metrics = metrics, dropped_metrics = dropped_metrics, pool_n = nrow(d), lower_better = lower_better)
 }
 
 scout_slice_page <- function(full_table, skip, n) {
@@ -494,12 +503,14 @@ scout_chat_query <- function(question, prior = NULL) {
       return(list(
         kind = "no_more", spec = prior$spec, metrics = prior$metrics,
         dropped_metrics = prior$dropped_metrics, pool_n = prior$pool_n,
+        lower_better = prior$lower_better,
         table = NULL, shown = prior$shown, full_table = prior$full_table
       ))
     }
     return(list(
       kind = "more", spec = prior$spec, metrics = prior$metrics,
       dropped_metrics = prior$dropped_metrics, pool_n = prior$pool_n,
+      lower_better = prior$lower_better,
       table = page, shown = prior$shown + nrow(page), full_table = prior$full_table
     ))
   }
@@ -526,7 +537,8 @@ scout_chat_query <- function(question, prior = NULL) {
   if (is.null(rank_result$table)) {
     return(list(
       kind = "empty", spec = spec, metrics = rank_result$metrics,
-      dropped_metrics = rank_result$dropped_metrics, pool_n = rank_result$pool_n
+      dropped_metrics = rank_result$dropped_metrics, pool_n = rank_result$pool_n,
+      lower_better = rank_result$lower_better
     ))
   }
 
@@ -539,6 +551,7 @@ scout_chat_query <- function(question, prior = NULL) {
   list(
     kind = "results", spec = spec, metrics = rank_result$metrics,
     dropped_metrics = rank_result$dropped_metrics, pool_n = rank_result$pool_n,
+    lower_better = rank_result$lower_better,
     table = page, shown = nrow(page), full_table = rank_result$table
   )
 }
@@ -553,6 +566,37 @@ scout_html_table <- function(df) {
   tags$div(
     class = "scout-chat-table-wrap",
     tags$table(class = "scout-chat-table", tags$thead(header), tags$tbody(body_rows))
+  )
+}
+
+# Prominent, always-shown explanation of how the Score column was built --
+# scouts kept treating Score as if it meant the same thing across different
+# league filters (it doesn't: it's a percentile rank within THAT query's
+# pool, not an absolute rating -- see SCOUT_CHAT_MIN_METRIC_COVERAGE comment
+# above and scout_rank_players_full). Listing the exact metrics with their
+# direction (mayor/menor = mejor) up front, instead of burying them in a
+# one-line caption, lets a scout sanity-check or challenge a ranking instead
+# of treating Score as an opaque number.
+scout_methodology_box <- function(res) {
+  if (!length(res$metrics)) return(NULL)
+  metric_items <- lapply(res$metrics, function(m) {
+    arrow <- if (m %in% res$lower_better) "menor = mejor" else "mayor = mejor"
+    tags$li(tags$code(m), sprintf(" (%s)", arrow))
+  })
+  tags$div(
+    class = "scout-chat-methodology",
+    tags$div(
+      class = "scout-chat-methodology-title",
+      "Cómo se calculó este ranking"
+    ),
+    tags$div(
+      class = "scout-chat-methodology-body",
+      sprintf(
+        "Score = promedio simple del percentil de cada métrica (0-100), calculado únicamente entre los %d jugadores del universo filtrado por esta pregunta. Todas las métricas pesan igual. Un mismo jugador puede tener un Score distinto en otra búsqueda si cambia el universo (ej. otro grupo de ligas), aunque sus estadísticas no cambien -- el número solo es comparable dentro de esta tabla.",
+        res$pool_n
+      )
+    ),
+    tags$ul(class = "scout-chat-methodology-metrics", metric_items)
   )
 }
 
@@ -580,11 +624,12 @@ scout_render_result <- function(res) {
       if (!is.null(res$spec$notes) && nzchar(res$spec$notes)) {
         tags$div(class = "scout-chat-caption", res$spec$notes)
       },
+      scout_methodology_box(res),
       tags$div(
         class = "scout-chat-meta",
         sprintf(
-          "%d jugadores (de %d en el universo filtrado) · métricas: %s%s",
-          res$shown, res$pool_n, paste(res$metrics, collapse = ", "),
+          "%d jugadores mostrados (de %d en el universo filtrado)%s",
+          res$shown, res$pool_n,
           if (length(res$dropped_metrics)) {
             paste0(" · excluidas por baja cobertura fuera de su liga: ", paste(res$dropped_metrics, collapse = ", "))
           } else ""
