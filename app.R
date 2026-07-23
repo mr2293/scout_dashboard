@@ -16,6 +16,9 @@
 #   - Porteros excluded from SC table
 # ============================================================
 
+# install.packages(c("dplyr", "ggplot2", "plotly", "forcats", "rlang", "stringr", "readr", "devtools",
+#                    "shinythemes", "bslib", "fmsb", "scales", "DT", "httr", "jsonlite", "shiny", "gt"))
+
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -453,9 +456,13 @@ compute_age_years <- function(birth_date_chr) {
 # Looks up Transfermarkt market value / contract expiry / agent for a
 # player+team and returns them as three Métrica/Valor/Percentil rows,
 # falling back to "–" when there's no match in the crosswalk.
+# team_name may be a "TeamA / TeamB" string for a player consolidated
+# across a mid-season transfer (see dedup_transfers()); each part is
+# tried in turn since the crosswalk keys on the original single team.
 build_transfermarkt_rows <- function(player_name, team_name) {
+  teams <- trimws(strsplit(team_name, "/", fixed = TRUE)[[1]])
   tm_row <- tm_crosswalk |>
-    dplyr::filter(player_name == !!player_name, team_name == !!team_name) |>
+    dplyr::filter(player_name == !!player_name, team_name %in% !!teams) |>
     dplyr::slice_head(n = 1)
 
   field <- function(col) {
@@ -484,6 +491,13 @@ apply_scatter_filters <- function(df, minutes_range = c(0, Inf), age_range = c(0
 }
 
 summarise_kpis <- function(df, pg, kpis_named_vec) {
+  # Some players have duplicate rows within a grouping key (SC join can
+  # produce more than one row per player); dedupe first so each group
+  # passed to summarise() has exactly one row, since these kpi expressions
+  # pass columns through unaggregated.
+  df <- df |>
+    distinct(player_name, team_name, primary_position, position_group,
+             player_season_minutes, .keep_all = TRUE)
   sy <- syms(unname(kpis_named_vec))
   names(sy) <- names(kpis_named_vec)
   df |>
@@ -1142,11 +1156,35 @@ all_players_df_from_cache <- function(scout_list, league_map) {
 # ============================================================
 # TRANSFER DEDUPLICATION
 # Players who changed teams mid-season appear as two rows in the
-# bound data. For radar / stats table / similarity we merge them
-# into one row using a minutes-weighted average of per-90 stats.
-# Scatter plots read directly from the raw league catalog so they
-# keep both stints as separate data points (intentional).
+# bound data (one per team_name, keyed by player_id). We merge them
+# into one row everywhere (scatter plots, radar, stats table,
+# similarity) using a minutes-weighted average of per-90 stats, so a
+# transferred player's profile is shown as a single combined season
+# rather than split across teams.
 # ============================================================
+
+# Collapses literal duplicate rows for the same player at the same team
+# *in the same season* (a data-join artifact, not a real transfer) down
+# to one row, before dedup_transfers() merges real multi-team/multi-season
+# stints. Grouping includes season_name (when present) so that a player
+# who was at the same club in two different seasons -- a real, distinct
+# pair of rows once multiple seasons are loaded -- isn't mistaken for a
+# duplicate. Rows with no player_id are left untouched since they can't
+# be safely grouped.
+dedup_same_team <- function(df) {
+  if (!"player_id" %in% names(df)) return(df)
+  has_id <- !is.na(df$player_id) & nzchar(df$player_id)
+  with_id    <- df[has_id, , drop = FALSE]
+  without_id <- df[!has_id, , drop = FALSE]
+  group_cols <- c("player_id", "team_name",
+                  intersect("season_name", names(with_id)))
+  with_id <- with_id |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(group_cols))) |>
+    dplyr::slice_head(n = 1) |>
+    dplyr::ungroup()
+  dplyr::bind_rows(with_id, without_id)
+}
+
 dedup_transfers <- function(df) {
   if (!"player_id" %in% names(df)) return(df)
 
@@ -1197,10 +1235,12 @@ dedup_transfers <- function(df) {
       base_row[[nineties_col]] <- sum(rows[[nineties_col]], na.rm = TRUE)
 
     # Concatenate team names and leagues so provenance is visible
-    teams   <- unique(rows$team_name[!is.na(rows$team_name)])
-    leagues <- unique(rows$.league_label[!is.na(rows$.league_label)])
-    base_row$team_name    <- paste(teams,   collapse = " / ")
-    base_row$.league_label <- paste(leagues, collapse = " / ")
+    teams <- unique(rows$team_name[!is.na(rows$team_name)])
+    base_row$team_name <- paste(teams, collapse = " / ")
+    if (".league_label" %in% names(rows)) {
+      leagues <- unique(rows$.league_label[!is.na(rows$.league_label)])
+      base_row$.league_label <- paste(leagues, collapse = " / ")
+    }
 
     base_row
   })
@@ -1626,7 +1666,7 @@ ui <- fluidPage(
                  sliderInput("age_range","Rango de edad", min=15, max=45,
                              value=c(17,45), step=1, width="100%")
           ),
-          column(2, "")
+          column(2, selectInput("season_filter", "Temporada", choices="Todas", selected="Todas"))
         )
       ),
 
@@ -1699,7 +1739,9 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   # ---- Primary data ----
-  league_df <- reactive({
+  # Pre-season-filter, pre-dedup data for the selected league. Used both to
+  # populate the season_filter choices and as the base league_df() builds on.
+  league_df_raw <- reactive({
     df <- get_league_df(scout, input$league)
     if ("country_id" %in% names(df)) {
       id_str <- as.character(df$country_id)
@@ -1709,7 +1751,32 @@ server <- function(input, output, session) {
     }
     df
   })
-  
+
+  # ---- Sync season_filter choices with league ----
+  observeEvent(league_df_raw(), {
+    df <- league_df_raw()
+    seasons <- if ("season_name" %in% names(df)) {
+      sort(unique(as.character(df$season_name[!is.na(df$season_name)])))
+    } else character(0)
+    updateSelectInput(session, "season_filter",
+                      choices  = c(seasons, "Acumulado"),
+                      selected = if (length(seasons)) tail(seasons, 1) else "Acumulado")
+  }, ignoreInit = FALSE)
+
+  # ---- Primary data: season-filtered (or accumulated), transfers merged ----
+  league_df <- reactive({
+    df <- league_df_raw()
+    sf <- input$season_filter
+    if (!is.null(sf) && nzchar(sf) && sf != "Acumulado" && sf != "Todas" &&
+        "season_name" %in% names(df)) {
+      df <- df |> dplyr::filter(season_name == sf)
+    }
+    # "Acumulado" (or no season picked yet) keeps every season's rows here;
+    # dedup_transfers merges them per player_id same as it merges mid-season
+    # team transfers, giving one combined-seasons profile per player.
+    df |> dedup_same_team() |> dedup_transfers()
+  })
+
   # ---- Sync sliders with league ----
   observeEvent(league_df(), {
     df <- league_df()

@@ -19,43 +19,124 @@ library(fmsb)
 username = Sys.getenv("SB_USERNAME")
 password = Sys.getenv("SB_PASSWORD")
 
-# comps <- competitions(username,password)
+comps <- competitions(username,password)
 
-ligamx <- matchesvector(username, password, season_id = 318, competition_id = 73)
-ccl <- matchesvector(username, password, season_id = 316, competition_id = 101)
-arg <- matchesvector(username, password, season_id = 316, competition_id = 81)
-# arg <- matchesvector(username, password, season_id = 315, competition_id = 81)
-# brasil <- matchesvector(username, password, season_id = 315, competition_id = 71)
-brasil <- matchesvector(username, password, season_id = 316, competition_id = 71)
-colombia <- matchesvector(username, password, season_id = 316, competition_id = 74)
-# colombia <- matchesvector(username, password, season_id = 315, competition_id = 74)
-# ecuador <- matchesvector(username, password, season_id = 315, competition_id = 105)
-ecuador <- matchesvector(username, password, season_id = 316, competition_id = 105)
-# chile <- matchesvector(username, password, season_id = 315, competition_id = 103)
-chile <- matchesvector(username, password, season_id = 316, competition_id = 103)
-# paraguay <- matchesvector(username, password, season_id = 315, competition_id = 247)
-paraguay <- matchesvector(username, password, season_id = 316, competition_id = 247)
-# uruguay <- matchesvector(username, password, season_id = 315, competition_id = 111)
-uruguay <- matchesvector(username, password, season_id = 316, competition_id = 111)
-# mls <- matchesvector(username, password, season_id = 315, competition_id = 44)
-mls <- matchesvector(username, password, season_id = 316, competition_id = 44)
-champions <- matchesvector(username, password, season_id = 318, competition_id = 16)
-premier <- matchesvector(username, password, season_id = 318, competition_id = 2)
-championship <- matchesvector(username, password, season_id = 318, competition_id = 3)
-laliga <- matchesvector(username, password, season_id = 318, competition_id = 11)
-laliga_2 <- matchesvector(username, password, season_id = 318, competition_id = 42)
-serie_a <- matchesvector(username, password, season_id = 318, competition_id = 12)
-serie_b <- matchesvector(username, password, season_id = 318, competition_id = 84)
-bundesliga <- matchesvector(username, password, season_id = 318, competition_id = 9)
-bundesliga_2 <- matchesvector(username, password, season_id = 318, competition_id = 10)
-ligue_1 <- matchesvector(username, password, season_id = 318, competition_id = 7)
-eredivisie <- matchesvector(username, password, season_id = 318, competition_id = 6)
-belgica <- matchesvector(username, password, season_id = 318, competition_id = 46)
+# ============================================================
+# SEASON IDs
+#   318 = 2025/2026 (Europe + Liga MX calendar)  | 351 = 2026/2027
+#   316 = 2025      (Americas calendar)          | 355 = 2026
+# Each league below pulls both the current and the newly-added season
+# and concatenates the match id vectors, so every downstream variable
+# (ligamx, jugs_ligamx, goles_ligamx, ...) covers both seasons at once.
+# Libertadores is left on season_id 315 only -- no 2026 mapping was
+# given for it, unlike the other Americas-calendar competitions.
+# ============================================================
+
+ligamx_2526 <- matchesvector(username, password, season_id = 318, competition_id = 73)
+ligamx_2627 <- matchesvector(username, password, season_id = 351, competition_id = 73)
+ligamx <- c(ligamx_2526, ligamx_2627)
+
+ccl_2025 <- matchesvector(username, password, season_id = 316, competition_id = 101)
+ccl_2026 <- matchesvector(username, password, season_id = 355, competition_id = 101)
+ccl <- c(ccl_2025, ccl_2026)
+
+arg_2025 <- matchesvector(username, password, season_id = 316, competition_id = 81)
+arg_2026 <- matchesvector(username, password, season_id = 355, competition_id = 81)
+arg <- c(arg_2025, arg_2026)
+
+brasil_2025 <- matchesvector(username, password, season_id = 316, competition_id = 71)
+brasil_2026 <- matchesvector(username, password, season_id = 355, competition_id = 71)
+brasil <- c(brasil_2025, brasil_2026)
+
+colombia_2025 <- matchesvector(username, password, season_id = 316, competition_id = 74)
+colombia_2026 <- matchesvector(username, password, season_id = 355, competition_id = 74)
+colombia <- c(colombia_2025, colombia_2026)
+
+ecuador_2025 <- matchesvector(username, password, season_id = 316, competition_id = 105)
+ecuador_2026 <- matchesvector(username, password, season_id = 355, competition_id = 105)
+ecuador <- c(ecuador_2025, ecuador_2026)
+
+chile_2025 <- matchesvector(username, password, season_id = 316, competition_id = 103)
+chile_2026 <- matchesvector(username, password, season_id = 355, competition_id = 103)
+chile <- c(chile_2025, chile_2026)
+
+paraguay_2025 <- matchesvector(username, password, season_id = 316, competition_id = 247)
+paraguay_2026 <- matchesvector(username, password, season_id = 355, competition_id = 247)
+paraguay <- c(paraguay_2025, paraguay_2026)
+
+uruguay_2025 <- matchesvector(username, password, season_id = 316, competition_id = 111)
+uruguay_2026 <- matchesvector(username, password, season_id = 355, competition_id = 111)
+uruguay <- c(uruguay_2025, uruguay_2026)
+
+mls_2025 <- matchesvector(username, password, season_id = 316, competition_id = 44)
+mls_2026 <- matchesvector(username, password, season_id = 355, competition_id = 44)
+mls <- c(mls_2025, mls_2026)
+
+champions_2526 <- matchesvector(username, password, season_id = 318, competition_id = 16)
+champions_2627 <- matchesvector(username, password, season_id = 351, competition_id = 16)
+champions <- c(champions_2526, champions_2627)
+
+premier_2526 <- matchesvector(username, password, season_id = 318, competition_id = 2)
+premier_2627 <- matchesvector(username, password, season_id = 351, competition_id = 2)
+premier <- c(premier_2526, premier_2627)
+
+championship_2526 <- matchesvector(username, password, season_id = 318, competition_id = 3)
+championship_2627 <- matchesvector(username, password, season_id = 351, competition_id = 3)
+championship <- c(championship_2526, championship_2627)
+
+laliga_2526 <- matchesvector(username, password, season_id = 318, competition_id = 11)
+laliga_2627 <- matchesvector(username, password, season_id = 351, competition_id = 11)
+laliga <- c(laliga_2526, laliga_2627)
+
+laliga_2_2526 <- matchesvector(username, password, season_id = 318, competition_id = 42)
+laliga_2_2627 <- matchesvector(username, password, season_id = 351, competition_id = 42)
+laliga_2 <- c(laliga_2_2526, laliga_2_2627)
+
+serie_a_2526 <- matchesvector(username, password, season_id = 318, competition_id = 12)
+serie_a_2627 <- matchesvector(username, password, season_id = 351, competition_id = 12)
+serie_a <- c(serie_a_2526, serie_a_2627)
+
+serie_b_2526 <- matchesvector(username, password, season_id = 318, competition_id = 84)
+serie_b_2627 <- matchesvector(username, password, season_id = 351, competition_id = 84)
+serie_b <- c(serie_b_2526, serie_b_2627)
+
+bundesliga_2526 <- matchesvector(username, password, season_id = 318, competition_id = 9)
+bundesliga_2627 <- matchesvector(username, password, season_id = 351, competition_id = 9)
+bundesliga <- c(bundesliga_2526, bundesliga_2627)
+
+bundesliga_2_2526 <- matchesvector(username, password, season_id = 318, competition_id = 10)
+bundesliga_2_2627 <- matchesvector(username, password, season_id = 351, competition_id = 10)
+bundesliga_2 <- c(bundesliga_2_2526, bundesliga_2_2627)
+
+ligue_1_2526 <- matchesvector(username, password, season_id = 318, competition_id = 7)
+ligue_1_2627 <- matchesvector(username, password, season_id = 351, competition_id = 7)
+ligue_1 <- c(ligue_1_2526, ligue_1_2627)
+
+eredivisie_2526 <- matchesvector(username, password, season_id = 318, competition_id = 6)
+eredivisie_2627 <- matchesvector(username, password, season_id = 351, competition_id = 6)
+eredivisie <- c(eredivisie_2526, eredivisie_2627)
+
+belgica_2526 <- matchesvector(username, password, season_id = 318, competition_id = 46)
+belgica_2627 <- matchesvector(username, password, season_id = 351, competition_id = 46)
+belgica <- c(belgica_2526, belgica_2627)
+
 libertadores <- matchesvector(username, password, season_id = 315, competition_id = 102)
-portugal <- matchesvector(username, password, season_id = 318, competition_id = 13)
-turquia <- matchesvector(username, password, season_id = 318, competition_id = 85)
-escocia <- matchesvector(username, password, season_id = 318, competition_id = 51)
-europa_league <- matchesvector(username, password, season_id = 318, competition_id = 35)
+
+portugal_2526 <- matchesvector(username, password, season_id = 318, competition_id = 13)
+portugal_2627 <- matchesvector(username, password, season_id = 351, competition_id = 13)
+portugal <- c(portugal_2526, portugal_2627)
+
+turquia_2526 <- matchesvector(username, password, season_id = 318, competition_id = 85)
+turquia_2627 <- matchesvector(username, password, season_id = 351, competition_id = 85)
+turquia <- c(turquia_2526, turquia_2627)
+
+escocia_2526 <- matchesvector(username, password, season_id = 318, competition_id = 51)
+escocia_2627 <- matchesvector(username, password, season_id = 351, competition_id = 51)
+escocia <- c(escocia_2526, escocia_2627)
+
+europa_league_2526 <- matchesvector(username, password, season_id = 318, competition_id = 35)
+europa_league_2627 <- matchesvector(username, password, season_id = 351, competition_id = 35)
+europa_league <- c(europa_league_2526, europa_league_2627)
 
 # ligamxlineups <- alllineups(username, password, ligamx, parallel = T)
 # ligamxlineups <- cleanlineups(ligamxlineups)
@@ -138,35 +219,111 @@ europa_league <- matchesvector(username, password, season_id = 318, competition_
 # libertadores_lineups <- alllineups(username, password, libertadores, parallel = T)
 # libertadores_lineups <- cleanlineups(libertadores_lineups)
 
-jugs_ligamx <- player_season(username, password, season_id = 318, competition_id = 73)
-jugs_ccl <- player_season(username, password, season_id = 316, competition_id = 101)
-# arg <- player_season(username, password, season_id = 315, competition_id = 81)
-jugs_arg <- player_season(username, password, season_id = 316, competition_id = 81)
-jugs_brasil <- player_season(username, password, season_id = 316, competition_id = 71)
-jugs_colombia <- player_season(username, password, season_id = 316, competition_id = 74)
-# jugs_colombia <- player_season(username, password, season_id = 315, competition_id = 74)
-jugs_ecuador <- player_season(username, password, season_id = 316, competition_id = 105)
-jugs_chile <- player_season(username, password, season_id = 316, competition_id = 103)
-jugs_paraguay <- player_season(username, password, season_id = 316, competition_id = 247)
-jugs_uruguay <- player_season(username, password, season_id = 316, competition_id = 111)
-jugs_mls <- player_season(username, password, season_id = 316, competition_id = 44)
-jugs_premier <- player_season(username, password, season_id = 318, competition_id = 2)
-jugs_championship <- player_season(username, password, season_id = 318, competition_id = 3)
-jugs_laliga <- player_season(username, password, season_id = 318, competition_id = 11)
-jugs_laliga_2 <- player_season(username, password, season_id = 318, competition_id = 42)
-jugs_serie_a <- player_season(username, password, season_id = 318, competition_id = 12)
-jugs_serie_b <- player_season(username, password, season_id = 318, competition_id = 84)
-jugs_bundesliga <- player_season(username, password, season_id = 318, competition_id = 9)
-jugs_bundesliga_2 <- player_season(username, password, season_id = 318, competition_id = 10)
-jugs_ligue_1 <- player_season(username, password, season_id = 318, competition_id = 7)
-jugs_eredivisie <- player_season(username, password, season_id = 318, competition_id = 6)
-jugs_belgica <- player_season(username, password, season_id = 318, competition_id = 46)
-jugs_portugal <- player_season(username, password, season_id = 318, competition_id = 13)
-jugs_turquia <- player_season(username, password, season_id = 318, competition_id = 85)
-jugs_escocia <- player_season(username, password, season_id = 318, competition_id = 51)
-jugs_champions <- player_season(username, password, season_id = 318, competition_id = 16)
+jugs_ligamx <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 73),
+  player_season(username, password, season_id = 351, competition_id = 73)
+)
+jugs_ccl <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 101),
+  player_season(username, password, season_id = 355, competition_id = 101)
+)
+jugs_arg <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 81),
+  player_season(username, password, season_id = 355, competition_id = 81)
+)
+jugs_brasil <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 71),
+  player_season(username, password, season_id = 355, competition_id = 71)
+)
+jugs_colombia <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 74),
+  player_season(username, password, season_id = 355, competition_id = 74)
+)
+jugs_ecuador <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 105),
+  player_season(username, password, season_id = 355, competition_id = 105)
+)
+jugs_chile <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 103),
+  player_season(username, password, season_id = 355, competition_id = 103)
+)
+jugs_paraguay <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 247),
+  player_season(username, password, season_id = 355, competition_id = 247)
+)
+jugs_uruguay <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 111),
+  player_season(username, password, season_id = 355, competition_id = 111)
+)
+jugs_mls <- bind_rows(
+  player_season(username, password, season_id = 316, competition_id = 44),
+  player_season(username, password, season_id = 355, competition_id = 44)
+)
+jugs_premier <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 2),
+  player_season(username, password, season_id = 351, competition_id = 2)
+)
+jugs_championship <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 3),
+  player_season(username, password, season_id = 351, competition_id = 3)
+)
+jugs_laliga <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 11),
+  player_season(username, password, season_id = 351, competition_id = 11)
+)
+jugs_laliga_2 <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 42),
+  player_season(username, password, season_id = 351, competition_id = 42)
+)
+jugs_serie_a <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 12),
+  player_season(username, password, season_id = 351, competition_id = 12)
+)
+jugs_serie_b <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 84),
+  player_season(username, password, season_id = 351, competition_id = 84)
+)
+jugs_bundesliga <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 9),
+  player_season(username, password, season_id = 351, competition_id = 9)
+)
+jugs_bundesliga_2 <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 10),
+  player_season(username, password, season_id = 351, competition_id = 10)
+)
+jugs_ligue_1 <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 7),
+  player_season(username, password, season_id = 351, competition_id = 7)
+)
+jugs_eredivisie <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 6),
+  player_season(username, password, season_id = 351, competition_id = 6)
+)
+jugs_belgica <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 46),
+  player_season(username, password, season_id = 351, competition_id = 46)
+)
+jugs_portugal <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 13),
+  player_season(username, password, season_id = 351, competition_id = 13)
+)
+jugs_turquia <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 85),
+  player_season(username, password, season_id = 351, competition_id = 85)
+)
+jugs_escocia <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 51),
+  player_season(username, password, season_id = 351, competition_id = 51)
+)
+jugs_champions <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 16),
+  player_season(username, password, season_id = 351, competition_id = 16)
+)
 jugs_libertadores <- player_season(username, password, season_id = 315, competition_id = 102)
-jugs_uel <- player_season(username, password, season_id = 318, competition_id = 35)
+jugs_uel <- bind_rows(
+  player_season(username, password, season_id = 318, competition_id = 35),
+  player_season(username, password, season_id = 351, competition_id = 35)
+)
 
 goles_ligamx <- all_player_matches(username, password, ligamx)
 goles_ccl <- all_player_matches(username, password, ccl)
