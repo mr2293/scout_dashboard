@@ -1844,10 +1844,37 @@ server <- function(input, output, session) {
   
   selected_player <- reactiveVal(NULL)
   
+  # Searching a player should make them actually show up in the scatter
+  # plots below -- jump to their position-group tab and clear the team/
+  # position/minutes/age filters so nothing hides their point, instead of
+  # requiring the user to go find and match those filters by hand.
   observeEvent(input$player_search, {
-    if (!is.null(input$player_search) && nzchar(input$player_search))
+    if (!is.null(input$player_search) && nzchar(input$player_search)) {
       selected_player(input$player_search)
-    else selected_player(NULL)
+
+      df  <- league_df()
+      row <- df |> dplyr::filter(player_name == input$player_search) |> dplyr::slice_head(n = 1)
+      if (nrow(row) == 1) {
+        pg_row <- as.character(row$position_group)
+        if (!is.na(pg_row) && nzchar(pg_row) && pg_row %in% names(charts_cfg)) {
+          updateSelectInput(session, "pg", selected = pg_row)
+        }
+        updateSelectInput(session, "team_filter", selected = "Todos los equipos")
+        updateSelectInput(session, "pos_filter", selected = "Todas")
+        updateSelectInput(session, "country_filter", selected = "Todas")
+
+        max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
+        updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
+
+        ages <- compute_age_years(df$birth_date)
+        ages <- ages[is.finite(ages) & ages < 200]
+        amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
+        amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
+        updateSliderInput(session, "age_range", value = c(amin, amax))
+      }
+    } else {
+      selected_player(NULL)
+    }
   }, ignoreInit=TRUE)
   
   # ---- Tabs UI ----
