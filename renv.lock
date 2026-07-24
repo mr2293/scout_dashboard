@@ -5606,6 +5606,12 @@
       "Maintainer": "Winston Chang <winston@posit.co>",
       "Repository": "CRAN"
     },
+    "shinyWidgets": {
+      "Package": "shinyWidgets",
+      "Version": "0.9.1",
+      "Source": "Repository",
+      "Repository": "CRAN"
+    },
     "shinythemes": {
       "Package": "shinythemes",
       "Version": "1.2.0",

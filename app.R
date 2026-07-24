@@ -34,6 +34,7 @@ library(scales)
 library(DT)
 library(httr)
 library(jsonlite)
+library(shinyWidgets)
 
 # Local-only; gitignored. Sets ANTHROPIC_API_KEY for the scouting chatbot.
 # On shinyapps.io it's written at deploy time by the GitHub Actions workflow.
@@ -163,6 +164,197 @@ country_id_names <- c(
   "246" = "Venezuela",
   "249" = "Zimbabue"
 )
+
+# ============================================================
+# BASE DE DATOS TAB — nationality, position-role and player-profile
+# classification, per scout_chat_system_prompt.md.
+# ============================================================
+
+# Per scout_chat_system_prompt.md's "Hispanohablante" section. El Salvador is
+# listed there too, but no club from El Salvador exists in the 27-league
+# dataset, so no player can ever carry that country_id -- documented
+# limitation, not an omission here.
+HISPANOHABLANTE_COUNTRIES <- c(
+  "México", "España", "Colombia", "Venezuela", "Ecuador", "Perú", "Bolivia",
+  "Argentina", "Uruguay", "Paraguay", "Costa Rica", "Panamá", "El Salvador",
+  "Guatemala", "Honduras", "República Dominicana", "Nicaragua"
+)
+
+# The app's existing 7-way position_group doesn't line up 1:1 with the 6
+# position headings scout_chat_system_prompt.md uses for its "Perfiles Club
+# América" sub-profiles. Central/Lateral/Delantero/Portero map directly;
+# Medio de Contención (defensive mid) and Interior/Mediapunta (attacking
+# mid) both fall under the doc's broader "Volante" bucket (whose
+# Destructor/Orquestador/Box a Box/Creativo sub-profiles already span that
+# defensive-to-attacking range), and Volante/Extremo (wide players) maps to
+# the doc's "Extremo".
+POSITION_GROUP_TO_PROFILE_GROUP <- c(
+  "Portero"             = "Portero",
+  "Central"             = "Defensa Central",
+  "Lateral/Carrilero"   = "Lateral",
+  "Medio de Contención" = "Volante",
+  "Interior/Mediapunta" = "Volante",
+  "Volante/Extremo"     = "Extremo",
+  "Delantero"           = "Delantero"
+)
+
+ROL_ABBR <- c(
+  "Portero"             = "POR",
+  "Central"             = "DFC",
+  "Lateral/Carrilero"   = "LAT",
+  "Medio de Contención" = "MCD",
+  "Interior/Mediapunta" = "MCO",
+  "Volante/Extremo"     = "EXT",
+  "Delantero"           = "DC"
+)
+
+# Metrics where a LOWER raw value is the better outcome (per
+# scout_chat_system_prompt.md's "Reglas de interpretación direccional").
+# Their percentile gets inverted (100 - pct) before folding into a profile's
+# composite score, so higher composite always means "closer fit" for every
+# sub-profile. Restricted to StatsBomb per-90 metrics -- see note below.
+LOWER_IS_BETTER_METRICS <- paste0("player_season_", c(
+  "fouls_90", "yellow_cards_90", "second_yellow_cards_90", "red_cards_90",
+  "errors_90", "turnovers_90", "dispossessions_90", "failed_dribbles_90",
+  "dribbled_past_90", "shots_faced_90", "goals_faced_90", "np_xg_faced_90",
+  "np_psxg_faced_90", "ot_shots_faced_90", "npot_psxg_faced_90",
+  "penalties_faced_90", "penalties_conceded_90"
+))
+
+# Sub-profile metric lists, copied from scout_chat_system_prompt.md's
+# "Perfiles Club América" section. Deliberately StatsBomb-only (dropping
+# that doc's SkillCorner physical/Game-Intelligence metrics, e.g. psv99,
+# sprint_*, count_*_per_30_tip): SkillCorner physical coverage is 13 of 27
+# leagues, and Game Intelligence is Liga MX only, so including them would
+# make a player's Perfil depend on which league happens to have SkillCorner
+# data rather than on football profile -- inconsistent across the dashboard.
+.psn <- function(...) paste0("player_season_", c(...))
+PROFILE_METRIC_DEFS <- list(
+  "Portero" = list(
+    "Atajador" = .psn("save_ratio", "gsaa_90", "gsaa_ratio", "xs_ratio",
+                       "ot_shots_faced_90", "ot_shots_faced_ratio", "np_psxg_faced_90",
+                       "npot_psxg_faced_90", "shots_faced_90", "np_xg_faced_90"),
+    "Líbero"   = .psn("da_aggressive_distance", "clcaa", "average_x_defensive_action",
+                       "padj_clearances_90", "clearance_90"),
+    "Salidor"  = .psn("clcaa", "aerial_ratio", "aerial_wins_90", "da_aggressive_distance"),
+    "Organizador" = .psn("obv_gk_90", "passing_ratio", "long_ball_ratio", "long_balls_90",
+                          "pressured_passing_ratio", "op_passes_90", "lbp_completed_90", "lbp_ratio")
+  ),
+  "Defensa Central" = list(
+    "Posicional" = .psn("clearance_90", "padj_clearances_90", "blocks_per_shot", "aerial_ratio",
+                         "aerial_wins_90", "average_x_defensive_action", "average_x_pass",
+                         "padj_tackles_and_interceptions_90", "challenge_ratio"),
+    "Anticipador" = .psn("padj_interceptions_90", "interceptions_90", "padj_pressures_90",
+                          "padj_tackles_and_interceptions_90", "challenge_ratio",
+                          "aggressive_actions_90", "defensive_action_regains_90",
+                          "fhalf_ball_recoveries_90", "average_x_defensive_action", "ball_recoveries_90"),
+    "Físico" = c(.psn("aerial_ratio", "aerial_wins_90", "challenge_ratio", "dribble_faced_ratio",
+                       "dribbled_past_90"), "player_height", "player_weight"),
+    "Progresivo" = .psn("lbp_completed_90", "lbp_ratio", "obv_lbp_90", "deep_progressions_90",
+                         "obv_pass_90", "passing_ratio", "carries_90", "carry_length",
+                         "forward_pass_proportion", "op_f3_passes_90", "pressured_passing_ratio",
+                         "obv_dribble_carry_90")
+  ),
+  "Lateral" = list(
+    "Defensivo" = .psn("padj_tackles_and_interceptions_90", "challenge_ratio", "dribble_faced_ratio",
+                        "dribbled_past_90", "aerial_ratio", "padj_clearances_90",
+                        "defensive_action_regains_90", "average_x_defensive_action",
+                        "average_x_pass", "padj_interceptions_90"),
+    "Ofensivo" = .psn("crosses_90", "crossing_ratio", "op_passes_into_box_90", "deep_completions_90",
+                       "deep_progressions_90", "xa_90", "key_passes_90", "obv_pass_90",
+                       "average_x_pass", "op_f3_passes_90", "assists_90"),
+    "Equilibrado" = .psn("padj_tackles_and_interceptions_90", "ball_recoveries_90", "challenge_ratio",
+                          "crosses_90", "average_x_pass", "obv_90", "defensive_action_regains_90", "xa_90"),
+    "Organizador" = .psn("passing_ratio", "obv_pass_90", "lbp_completed_90", "crosses_90",
+                          "crossing_ratio", "op_passes_into_box_90", "forward_pass_proportion",
+                          "pressured_passing_ratio", "xgbuildup_90", "key_passes_90", "through_balls_90")
+  ),
+  "Volante" = list(
+    "Destructor" = .psn("padj_tackles_and_interceptions_90", "padj_interceptions_90",
+                         "padj_pressures_90", "challenge_ratio", "ball_recoveries_90",
+                         "defensive_action_regains_90", "aggressive_actions_90", "counterpressures_90",
+                         "average_x_defensive_action", "average_x_pass", "fhalf_ball_recoveries_90",
+                         "padj_tackles_90"),
+    "Orquestador" = .psn("op_passes_90", "passing_ratio", "pressured_passing_ratio", "xgbuildup_90",
+                          "op_xgbuildup_90", "obv_pass_90", "xgchain_90", "pass_length",
+                          "average_x_pass", "forward_pass_proportion", "lbp_completed_90"),
+    "Box a Box" = .psn("padj_pressures_90", "counterpressures_90", "ball_recoveries_90",
+                        "padj_tackles_and_interceptions_90", "xgchain_90", "obv_90", "carries_90",
+                        "deep_progressions_90", "key_passes_90", "defensive_action_regains_90"),
+    "Creativo" = .psn("lbp_completed_90", "lbp_ratio", "obv_lbp_90", "f3_lbp_completed_90",
+                       "through_balls_90", "key_passes_90", "xa_90", "obv_pass_90", "dribbles_90",
+                       "dribble_ratio", "obv_dribble_carry_90", "np_xg_90", "np_shots_90",
+                       "average_x_pass", "average_space_received_in", "lbp_received_90")
+  ),
+  "Extremo" = list(
+    "Profundo" = .psn("crosses_90", "crossing_ratio", "op_passes_into_box_90", "deep_completions_90",
+                       "xa_90", "average_x_pass", "assists_90"),
+    "Interior" = .psn("np_xg_90", "npg_90", "np_shots_90", "touches_inside_box_90", "key_passes_90",
+                       "xa_90", "left_foot_ratio", "lbp_received_90", "average_space_received_in",
+                       "obv_shot_90", "np_xg_per_shot", "shot_on_target_ratio", "obv_pass_90"),
+    "Regateador" = .psn("dribbles_90", "dribble_ratio", "total_dribbles_90", "failed_dribbles_90",
+                         "obv_dribble_carry_90", "carries_90", "carry_ratio", "fouls_won_90"),
+    "Llegador" = .psn("np_xg_90", "npg_90", "touches_inside_box_90", "shot_touch_ratio", "np_shots_90",
+                       "np_xg_per_shot", "conversion_ratio", "obv_shot_90")
+  ),
+  "Delantero" = list(
+    "Cazador" = .psn("touches_inside_box_90", "npg_90", "np_xg_90", "np_xg_per_shot",
+                      "shot_on_target_ratio", "conversion_ratio", "shot_touch_ratio", "np_shots_90",
+                      "aerial_wins_90", "average_x_pass", "op_xgbuildup_90"),
+    "Móvil" = .psn("xgbuildup_90", "xgchain_90", "key_passes_90", "xa_90", "carries_90",
+                    "average_x_pass", "lbp_received_90", "positive_outcome_90", "op_passes_90", "assists_90"),
+    "Retenedor" = c(.psn("aerial_wins_90", "aerial_ratio", "fouls_won_90", "dispossessions_90",
+                          "turnovers_90", "touches_inside_box_90", "xgbuildup_90",
+                          "average_space_received_in", "np_shots_90"), "player_height", "player_weight"),
+    "Aéreo" = c(.psn("aerial_wins_90", "aerial_ratio", "npg_90", "np_xg_90", "touches_inside_box_90",
+                      "lbp_received_90", "average_lbp_to_space_received_distance", "fouls_won_90"),
+                "player_height", "player_weight"),
+    "Acosador" = .psn("padj_pressures_90", "fhalf_pressures_90", "fhalf_pressures_ratio",
+                       "average_x_pressure", "counterpressures_90", "fhalf_counterpressures_90",
+                       "pressure_regains_90", "counterpressure_regains_90", "fhalf_ball_recoveries_90",
+                       "ball_recoveries_90", "defensive_action_regains_90")
+  )
+)
+
+# Assigns each player the sub-profile (within their position's group) whose
+# metrics they score highest on, as an average percentile-rank composite
+# against every other player in that same position group. Metrics missing
+# from a given player/column are simply skipped (na.rm), so partial
+# StatsBomb coverage degrades gracefully instead of erroring.
+assign_player_profiles <- function(dat) {
+  dat$.profile_group <- unname(POSITION_GROUP_TO_PROFILE_GROUP[dat$position_group])
+  out <- vector("list", length(PROFILE_METRIC_DEFS))
+  names(out) <- names(PROFILE_METRIC_DEFS)
+
+  for (grp in names(PROFILE_METRIC_DEFS)) {
+    idx <- which(dat$.profile_group == grp)
+    if (!length(idx)) next
+    sub <- dat[idx, , drop = FALSE]
+    subprofiles <- PROFILE_METRIC_DEFS[[grp]]
+
+    scores <- matrix(NA_real_, nrow = nrow(sub), ncol = length(subprofiles),
+                     dimnames = list(NULL, names(subprofiles)))
+    for (sp in names(subprofiles)) {
+      cols <- intersect(subprofiles[[sp]], names(sub))
+      if (!length(cols)) next
+      pct_mat <- vapply(cols, function(cn) {
+        v <- suppressWarnings(as.numeric(sub[[cn]]))
+        pct <- dplyr::percent_rank(v) * 100
+        if (cn %in% LOWER_IS_BETTER_METRICS) pct <- 100 - pct
+        pct
+      }, numeric(nrow(sub)))
+      scores[, sp] <- rowMeans(pct_mat, na.rm = TRUE)
+    }
+
+    best <- apply(scores, 1, function(r) {
+      if (all(is.na(r))) return(NA_character_)
+      names(r)[which.max(r)]
+    })
+    out[[grp]] <- data.frame(player_id = sub$player_id, Perfil = best, stringsAsFactors = FALSE)
+  }
+
+  dplyr::bind_rows(out)
+}
 
 # ============================================================
 # CHARTS CONFIG (unchanged from your original)
@@ -1248,21 +1440,144 @@ dedup_transfers <- function(df) {
   dplyr::bind_rows(singles, dplyr::bind_rows(merged_list))
 }
 
-# ---- All players across all leagues (for radar, similarity) ----
-# Lazily computed once per app PROCESS (not per session, and not at
-# startup) -- these are pure functions of the static scout/joined_cache
-# data. Recomputing per session was wasted work, but computing them
-# *eagerly* at startup made the app take too long to start listening
-# and shinyapps.io killed the worker ("startup took too long"). So:
-# compute on first access, cache the result, reuse for every session
-# after that within the same running process.
+# ---- All players across all leagues (for radar, similarity, search) ----
+# These are pure functions of the static scout/joined_cache data, computed
+# once per app PROCESS and cached (not recomputed per session).
 .all_players_df_cache <- NULL
 get_all_players_df <- function() {
   if (is.null(.all_players_df_cache)) {
-    .all_players_df_cache <<- dedup_transfers(all_players_df_from_cache(scout, league_map))
+    # dedup_same_team() first shrinks join-artifact duplicate rows (up to 4x
+    # per player) down to one before dedup_transfers() does its per-column
+    # weighted-average merge -- skipping it made dedup_transfers() churn
+    # through inflated group sizes, ~33s vs ~9s measured on the full dataset.
+    .all_players_df_cache <<- all_players_df_from_cache(scout, league_map) |>
+      dedup_same_team() |>
+      dedup_transfers()
   }
   .all_players_df_cache
 }
+
+# Computed eagerly (once per process, at app startup rather than lazily on
+# first session access) so the Dashboard's player search can list every
+# player across all leagues from the moment any session connects, instead
+# of only the currently selected league. Costs ~9s added to how long the
+# app takes to start listening -- an explicit, deliberate tradeoff (this
+# used to be lazy specifically to avoid that startup cost; see git history
+# if that constraint matters again for a specific deployment target).
+invisible(get_all_players_df())
+
+# ============================================================
+# BASE DE DATOS TAB — full cross-league player table
+# Built once eagerly (same tradeoff as get_all_players_df() above): all
+# derived fields here (Nacionalidad, Rol, Perfil, Pie, market value/contract)
+# come from static, process-wide-cached data, so there's nothing to
+# recompute per session.
+# ============================================================
+build_database_master <- function() {
+  dat <- get_all_players_df()
+
+  id_str <- as.character(dat$country_id)
+  player_country <- unname(country_id_names[id_str])
+  player_country[is.na(player_country)] <- paste0("Otro (", id_str[is.na(player_country)], ")")
+
+  foot_ratio <- suppressWarnings(as.numeric(dat$player_season_left_foot_ratio))
+  pie <- dplyr::case_when(
+    is.na(foot_ratio)      ~ NA_character_,
+    foot_ratio > 0.60      ~ "Zurdo",
+    foot_ratio < 0.40      ~ "Diestro",
+    TRUE                   ~ "Ambidiestro"
+  )
+
+  posiciones <- purrr::map2_chr(dat$primary_position, dat$secondary_position, function(p, s) {
+    vals <- unique(c(p, s))
+    vals <- vals[!is.na(vals) & nzchar(vals)]
+    if (!length(vals)) NA_character_ else paste(vals, collapse = ", ")
+  })
+
+  # assign_player_profiles() joins back on player_id (unique, always
+  # present) rather than player_name -- several genuinely different real
+  # players share an exact name (two different "Aaron Ramsey"s, two
+  # different "Adama Traoré"s, etc.), so joining on name alone fanned out
+  # into duplicate rows for every such namesake collision.
+  profiles <- assign_player_profiles(dat)
+
+  # tm_crosswalk still has to join on player_name + team_name (it has no
+  # player_id), but a number of players there carry a genuinely NA
+  # player_name (a known StatsBomb data gap, seen earlier in the
+  # Transfermarkt crosswalk work too) -- dplyr::left_join() treats NA == NA
+  # as a match, so without excluding those rows first every NA-named row
+  # would cartesian-match every other NA-named row on the other side.
+  contract_year <- sub("^.*/(\\d{4})$", "\\1", tm_crosswalk$contract_expires)
+  contract_year[!grepl("^\\d{4}$", contract_year)] <- NA_character_
+  tm_lookup <- tm_crosswalk
+  tm_lookup$contract_year <- contract_year
+  tm_lookup <- tm_lookup |> dplyr::filter(!is.na(player_name), !is.na(team_name))
+
+  dat |>
+    dplyr::mutate(
+      player_country = player_country,
+      Pie            = pie,
+      Posiciones_jugadas = posiciones,
+      Edad           = as.integer(compute_age_years(birth_date))
+    ) |>
+    dplyr::left_join(profiles, by = "player_id") |>
+    dplyr::left_join(tm_lookup, by = c("player_name", "team_name")) |>
+    dplyr::mutate(
+      Hispanohablante = dplyr::if_else(player_country %in% HISPANOHABLANTE_COUNTRIES, "Sí", "No"),
+      Rol             = unname(ROL_ABBR[position_group])
+    ) |>
+    dplyr::transmute(
+      Jugador            = player_name,
+      Equipo             = team_name,
+      Liga               = .league_label,
+      Nacionalidad       = player_country,
+      Hispanohablante    = Hispanohablante,
+      Edad               = Edad,
+      Rol                = Rol,
+      Posiciones_jugadas = Posiciones_jugadas,
+      Perfil             = Perfil,
+      Pie                = Pie,
+      Minutos            = as.integer(round(player_season_minutes)),
+      Valor_mercado      = market_value_eur,
+      Vencimiento_contrato = contract_expires,
+      contract_year      = contract_year
+    )
+}
+
+DB_MASTER <- build_database_master()
+
+# dedup_transfers() (upstream, inside get_all_players_df()) concatenates
+# Liga/Equipo with " / " for a player who appears under more than one
+# league or team -- split those back out for filter choice lists and for
+# checking whether a player's combined string contains a selected value.
+split_combined_values <- function(x) sort(unique(trimws(unlist(strsplit(x, "/", fixed = TRUE)))))
+any_combined_match <- function(combined_col, selected) {
+  if (!length(selected)) return(rep(TRUE, length(combined_col)))
+  vapply(combined_col, function(x) {
+    if (is.na(x)) return(FALSE)
+    parts <- trimws(strsplit(x, "/", fixed = TRUE)[[1]])
+    any(parts %in% selected)
+  }, logical(1), USE.NAMES = FALSE)
+}
+
+DB_LIGA_CHOICES        <- split_combined_values(DB_MASTER$Liga)
+DB_ROL_CHOICES         <- sort(unique(stats::na.omit(DB_MASTER$Rol)))
+DB_PERFIL_CHOICES      <- sort(unique(stats::na.omit(DB_MASTER$Perfil)))
+DB_PIE_CHOICES         <- sort(unique(stats::na.omit(DB_MASTER$Pie)))
+DB_NACIONALIDAD_CHOICES <- sort(unique(DB_MASTER$Nacionalidad))
+DB_VENCIMIENTO_CHOICES  <- sort(unique(stats::na.omit(DB_MASTER$contract_year)), decreasing = FALSE)
+DB_EDAD_RANGE    <- range(DB_MASTER$Edad, na.rm = TRUE)
+DB_MINUTOS_RANGE <- range(DB_MASTER$Minutos, na.rm = TRUE)
+DB_VALOR_RANGE   <- range(DB_MASTER$Valor_mercado, na.rm = TRUE)
+
+# Rol (abbreviated position) -> the Perfil names actually possible for it,
+# so picking a Rol can narrow the Perfil picker to only relevant choices.
+ROL_TO_PERFILES <- setNames(
+  lapply(names(ROL_ABBR), function(pg) {
+    names(PROFILE_METRIC_DEFS[[POSITION_GROUP_TO_PROFILE_GROUP[[pg]]]])
+  }),
+  unname(ROL_ABBR)
+)
 
 # ---- All players enriched with SC physical cols (for SC-based similarity) ----
 # Merges physical SC columns from joined_leagues onto the SB player rows by name.
@@ -1677,13 +1992,11 @@ ui <- fluidPage(
         column(5, uiOutput("radar_panel"))
       ),
 
-      uiOutput("second_row"),
-
       tags$hr(),
 
-      # ── SkillCorner section ──────────────────────────────
+      # ── SkillCorner + player info side by side ────────────
       fluidRow(
-        column(12,
+        column(6,
           tags$div(
             id = "sc-section",
             tags$h4("SkillCorner — Datos Físicos y de Game Intelligence"),
@@ -1701,14 +2014,66 @@ ui <- fluidPage(
               ),
               tags$ul(
                 style = "margin:6px 0 0 16px; padding:0; font-size:0.83em; color:#4b5563;
-                         columns:3; list-style-type:disc;",
+                         columns:2; list-style-type:disc;",
                 lapply(sort(SC_LEAGUES), function(lg) tags$li(lg))
               )
             ),
             uiOutput("sc_no_data_msg"),
             uiOutput("skillcorner_ui")
           )
-        )
+        ),
+        column(6, uiOutput("second_row"))
+      )
+    ),
+
+    # ── Base de Datos (full cross-league player table) ──────
+    tabPanel(
+      "Base de Datos",
+      tags$div(
+        style = "padding-top: 12px;",
+        tags$h5("Base de datos de jugadores"),
+        tags$p(style="color:#666;font-size:0.85em;margin:2px 0 8px;",
+               "Todas las ligas del dashboard. Sin filtros aplicados se muestran todos los jugadores; ",
+               "cada filtro de categoría admite selección múltiple."),
+        fluidRow(
+          column(3, pickerInput("db_liga", "Liga", choices = DB_LIGA_CHOICES, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_equipo", "Equipo", choices = NULL, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_rol", "Posición Principal", choices = DB_ROL_CHOICES, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_perfil", "Perfil", choices = DB_PERFIL_CHOICES, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                        selectedTextFormat = "count > 3")))
+        ),
+        fluidRow(
+          column(3, pickerInput("db_pie", "Pie", choices = DB_PIE_CHOICES, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_nacionalidad", "Nacionalidad", choices = DB_NACIONALIDAD_CHOICES,
+                                multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_hispanohablante", "Hispanohablante", choices = c("Sí", "No"),
+                                multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_vencimiento", "Vencimiento contrato (año)",
+                                choices = DB_VENCIMIENTO_CHOICES, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3")))
+        ),
+        fluidRow(
+          column(3, textInput("db_jugador", "Jugador", placeholder = "Buscar por nombre…")),
+          column(3, sliderInput("db_edad", "Edad", min = DB_EDAD_RANGE[1], max = DB_EDAD_RANGE[2],
+                                value = DB_EDAD_RANGE, step = 1)),
+          column(3, sliderInput("db_valor", "Valor de mercado (€)", min = DB_VALOR_RANGE[1],
+                                max = DB_VALOR_RANGE[2], value = DB_VALOR_RANGE, step = 50000)),
+          column(3, sliderInput("db_minutos", "Minutos jugados", min = DB_MINUTOS_RANGE[1],
+                                max = DB_MINUTOS_RANGE[2], value = DB_MINUTOS_RANGE, step = 50))
+        ),
+        DT::DTOutput("db_table")
       )
     ),
 
@@ -1888,46 +2253,73 @@ server <- function(input, output, session) {
   })
   
   # ---- Populate player search ----
-  observeEvent(league_df(), {
-    players <- league_df() |> arrange(player_name) |> distinct(player_name) |> pull()
-    updateSelectizeInput(session, "player_search", choices=players,
-                         selected=character(0), server=TRUE)
-  }, ignoreInit=FALSE)
-  
+  # get_all_players_df() is precomputed eagerly at app startup (see its
+  # definition), so this is instant for every session -- no per-league
+  # scoping or lazy loading needed.
+  all_players_for_search <- get_all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+  updateSelectizeInput(session, "player_search", choices = all_players_for_search,
+                       selected = character(0), server = TRUE)
+
   selected_player <- reactiveVal(NULL)
-  
+
   # Searching a player should make them actually show up in the scatter
-  # plots below -- jump to their position-group tab and clear the team/
-  # position/minutes/age filters so nothing hides their point, instead of
-  # requiring the user to go find and match those filters by hand.
+  # plots below -- jump to their league and position-group tab, and clear
+  # the team/position/minutes/age filters so nothing hides their point,
+  # instead of requiring the user to go find and match those filters by hand.
+  apply_search_focus <- function(name, df) {
+    row <- df |> dplyr::filter(player_name == name) |> dplyr::slice_head(n = 1)
+    if (nrow(row) != 1) return(invisible())
+
+    pg_row <- as.character(row$position_group)
+    if (!is.na(pg_row) && nzchar(pg_row) && pg_row %in% names(charts_cfg)) {
+      updateSelectInput(session, "pg", selected = pg_row)
+    }
+    updateSelectInput(session, "team_filter", selected = "Todos los equipos")
+    updateSelectInput(session, "pos_filter", selected = "Todas")
+    updateSelectInput(session, "country_filter", selected = "Todas")
+
+    max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
+    updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
+
+    ages <- compute_age_years(df$birth_date)
+    ages <- ages[is.finite(ages) & ages < 200]
+    amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
+    amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
+    updateSliderInput(session, "age_range", value = c(amin, amax))
+  }
+
+  # Set when a searched player belongs to a different league than the one
+  # currently selected: switching input$league invalidates league_df()
+  # asynchronously, so the pg/filter focus has to wait for that to land
+  # before it can look the player up in the (now-correct) league's data.
+  pending_search_player <- reactiveVal(NULL)
+
   observeEvent(input$player_search, {
     if (!is.null(input$player_search) && nzchar(input$player_search)) {
       selected_player(input$player_search)
 
-      df  <- league_df()
-      row <- df |> dplyr::filter(player_name == input$player_search) |> dplyr::slice_head(n = 1)
-      if (nrow(row) == 1) {
-        pg_row <- as.character(row$position_group)
-        if (!is.na(pg_row) && nzchar(pg_row) && pg_row %in% names(charts_cfg)) {
-          updateSelectInput(session, "pg", selected = pg_row)
-        }
-        updateSelectInput(session, "team_filter", selected = "Todos los equipos")
-        updateSelectInput(session, "pos_filter", selected = "Todas")
-        updateSelectInput(session, "country_filter", selected = "Todas")
+      all_df <- get_all_players_df()
+      prow <- all_df |> dplyr::filter(player_name == input$player_search) |> dplyr::slice_head(n = 1)
+      player_league <- if (nrow(prow) == 1) as.character(prow$.league_label[1]) else NA_character_
 
-        max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
-        updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
-
-        ages <- compute_age_years(df$birth_date)
-        ages <- ages[is.finite(ages) & ages < 200]
-        amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
-        amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
-        updateSliderInput(session, "age_range", value = c(amin, amax))
+      if (!is.na(player_league) && player_league %in% names(league_map) &&
+          !identical(input$league, player_league)) {
+        pending_search_player(input$player_search)
+        updateSelectInput(session, "league", selected = player_league)
+      } else {
+        apply_search_focus(input$player_search, league_df())
       }
     } else {
       selected_player(NULL)
     }
   }, ignoreInit=TRUE)
+
+  observeEvent(league_df(), {
+    pend <- pending_search_player()
+    if (is.null(pend)) return()
+    pending_search_player(NULL)
+    apply_search_focus(pend, league_df())
+  }, ignoreInit = TRUE)
   
   # ---- Tabs UI ----
   output$tabs_ui <- renderUI({
@@ -2173,18 +2565,11 @@ server <- function(input, output, session) {
   }, ignoreInit = TRUE)
 
   # ---- Similarity ----
-  # metric_whitelist: display-label strings from var_map()'s names (as shown
-  # in the "Métricas a incluir" picker), or NULL/empty to use every metric
-  # that passes the NA-rate/variance screens below (the original behavior).
-  build_similarity_pool <- function(dat, pg = NULL, metric_whitelist = NULL) {
+  build_similarity_pool <- function(dat, pg = NULL) {
     df <- if (is.null(pg)) dplyr::filter(dat, position_group != "Portero")
           else dplyr::filter(dat, position_group == pg)
-    vm  <- var_map(df)
-    keep <- if (!is.null(metric_whitelist) && length(metric_whitelist) > 0) {
-      unname(vm[intersect(names(vm), metric_whitelist)])
-    } else {
-      unname(vm)
-    }
+    vm   <- var_map(df)
+    keep <- unname(vm)
     pool     <- dplyr::select(df, player_name, team_name, primary_position,
                               player_season_90s_played, dplyr::all_of(keep)) |>
       dplyr::distinct(player_name, .keep_all=TRUE)
@@ -2218,10 +2603,16 @@ server <- function(input, output, session) {
   }
 
   # ---- Populate the similarity tab's own player search + metric picker ----
-  # (cross-league, independent of the Dashboard tab's league/pg filters;
-  # get_all_players_sc_df() is a process-wide cache so this is cheap after
-  # the first session computes it).
-  observe({
+  # (cross-league, independent of the Dashboard tab's league/pg filters).
+  # get_all_players_sc_df() takes ~30s on a cold cache (first session per R
+  # process) -- deferred until the user actually opens this tab, instead of
+  # running eagerly at session start, where it would block every other
+  # output (scatter plots, radar) from rendering while it computes.
+  sim_choices_populated <- reactiveVal(FALSE)
+  observeEvent(input$app_main_tabs, {
+    req(input$app_main_tabs == "Jugadores Similares")
+    if (isTRUE(sim_choices_populated())) return()
+
     dat_all <- get_all_players_sc_df()
     players <- dat_all |> dplyr::arrange(player_name) |> dplyr::distinct(player_name) |> dplyr::pull()
     updateSelectizeInput(session, "sim_player_search", choices = players,
@@ -2230,6 +2621,7 @@ server <- function(input, output, session) {
     vm <- var_map(dplyr::filter(dat_all, position_group != "Portero"))
     updateSelectizeInput(session, "sim_metrics", choices = names(vm),
                          selected = character(0), server = TRUE)
+    sim_choices_populated(TRUE)
   })
 
   # ---- Similarity using SB + SC data ----
@@ -2243,10 +2635,9 @@ server <- function(input, output, session) {
     req(nrow(sel_row) == 1)
     pg   <- sel_row$position_group[1]
     ppos <- sel_row$primary_position[1]
-    built   <- build_similarity_pool(dat_all, metric_whitelist = input$sim_metrics)
+    built   <- build_similarity_pool(dat_all)
     pool    <- built$pool; metrics <- built$metric_cols
-    min_metrics_required <- if (!is.null(input$sim_metrics) && length(input$sim_metrics) > 0) 2 else 5
-    if (length(metrics) < min_metrics_required || nrow(pool) < 10)
+    if (length(metrics) < 5 || nrow(pool) < 10)
       return(data.frame(Jugador = character(), Equipo = character(),
                         Liga = character(), Grupo_Posicion = character(),
                         Posicion = character(), Edad = integer(),
@@ -2261,7 +2652,7 @@ server <- function(input, output, session) {
       dplyr::distinct(player_name, .keep_all = TRUE) |>
       dplyr::select(player_name, .league_label, birth_date, position_group)
 
-    pool_use |>
+    result <- pool_use |>
       dplyr::mutate(similarity = sims) |>
       dplyr::filter(player_name != base_player) |>
       dplyr::left_join(meta, by = "player_name") |>
@@ -2278,6 +2669,24 @@ server <- function(input, output, session) {
         Similitud      = round(pmin(pmax(similarity, -1), 1), 3)
       ) |>
       dplyr::slice_head(n = 150)
+
+    # "Métricas a incluir" adds each chosen metric as its own extra column
+    # (raw value, not part of the cosine similarity computation) so you can
+    # eyeball e.g. shots/90 alongside the similarity score, instead of it
+    # restricting which metrics feed the similarity math.
+    if (!is.null(input$sim_metrics) && length(input$sim_metrics) > 0) {
+      vm_full <- var_map(dplyr::filter(dat_all, position_group != "Portero"))
+      raw_map <- vm_full[intersect(names(vm_full), input$sim_metrics)]
+      if (length(raw_map)) {
+        extra_df <- dat_all |>
+          dplyr::distinct(player_name, .keep_all = TRUE) |>
+          dplyr::select(player_name, dplyr::all_of(unname(raw_map)))
+        names(extra_df)[-1] <- names(raw_map)
+        result <- dplyr::left_join(result, extra_df, by = c("Jugador" = "player_name"))
+      }
+    }
+
+    result
   })
 
   # ---- Filtered similarity table ----
@@ -2641,9 +3050,9 @@ server <- function(input, output, session) {
         autoWidth  = TRUE,
         scrollX    = FALSE,
         columnDefs = list(
-          list(targets=0, width="780px"),
-          list(targets=1, width="120px", className="dt-right"),
-          list(targets=2, width="120px", className="dt-right")
+          list(targets=0, width="60%"),
+          list(targets=1, width="20%", className="dt-right"),
+          list(targets=2, width="20%", className="dt-right")
         )
       ),
       class = "stripe hover compact"
@@ -2705,10 +3114,10 @@ server <- function(input, output, session) {
       options=list(
         dom="t", paging=FALSE, ordering=TRUE, autoWidth=TRUE, scrollX=FALSE,
         columnDefs=list(
-          list(targets=0, width="160px", className="dt-center"),
-          list(targets=1, width="780px"),
-          list(targets=2, width="120px", className="dt-right"),
-          list(targets=3, width="120px", className="dt-right")
+          list(targets=0, width="15%", className="dt-center"),
+          list(targets=1, width="55%"),
+          list(targets=2, width="15%", className="dt-right"),
+          list(targets=3, width="15%", className="dt-right")
         )
       ),
       class="stripe hover compact"
@@ -2805,6 +3214,100 @@ server <- function(input, output, session) {
         tags$div(class = "scout-chat-answer", scout_render_result(m$res))
       }
     })
+  })
+
+  # ============================================================
+  # BASE DE DATOS TAB
+  # ============================================================
+
+  # Equipo choices narrow to whatever Liga(s) are selected -- DB_MASTER,
+  # DB_LIGA_CHOICES etc. are all precomputed globals (see their definitions
+  # near build_database_master()), so this is instant, no per-session cost.
+  observeEvent(input$db_liga, {
+    pool <- if (length(input$db_liga)) {
+      DB_MASTER[any_combined_match(DB_MASTER$Liga, input$db_liga), ]
+    } else {
+      DB_MASTER
+    }
+    updatePickerInput(session, "db_equipo",
+                      choices  = split_combined_values(pool$Equipo),
+                      selected = intersect(input$db_equipo %||% character(0), split_combined_values(pool$Equipo)))
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
+
+  # Perfil choices narrow to whatever Rol(es) (Posición Principal) are
+  # selected -- a Delantero can't be "Orquestador" (a Volante sub-profile),
+  # so don't offer it once a position is chosen.
+  observeEvent(input$db_rol, {
+    valid_perfiles <- if (length(input$db_rol)) {
+      sort(unique(unlist(ROL_TO_PERFILES[input$db_rol])))
+    } else {
+      DB_PERFIL_CHOICES
+    }
+    updatePickerInput(session, "db_perfil",
+                      choices  = valid_perfiles,
+                      selected = intersect(input$db_perfil %||% character(0), valid_perfiles))
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
+
+  db_filtered <- reactive({
+    df <- DB_MASTER
+
+    if (length(input$db_liga))
+      df <- df[any_combined_match(df$Liga, input$db_liga), ]
+    if (length(input$db_equipo))
+      df <- df[any_combined_match(df$Equipo, input$db_equipo), ]
+    if (length(input$db_rol))
+      df <- dplyr::filter(df, Rol %in% input$db_rol)
+    if (length(input$db_perfil))
+      df <- dplyr::filter(df, Perfil %in% input$db_perfil)
+    if (length(input$db_pie))
+      df <- dplyr::filter(df, Pie %in% input$db_pie)
+    if (length(input$db_nacionalidad))
+      df <- dplyr::filter(df, Nacionalidad %in% input$db_nacionalidad)
+    if (length(input$db_hispanohablante))
+      df <- dplyr::filter(df, Hispanohablante %in% input$db_hispanohablante)
+    if (length(input$db_vencimiento))
+      df <- dplyr::filter(df, contract_year %in% input$db_vencimiento)
+    if (!is.null(input$db_jugador) && nzchar(trimws(input$db_jugador)))
+      df <- dplyr::filter(df, grepl(trimws(input$db_jugador), Jugador, ignore.case = TRUE))
+    if (!is.null(input$db_edad))
+      df <- dplyr::filter(df, is.na(Edad) | dplyr::between(Edad, input$db_edad[1], input$db_edad[2]))
+    if (!is.null(input$db_minutos))
+      df <- dplyr::filter(df, is.na(Minutos) | dplyr::between(Minutos, input$db_minutos[1], input$db_minutos[2]))
+    # Only exclude NA market values once the slider has actually been moved
+    # off its full default range -- at the default (i.e. not filtering by
+    # market value at all) every player should still show up, NA included.
+    if (!is.null(input$db_valor) &&
+        !isTRUE(all.equal(input$db_valor, DB_VALOR_RANGE, tolerance = 1e-6))) {
+      df <- dplyr::filter(df, !is.na(Valor_mercado),
+                          dplyr::between(Valor_mercado, input$db_valor[1], input$db_valor[2]))
+    }
+
+    df
+  })
+
+  output$db_table <- DT::renderDT({
+    df <- db_filtered() |>
+      dplyr::transmute(
+        Jugador, Equipo, Liga, Nacionalidad, Hispanohablante, Edad, Rol,
+        `Posiciones jugadas` = Posiciones_jugadas,
+        Perfil, Pie,
+        `Minutos jugados` = Minutos,
+        `Valor de mercado` = ifelse(is.na(Valor_mercado), "–",
+                                    paste0("€", formatC(Valor_mercado, format = "d", big.mark = ","))),
+        `Vencimiento contrato` = ifelse(is.na(Vencimiento_contrato), "–", Vencimiento_contrato)
+      )
+
+    DT::datatable(
+      df,
+      rownames = FALSE,
+      filter   = "none",
+      options  = list(
+        pageLength = 25,
+        lengthMenu = c(10, 25, 50, 100),
+        dom        = "lftip",
+        scrollX    = TRUE
+      )
+    )
   })
 
 }
