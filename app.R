@@ -2063,8 +2063,14 @@ ui <- fluidPage(
           column(4,
                  tags$label("Valor de mercado (€)"),
                  fluidRow(
-                   column(6, numericInput("db_valor_min", "Mínimo", value = 500000, min = 0, step = 50000)),
-                   column(6, numericInput("db_valor_max", "Máximo", value = 200000000, min = 0, step = 50000))
+                   column(6, autonumericInput("db_valor_min", "Mínimo", value = 500000,
+                                              currencySymbol = "€", currencySymbolPlacement = "p",
+                                              decimalPlaces = 0, digitGroupSeparator = ",",
+                                              minimumValue = "0")),
+                   column(6, autonumericInput("db_valor_max", "Máximo", value = 200000000,
+                                              currencySymbol = "€", currencySymbolPlacement = "p",
+                                              decimalPlaces = 0, digitGroupSeparator = ",",
+                                              minimumValue = "0"))
                  )),
           column(3, sliderInput("db_minutos", "Minutos jugados", min = 0, max = 1,
                                 value = c(0, 1), step = 50))
@@ -2248,19 +2254,23 @@ server <- function(input, output, session) {
     df
   })
   
-  # ---- Populate player search ----
-  # Scoped to the selected league only -- deliberately NOT the full
-  # cross-league player list. get_all_players_df() takes real time to
-  # compute (dedup across ~17k rows), and shinyapps.io kills a worker that
-  # can't start listening within 60s; even the "compute lazily on first use"
-  # version of cross-league search caused visible stalls the first time any
-  # session touched it. Keeping this league-scoped keeps it instant always,
-  # at the cost of not finding players outside the currently selected league.
-  observeEvent(league_df(), {
-    players <- league_df() |> arrange(player_name) |> distinct(player_name) |> pull()
-    updateSelectizeInput(session, "player_search", choices=players,
+  # ---- Populate player search (cross-league, all players in the dashboard) ----
+  # Shiny's server-side selectize can only be registered once per input: the
+  # client's search box stays bound to whichever choices were passed the
+  # *first* time updateSelectizeInput(..., server=TRUE) ran for this id, so
+  # a later call with a bigger list is silently ignored by the browser even
+  # though the server-side data is correct. That ruled out "start league-
+  # scoped for instant usability, then upgrade to cross-league in the
+  # background" -- it has to be a single registration.
+  # Deferred via session$onFlushed(once=TRUE) so the (~10s on a cold
+  # per-process cache, instant once warm) get_all_players_df() computation
+  # runs after the initial page paint instead of blocking dashboard startup
+  # -- same tradeoff already used for the Jugadores Similares tab's search.
+  session$onFlushed(function() {
+    all_players <- get_all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+    updateSelectizeInput(session, "player_search", choices=all_players,
                          selected=character(0), server=TRUE)
-  }, ignoreInit=FALSE)
+  }, once=TRUE)
 
   selected_player <- reactiveVal(NULL)
 
@@ -2596,7 +2606,7 @@ server <- function(input, output, session) {
 
     vm <- var_map(dplyr::filter(dat_all, position_group != "Portero"))
     updateSelectizeInput(session, "sim_metrics",
-                         choices = c(names(vm), "Valor de mercado", "Vencimiento contrato"),
+                         choices = names(vm),
                          selected = character(0), server = TRUE)
     sim_choices_populated(TRUE)
   })
@@ -2647,6 +2657,17 @@ server <- function(input, output, session) {
       ) |>
       dplyr::slice_head(n = 150)
 
+    # Transfermarkt-sourced columns -- not part of dat_all/var_map, keyed on
+    # player_name + team_name like the rest of the crosswalk. Always shown
+    # (not gated behind "Métricas a incluir") since market value / contract
+    # expiry are core scouting context, not optional stat comparisons.
+    tm_vm_vc <- tm_crosswalk |>
+      dplyr::distinct(player_name, team_name, .keep_all = TRUE) |>
+      dplyr::transmute(player_name, team_name,
+                       `Valor de mercado` = round(suppressWarnings(as.numeric(market_value_eur)), 3),
+                       `Vencimiento contrato` = contract_expires)
+    result <- dplyr::left_join(result, tm_vm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
+
     # "Métricas a incluir" adds each chosen metric as its own extra column
     # (raw value, not part of the cosine similarity computation) so you can
     # eyeball e.g. shots/90 alongside the similarity score, instead of it
@@ -2663,22 +2684,6 @@ server <- function(input, output, session) {
           dplyr::mutate(dplyr::across(-player_name, ~round(suppressWarnings(as.numeric(.x)), 3)))
         names(extra_df)[-1] <- names(raw_map)
         result <- dplyr::left_join(result, extra_df, by = c("Jugador" = "player_name"))
-      }
-
-      # Transfermarkt-sourced pseudo-metrics -- not part of dat_all/var_map,
-      # keyed on player_name + team_name like the rest of the crosswalk.
-      if ("Valor de mercado" %in% chosen) {
-        tm_vm <- tm_crosswalk |>
-          dplyr::distinct(player_name, team_name, .keep_all = TRUE) |>
-          dplyr::transmute(player_name, team_name,
-                           `Valor de mercado` = round(suppressWarnings(as.numeric(market_value_eur)), 3))
-        result <- dplyr::left_join(result, tm_vm, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
-      }
-      if ("Vencimiento contrato" %in% chosen) {
-        tm_vc <- tm_crosswalk |>
-          dplyr::distinct(player_name, team_name, .keep_all = TRUE) |>
-          dplyr::select(player_name, team_name, `Vencimiento contrato` = contract_expires)
-        result <- dplyr::left_join(result, tm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
       }
     }
 
@@ -2929,6 +2934,16 @@ server <- function(input, output, session) {
         options = list(dom = "t"), rownames = FALSE
       ))
     }
+    if ("Valor de mercado" %in% names(df)) {
+      df[["Valor de mercado"]] <- ifelse(
+        is.na(df[["Valor de mercado"]]), "–",
+        paste0("€", formatC(df[["Valor de mercado"]], format = "d", big.mark = ","))
+      )
+    }
+    if ("Vencimiento contrato" %in% names(df)) {
+      df[["Vencimiento contrato"]][is.na(df[["Vencimiento contrato"]])] <- "–"
+    }
+
     base_cols  <- c("Jugador","Equipo","Liga","Grupo_Posicion","Posicion","Edad","Minutos","Similitud")
     extra_cols <- setdiff(names(df), base_cols)
     extra_numeric_cols <- extra_cols[vapply(df[extra_cols], is.numeric, TRUE)]
