@@ -1516,23 +1516,18 @@ build_database_master <- function() {
     dplyr::left_join(tm_lookup, by = c("player_name", "team_name")) |>
     dplyr::mutate(
       Hispanohablante = dplyr::if_else(player_country %in% HISPANOHABLANTE_COUNTRIES, "Sí", "No"),
-      Rol             = unname(ROL_ABBR[position_group])
-    ) |>
-    dplyr::transmute(
+      Rol             = unname(ROL_ABBR[position_group]),
+      # Curated display aliases -- kept alongside (not instead of) every
+      # raw column from `dat` so the "Métricas a incluir" column-picker can
+      # still reach any StatsBomb per-90 metric by its original name.
       Jugador            = player_name,
       Equipo             = team_name,
       Liga               = .league_label,
       Nacionalidad       = player_country,
-      Hispanohablante    = Hispanohablante,
-      Edad               = Edad,
-      Rol                = Rol,
       Posiciones_jugadas = Posiciones_jugadas,
-      Perfil             = Perfil,
-      Pie                = Pie,
       Minutos            = as.integer(round(player_season_minutes)),
       Valor_mercado      = market_value_eur,
-      Vencimiento_contrato = contract_expires,
-      contract_year      = contract_year
+      Vencimiento_contrato = contract_expires
     )
 }
 
@@ -2036,20 +2031,17 @@ ui <- fluidPage(
           column(3, pickerInput("db_liga", "Liga", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                         selectedTextFormat = "count > 3"))),
-          column(3, pickerInput("db_equipo", "Equipo", choices = NULL, multiple = TRUE,
-                                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
-                                                        selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_rol", "Posición Principal", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE,
                                                         selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_perfil", "Perfil", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                        selectedTextFormat = "count > 3"))),
+          column(3, pickerInput("db_pie", "Pie", choices = NULL, multiple = TRUE,
+                                options = pickerOptions(actionsBox = TRUE,
                                                         selectedTextFormat = "count > 3")))
         ),
         fluidRow(
-          column(3, pickerInput("db_pie", "Pie", choices = NULL, multiple = TRUE,
-                                options = pickerOptions(actionsBox = TRUE,
-                                                        selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_nacionalidad", "Nacionalidad", choices = NULL,
                                 multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
@@ -2059,13 +2051,21 @@ ui <- fluidPage(
                                 options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_vencimiento", "Vencimiento contrato (año)",
                                 choices = NULL, multiple = TRUE,
-                                options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3")))
+                                options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
+          column(3, selectizeInput(
+            "db_metrics", "Métricas a incluir", choices = NULL, multiple = TRUE,
+            options = list(placeholder = "Ninguna (por defecto)", maxOptions = 5000,
+                           plugins = list("remove_button"))
+          ))
         ),
         fluidRow(
-          column(3, textInput("db_jugador", "Jugador", placeholder = "Buscar por nombre…")),
           column(3, sliderInput("db_edad", "Edad", min = 15, max = 45, value = c(15, 45), step = 1)),
-          column(3, sliderInput("db_valor", "Valor de mercado (€)", min = 0, max = 1,
-                                value = c(0, 1), step = 50000)),
+          column(4,
+                 tags$label("Valor de mercado (€)"),
+                 fluidRow(
+                   column(6, numericInput("db_valor_min", "Mínimo", value = 500000, min = 0, step = 50000)),
+                   column(6, numericInput("db_valor_max", "Máximo", value = 200000000, min = 0, step = 50000))
+                 )),
           column(3, sliderInput("db_minutos", "Minutos jugados", min = 0, max = 1,
                                 value = c(0, 1), step = 50))
         ),
@@ -2595,7 +2595,8 @@ server <- function(input, output, session) {
                          selected = character(0), server = TRUE)
 
     vm <- var_map(dplyr::filter(dat_all, position_group != "Portero"))
-    updateSelectizeInput(session, "sim_metrics", choices = names(vm),
+    updateSelectizeInput(session, "sim_metrics",
+                         choices = c(names(vm), "Valor de mercado", "Vencimiento contrato"),
                          selected = character(0), server = TRUE)
     sim_choices_populated(TRUE)
   })
@@ -2649,16 +2650,35 @@ server <- function(input, output, session) {
     # "Métricas a incluir" adds each chosen metric as its own extra column
     # (raw value, not part of the cosine similarity computation) so you can
     # eyeball e.g. shots/90 alongside the similarity score, instead of it
-    # restricting which metrics feed the similarity math.
+    # restricting which metrics feed the similarity math. Values are
+    # rounded to 3 decimals for display.
     if (!is.null(input$sim_metrics) && length(input$sim_metrics) > 0) {
+      chosen <- input$sim_metrics
       vm_full <- var_map(dplyr::filter(dat_all, position_group != "Portero"))
-      raw_map <- vm_full[intersect(names(vm_full), input$sim_metrics)]
+      raw_map <- vm_full[intersect(names(vm_full), chosen)]
       if (length(raw_map)) {
         extra_df <- dat_all |>
           dplyr::distinct(player_name, .keep_all = TRUE) |>
-          dplyr::select(player_name, dplyr::all_of(unname(raw_map)))
+          dplyr::select(player_name, dplyr::all_of(unname(raw_map))) |>
+          dplyr::mutate(dplyr::across(-player_name, ~round(suppressWarnings(as.numeric(.x)), 3)))
         names(extra_df)[-1] <- names(raw_map)
         result <- dplyr::left_join(result, extra_df, by = c("Jugador" = "player_name"))
+      }
+
+      # Transfermarkt-sourced pseudo-metrics -- not part of dat_all/var_map,
+      # keyed on player_name + team_name like the rest of the crosswalk.
+      if ("Valor de mercado" %in% chosen) {
+        tm_vm <- tm_crosswalk |>
+          dplyr::distinct(player_name, team_name, .keep_all = TRUE) |>
+          dplyr::transmute(player_name, team_name,
+                           `Valor de mercado` = round(suppressWarnings(as.numeric(market_value_eur)), 3))
+        result <- dplyr::left_join(result, tm_vm, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
+      }
+      if ("Vencimiento contrato" %in% chosen) {
+        tm_vc <- tm_crosswalk |>
+          dplyr::distinct(player_name, team_name, .keep_all = TRUE) |>
+          dplyr::select(player_name, team_name, `Vencimiento contrato` = contract_expires)
+        result <- dplyr::left_join(result, tm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
       }
     }
 
@@ -2909,7 +2929,11 @@ server <- function(input, output, session) {
         options = list(dom = "t"), rownames = FALSE
       ))
     }
-    DT::datatable(
+    base_cols  <- c("Jugador","Equipo","Liga","Grupo_Posicion","Posicion","Edad","Minutos","Similitud")
+    extra_cols <- setdiff(names(df), base_cols)
+    extra_numeric_cols <- extra_cols[vapply(df[extra_cols], is.numeric, TRUE)]
+
+    dt <- DT::datatable(
       df,
       selection = "single",
       rownames  = FALSE,
@@ -2933,6 +2957,8 @@ server <- function(input, output, session) {
           c("#ffcccc", "#fff3cd", "#ccffcc")
         )
       )
+    if (length(extra_numeric_cols)) dt <- dt |> DT::formatRound(extra_numeric_cols, digits = 3)
+    dt
   })
 
   observeEvent(input$similar_players_sc_table_rows_selected, {
@@ -3208,7 +3234,6 @@ server <- function(input, output, session) {
     db <- get_db_master()
 
     updatePickerInput(session, "db_liga", choices = split_combined_values(db$Liga))
-    updatePickerInput(session, "db_equipo", choices = split_combined_values(db$Equipo))
     updatePickerInput(session, "db_rol", choices = sort(unique(stats::na.omit(db$Rol))))
     updatePickerInput(session, "db_perfil", choices = sort(unique(stats::na.omit(db$Perfil))))
     updatePickerInput(session, "db_pie", choices = sort(unique(stats::na.omit(db$Pie))))
@@ -3216,29 +3241,15 @@ server <- function(input, output, session) {
     updatePickerInput(session, "db_vencimiento",
                       choices = sort(unique(stats::na.omit(db$contract_year))))
 
-    edad_range    <- range(db$Edad, na.rm = TRUE)
+    vm <- var_map(db)
+    updateSelectizeInput(session, "db_metrics", choices = names(vm),
+                         selected = character(0), server = TRUE)
+
     minutos_range <- range(db$Minutos, na.rm = TRUE)
-    valor_range   <- range(db$Valor_mercado, na.rm = TRUE)
-    updateSliderInput(session, "db_edad", min = edad_range[1], max = edad_range[2], value = edad_range)
     updateSliderInput(session, "db_minutos", min = minutos_range[1], max = minutos_range[2], value = minutos_range)
-    updateSliderInput(session, "db_valor", min = valor_range[1], max = valor_range[2], value = valor_range)
 
     db_choices_populated(TRUE)
   })
-
-  # Equipo choices narrow to whatever Liga(s) are selected.
-  observeEvent(input$db_liga, {
-    req(db_choices_populated())
-    db <- get_db_master()
-    pool <- if (length(input$db_liga)) {
-      db[any_combined_match(db$Liga, input$db_liga), ]
-    } else {
-      db
-    }
-    updatePickerInput(session, "db_equipo",
-                      choices  = split_combined_values(pool$Equipo),
-                      selected = intersect(input$db_equipo %||% character(0), split_combined_values(pool$Equipo)))
-  }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
   # Perfil choices narrow to whatever Rol(es) (Posición Principal) are
   # selected -- a Delantero can't be "Orquestador" (a Volante sub-profile),
@@ -3262,8 +3273,6 @@ server <- function(input, output, session) {
 
     if (length(input$db_liga))
       df <- df[any_combined_match(df$Liga, input$db_liga), ]
-    if (length(input$db_equipo))
-      df <- df[any_combined_match(df$Equipo, input$db_equipo), ]
     if (length(input$db_rol))
       df <- dplyr::filter(df, Rol %in% input$db_rol)
     if (length(input$db_perfil))
@@ -3276,28 +3285,25 @@ server <- function(input, output, session) {
       df <- dplyr::filter(df, Hispanohablante %in% input$db_hispanohablante)
     if (length(input$db_vencimiento))
       df <- dplyr::filter(df, contract_year %in% input$db_vencimiento)
-    if (!is.null(input$db_jugador) && nzchar(trimws(input$db_jugador)))
-      df <- dplyr::filter(df, grepl(trimws(input$db_jugador), Jugador, ignore.case = TRUE))
     if (!is.null(input$db_edad))
       df <- dplyr::filter(df, is.na(Edad) | dplyr::between(Edad, input$db_edad[1], input$db_edad[2]))
     if (!is.null(input$db_minutos))
       df <- dplyr::filter(df, is.na(Minutos) | dplyr::between(Minutos, input$db_minutos[1], input$db_minutos[2]))
-    # Only exclude NA market values once the slider has actually been moved
-    # off its full default range -- at the default (i.e. not filtering by
-    # market value at all) every player should still show up, NA included.
-    valor_full_range <- range(get_db_master()$Valor_mercado, na.rm = TRUE)
-    if (!is.null(input$db_valor) &&
-        !isTRUE(all.equal(input$db_valor, valor_full_range, tolerance = 1e-6))) {
+    # Market value is a plain min/max box pair now (not a slider spanning
+    # the full data range), so it's always actively applied, NA included.
+    if (!is.null(input$db_valor_min) && !is.null(input$db_valor_max)) {
       df <- dplyr::filter(df, !is.na(Valor_mercado),
-                          dplyr::between(Valor_mercado, input$db_valor[1], input$db_valor[2]))
+                          dplyr::between(Valor_mercado, input$db_valor_min, input$db_valor_max))
     }
 
     df
   })
 
   output$db_table <- DT::renderDT({
-    df <- db_filtered() |>
+    base <- db_filtered()
+    df <- base |>
       dplyr::transmute(
+        player_id,
         Jugador, Equipo, Liga, Nacionalidad, Hispanohablante, Edad, Rol,
         `Posiciones jugadas` = Posiciones_jugadas,
         Perfil, Pie,
@@ -3307,7 +3313,26 @@ server <- function(input, output, session) {
         `Vencimiento contrato` = ifelse(is.na(Vencimiento_contrato), "–", Vencimiento_contrato)
       )
 
-    DT::datatable(
+    # "Métricas a incluir" adds each chosen metric as its own extra column
+    # (raw value, pulled from the already-filtered set), rounded to 3
+    # decimals for display.
+    extra_numeric_cols <- character(0)
+    if (!is.null(input$db_metrics) && length(input$db_metrics) > 0) {
+      vm <- var_map(base)
+      raw_map <- vm[intersect(names(vm), input$db_metrics)]
+      if (length(raw_map)) {
+        extra_df <- base |>
+          dplyr::distinct(player_id, .keep_all = TRUE) |>
+          dplyr::select(player_id, dplyr::all_of(unname(raw_map))) |>
+          dplyr::mutate(dplyr::across(-player_id, ~round(suppressWarnings(as.numeric(.x)), 3)))
+        names(extra_df)[-1] <- names(raw_map)
+        extra_numeric_cols <- names(raw_map)
+        df <- dplyr::left_join(df, extra_df, by = "player_id")
+      }
+    }
+    df <- dplyr::select(df, -player_id)
+
+    dt <- DT::datatable(
       df,
       rownames = FALSE,
       filter   = "none",
@@ -3318,6 +3343,8 @@ server <- function(input, output, session) {
         scrollX    = TRUE
       )
     )
+    if (length(extra_numeric_cols)) dt <- dt |> DT::formatRound(extra_numeric_cols, digits = 3)
+    dt
   })
 
 }
