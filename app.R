@@ -702,7 +702,7 @@ var_map <- function(df_pg) {
   drop_cols <- c(
     "player_name","team_name","position_group","primary_position",
     "birth_date","league","season","country","competition",
-    "player_season_minutes","player_season_90s_played",
+    "player_season_minutes","player_season_90s_played","Pct_Minutos",
     ".league_label",".league_key",
     "sc_player_id","match_type"
   )
@@ -1450,9 +1450,30 @@ get_all_players_df <- function() {
     # per player) down to one before dedup_transfers() does its per-column
     # weighted-average merge -- skipping it made dedup_transfers() churn
     # through inflated group sizes, ~33s vs ~9s measured on the full dataset.
-    .all_players_df_cache <<- all_players_df_from_cache(scout, league_map) |>
+    dat <- all_players_df_from_cache(scout, league_map) |>
       dedup_same_team() |>
       dedup_transfers()
+
+    # % of minutes played vs. the most-used player in the same league --
+    # computed once here (rather than separately per tab) so "Base de
+    # Datos" and "Jugadores Similares" agree on the same number for a
+    # given player. Grouped on .league_label, which for a player who
+    # transferred leagues mid-season is dedup_transfers()'s combined
+    # "LeagueA / LeagueB" string -- such players end up alone in their own
+    # group and read as 100%, a known blind spot for that small subset
+    # rather than a true single-league comparison.
+    dat <- dat |>
+      dplyr::group_by(.league_label) |>
+      dplyr::mutate(
+        Pct_Minutos = {
+          mx <- suppressWarnings(max(player_season_minutes, na.rm = TRUE))
+          if (!is.finite(mx) || mx <= 0) rep(NA_real_, dplyr::n())
+          else round(100 * player_season_minutes / mx, 1)
+        }
+      ) |>
+      dplyr::ungroup()
+
+    .all_players_df_cache <<- dat
   }
   .all_players_df_cache
 }
@@ -2075,11 +2096,11 @@ ui <- fluidPage(
           ))
         ),
         fluidRow(
-          column(3, sliderInput("db_edad", "Edad", min = 15, max = 45, value = c(15, 45), step = 1)),
+          column(2, sliderInput("db_edad", "Edad", min = 15, max = 45, value = c(15, 45), step = 1)),
           column(4,
                  tags$label("Valor de mercado (€)"),
                  fluidRow(
-                   column(6, autonumericInput("db_valor_min", "Mínimo", value = 500000,
+                   column(6, autonumericInput("db_valor_min", "Mínimo", value = 0,
                                               currencySymbol = "€", currencySymbolPlacement = "p",
                                               decimalPlaces = 0, digitGroupSeparator = ",",
                                               minimumValue = "0")),
@@ -2089,7 +2110,11 @@ ui <- fluidPage(
                                               minimumValue = "0"))
                  )),
           column(3, sliderInput("db_minutos", "Minutos jugados", min = 0, max = 1,
-                                value = c(0, 1), step = 50))
+                                value = c(0, 1), step = 50)),
+          column(3, sliderInput("db_pct_minutos",
+                                "% minutos jugados (vs. máx. en su liga)",
+                                min = 0, max = 100, value = c(0, 100),
+                                step = 5, post = "%"))
         ),
         DT::DTOutput("db_table")
       )
@@ -2108,36 +2133,26 @@ ui <- fluidPage(
         tags$div(
           class = "filter-card",
           fluidRow(
-            column(6, selectizeInput(
+            column(3, selectizeInput(
               "sim_player_search", "Jugador base", choices = NULL, multiple = FALSE,
               options = list(placeholder = "Escribe un nombre…", selectOnTab = TRUE,
                              maxOptions = 5000, openOnFocus = TRUE)
             )),
-            column(6, selectizeInput(
-              "sim_metrics", "Métricas a incluir", choices = NULL, multiple = TRUE,
-              options = list(placeholder = "Todas las métricas (por defecto)",
-                             maxOptions = 5000, plugins = list("remove_button"))
-            ))
-          ),
-          fluidRow(
-            column(4, selectizeInput("sim_league_filter", "Liga",
+            column(2, selectizeInput("sim_league_filter", "Liga",
                                      choices  = names(league_map),
                                      selected = NULL,
                                      multiple = TRUE,
                                      options  = list(placeholder = "Todas las ligas"))),
-            column(4, selectInput("sim_pos_filter", "Posición",
+            column(2, selectInput("sim_pos_filter", "Posición",
                                   choices  = c("Todas" = ""),
                                   selected = "")),
-            column(4, numericInput("sim_min_similarity", "Similitud mín.",
-                                   value = 0.45, min = -1, max = 1, step = 0.05))
-          ),
-          fluidRow(
-            column(6, sliderInput("sim_age_filter", "Rango de edad",
-                                  min = 15, max = 45, value = c(15, 45),
-                                  step = 1, width = "100%")),
-            column(6, sliderInput("sim_min_minutes", "Minutos mín. jugados",
-                                  min = 0, max = 3000, value = 0,
-                                  step = 100, width = "100%"))
+            column(2, numericInput("sim_min_similarity", "Similitud mín.",
+                                   value = 0.45, min = -1, max = 1, step = 0.05)),
+            column(3, selectizeInput(
+              "sim_metrics", "Métricas a incluir", choices = NULL, multiple = TRUE,
+              options = list(placeholder = "Todas las métricas (por defecto)",
+                             maxOptions = 5000, plugins = list("remove_button"))
+            ))
           ),
           fluidRow(
             column(3, pickerInput("sim_pie", "Pie", choices = NULL, multiple = TRUE,
@@ -2155,18 +2170,24 @@ ui <- fluidPage(
                                   options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3")))
           ),
           fluidRow(
-            column(4,
-                   tags$label("Valor de mercado (€)"),
-                   fluidRow(
-                     column(6, autonumericInput("sim_valor_min", "Mínimo", value = 0,
-                                                currencySymbol = "€", currencySymbolPlacement = "p",
-                                                decimalPlaces = 0, digitGroupSeparator = ",",
-                                                minimumValue = "0")),
-                     column(6, autonumericInput("sim_valor_max", "Máximo", value = 200000000,
-                                                currencySymbol = "€", currencySymbolPlacement = "p",
-                                                decimalPlaces = 0, digitGroupSeparator = ",",
-                                                minimumValue = "0"))
-                   ))
+            column(2, autonumericInput("sim_valor_min", "Valor mín. (€)", value = 0,
+                                       currencySymbol = "€", currencySymbolPlacement = "p",
+                                       decimalPlaces = 0, digitGroupSeparator = ",",
+                                       minimumValue = "0")),
+            column(2, autonumericInput("sim_valor_max", "Valor máx. (€)", value = 200000000,
+                                       currencySymbol = "€", currencySymbolPlacement = "p",
+                                       decimalPlaces = 0, digitGroupSeparator = ",",
+                                       minimumValue = "0")),
+            column(3, sliderInput("sim_age_filter", "Rango de edad",
+                                  min = 15, max = 45, value = c(15, 45),
+                                  step = 1, width = "100%")),
+            column(3, sliderInput("sim_min_minutes", "Minutos mín. jugados",
+                                  min = 0, max = 3000, value = 0,
+                                  step = 100, width = "100%")),
+            column(2, sliderInput("sim_pct_minutos",
+                                  "% minutos jugados (vs. máx. en su liga)",
+                                  min = 0, max = 100, value = c(0, 100),
+                                  step = 5, post = "%", width = "100%"))
           )
         ),
         DT::DTOutput("similar_players_sc_table"),
@@ -2687,7 +2708,8 @@ server <- function(input, output, session) {
       return(data.frame(Jugador = character(), Equipo = character(),
                         Liga = character(), Grupo_Posicion = character(),
                         Posicion = character(), Edad = integer(),
-                        Minutos = integer(), Similitud = numeric()))
+                        Minutos = integer(), `% Minutos` = numeric(),
+                        Similitud = numeric(), check.names = FALSE))
     pool_use <- pool
     M   <- as.matrix(pool_use[, metrics, drop = FALSE])
     idx <- match(base_player, pool_use$player_name)
@@ -2696,7 +2718,7 @@ server <- function(input, output, session) {
 
     meta <- dat_all |>
       dplyr::distinct(player_name, .keep_all = TRUE) |>
-      dplyr::select(player_name, .league_label, birth_date, position_group)
+      dplyr::select(player_name, .league_label, birth_date, position_group, Pct_Minutos)
 
     result <- pool_use |>
       dplyr::mutate(similarity = sims) |>
@@ -2712,6 +2734,7 @@ server <- function(input, output, session) {
         Posicion       = primary_position,
         Edad           = Edad,
         Minutos        = as.integer(round(player_season_90s_played * 90)),
+        `% Minutos`    = Pct_Minutos,
         Similitud      = round(pmin(pmax(similarity, -1), 1), 3)
       ) |>
       dplyr::slice_head(n = 150)
@@ -2727,12 +2750,13 @@ server <- function(input, output, session) {
                        `Vencimiento contrato` = contract_expires)
     result <- dplyr::left_join(result, tm_vm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
 
-    # Pie/Nacionalidad/Hispanohablante -- same derived master used by the
-    # "Base de Datos" tab, joined here purely to power this tab's own
-    # filters (kept hidden in the rendered table, like Grupo_Posicion is).
+    # Pie/Nacionalidad/Hispanohablante/Perfil -- same derived master used by
+    # the "Base de Datos" tab. Pie/Nacionalidad/Hispanohablante/
+    # contract_year power this tab's own filters and stay hidden in the
+    # rendered table (like Grupo_Posicion); Perfil is shown as a column.
     filt_meta <- get_db_master() |>
       dplyr::distinct(Jugador, Equipo, .keep_all = TRUE) |>
-      dplyr::select(Jugador, Equipo, Pie, Nacionalidad, Hispanohablante, contract_year)
+      dplyr::select(Jugador, Equipo, Perfil, Pie, Nacionalidad, Hispanohablante, contract_year)
     result <- dplyr::left_join(result, filt_meta, by = c("Jugador", "Equipo"))
 
     # "Métricas a incluir" adds each chosen metric as its own extra column
@@ -2797,6 +2821,10 @@ server <- function(input, output, session) {
       df <- dplyr::filter(df, !is.na(`Valor de mercado`),
                           dplyr::between(`Valor de mercado`, input$sim_valor_min, input$sim_valor_max))
     }
+    pct_range <- input$sim_pct_minutos
+    if (!is.null(pct_range) && length(pct_range) == 2)
+      df <- dplyr::filter(df, is.na(`% Minutos`) |
+                          dplyr::between(`% Minutos`, pct_range[1], pct_range[2]))
 
     df
   })
@@ -3029,8 +3057,14 @@ server <- function(input, output, session) {
     if ("Vencimiento contrato" %in% names(df)) {
       df[["Vencimiento contrato"]][is.na(df[["Vencimiento contrato"]])] <- "–"
     }
+    if ("% Minutos" %in% names(df)) {
+      df[["% Minutos"]] <- ifelse(
+        is.na(df[["% Minutos"]]), "–",
+        paste0(df[["% Minutos"]], "%")
+      )
+    }
 
-    base_cols  <- c("Jugador","Equipo","Liga","Grupo_Posicion","Posicion","Edad","Minutos","Similitud")
+    base_cols  <- c("Jugador","Equipo","Liga","Grupo_Posicion","Posicion","Edad","Minutos","% Minutos","Similitud")
     extra_cols <- setdiff(names(df), base_cols)
     extra_numeric_cols <- extra_cols[vapply(df[extra_cols], is.numeric, TRUE)]
 
@@ -3038,12 +3072,14 @@ server <- function(input, output, session) {
     # power this tab's own filters -- hidden here the same way
     # Grupo_Posicion (also filter-only) already is. Located by name, not a
     # fixed index, since they sit after whichever optional "Métricas a
-    # incluir" columns preceded them.
+    # incluir" columns preceded them. Liga and Minutos stay filterable
+    # (sim_league_filter/sim_min_minutes already run upstream in
+    # similar_players_sc_filtered()) but are likewise dropped from display.
     filter_only_cols <- intersect(
       c("Pie", "Nacionalidad", "Hispanohablante", "contract_year"),
       names(df)
     )
-    hidden_targets <- match(c("Grupo_Posicion", filter_only_cols), names(df)) - 1L
+    hidden_targets <- match(c("Liga", "Grupo_Posicion", "Minutos", filter_only_cols), names(df)) - 1L
 
     dt <- DT::datatable(
       df,
@@ -3052,13 +3088,20 @@ server <- function(input, output, session) {
       options   = list(
         pageLength  = 10,
         dom         = "tp",
-        scrollX     = TRUE,
-        order       = list(list(7L, "desc")),
+        autoWidth   = FALSE,
+        # No scrollX: it renders the header and body as two separate
+        # <table>s with independently computed column widths, which drift
+        # out of sync once cells wrap across multiple lines (e.g.
+        # "CONCACAF Champions Cup / Liga MX") -- headers stop lining up
+        # with their column's data. See db_table's renderer for the same
+        # fix and fuller explanation.
+        order       = list(list(8L, "desc")),
         columnDefs  = list(
           list(visible = FALSE, targets = hidden_targets),  # filter-only columns
           list(width = "90px",  targets = 5),   # Edad
           list(width = "80px",  targets = 6),   # Minutos
-          list(width = "85px",  targets = 7)    # Similitud
+          list(width = "85px",  targets = 7),   # % Minutos
+          list(width = "85px",  targets = 8)    # Similitud
         )
       )
     ) |>
@@ -3401,12 +3444,21 @@ server <- function(input, output, session) {
       df <- dplyr::filter(df, is.na(Edad) | dplyr::between(Edad, input$db_edad[1], input$db_edad[2]))
     if (!is.null(input$db_minutos))
       df <- dplyr::filter(df, is.na(Minutos) | dplyr::between(Minutos, input$db_minutos[1], input$db_minutos[2]))
-    # Market value is a plain min/max box pair now (not a slider spanning
-    # the full data range), so it's always actively applied, NA included.
-    if (!is.null(input$db_valor_min) && !is.null(input$db_valor_max)) {
+    # Market value is a plain min/max box pair (not a slider spanning the
+    # full data range), defaulting to €0-200M so it doesn't exclude anyone
+    # on load. It only actively filters -- including dropping players with
+    # no Transfermarkt market value at all -- once the user narrows the
+    # range from that default; otherwise ~2,150 uncrosswalked players and
+    # everyone under whatever the old €500k floor was would silently
+    # disappear before the user touched the filter.
+    if (!is.null(input$db_valor_min) && !is.null(input$db_valor_max) &&
+        (input$db_valor_min > 0 || input$db_valor_max < 200000000)) {
       df <- dplyr::filter(df, !is.na(Valor_mercado),
                           dplyr::between(Valor_mercado, input$db_valor_min, input$db_valor_max))
     }
+    if (!is.null(input$db_pct_minutos))
+      df <- dplyr::filter(df, is.na(Pct_Minutos) |
+                          dplyr::between(Pct_Minutos, input$db_pct_minutos[1], input$db_pct_minutos[2]))
 
     df
   })
@@ -3420,6 +3472,7 @@ server <- function(input, output, session) {
         `Posiciones jugadas` = Posiciones_jugadas,
         Perfil, Pie,
         `Minutos jugados` = Minutos,
+        `% Minutos` = ifelse(is.na(Pct_Minutos), "–", paste0(Pct_Minutos, "%")),
         `Valor de mercado` = ifelse(is.na(Valor_mercado), "–",
                                     paste0("€", formatC(Valor_mercado, format = "d", big.mark = ","))),
         `Vencimiento contrato` = ifelse(is.na(Vencimiento_contrato), "–", Vencimiento_contrato)
@@ -3444,6 +3497,16 @@ server <- function(input, output, session) {
     }
     df <- dplyr::select(df, -player_id)
 
+    # Liga/Hispanohablante/Minutos jugados stay filterable (db_filtered()
+    # already applies db_liga/db_hispanohablante/db_minutos against the
+    # raw get_db_master() columns upstream of this transmute) but are
+    # dropped from the *display* -- hidden the same way Grupo_Posicion is
+    # on the Jugadores Similares table.
+    hidden_targets <- match(
+      intersect(c("Liga", "Hispanohablante", "Minutos jugados"), names(df)),
+      names(df)
+    ) - 1L
+
     dt <- DT::datatable(
       df,
       rownames = FALSE,
@@ -3452,7 +3515,15 @@ server <- function(input, output, session) {
         pageLength = 25,
         lengthMenu = c(10, 25, 50, 100),
         dom        = "lftip",
-        scrollX    = TRUE
+        autoWidth  = FALSE,
+        columnDefs = list(list(visible = FALSE, targets = hidden_targets))
+        # No scrollX here: DataTables' scrollX mode renders the header and
+        # body as two separate <table>s with independently computed column
+        # widths, and cells that wrap across multiple lines (e.g. "Left
+        # Centre Back, Right Centre Back") throw those two width
+        # computations out of sync -- the header ends up not lining up
+        # with its column's data. A single unrolled table (normal
+        # wrapping, no horizontal scroll) can't drift like that.
       )
     )
     if (length(extra_numeric_cols)) dt <- dt |> DT::formatRound(extra_numeric_cols, digits = 3)
