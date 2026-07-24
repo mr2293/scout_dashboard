@@ -436,6 +436,15 @@ jugs_ligamx <- jugs_ligamx |>
 
 jugs_ligamx <- safe_join_goles(jugs_ligamx, goles_ligamx)
 
+# A player active in both pulled seasons (25/26 and 26/27) now has two rows
+# here instead of one. Several summarise(.by=...) blocks below pass columns
+# straight through unaggregated (fine with one row per group, fatal with
+# two), and the radar-comparison demos build data.frame rownames directly
+# from player_name (which can't have duplicates) -- collapse to the
+# higher-minutes row per player before any of that runs.
+jugs_ligamx <- jugs_ligamx |>
+  dplyr::slice_max(player_season_minutes, n = 1, by = player_name, with_ties = FALSE)
+
 ## Delanteros ----
 
 ### Goleadores ----
