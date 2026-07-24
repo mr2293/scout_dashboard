@@ -1457,14 +1457,6 @@ get_all_players_df <- function() {
   .all_players_df_cache
 }
 
-# Computed eagerly (once per process, at app startup rather than lazily on
-# first session access) so the Dashboard's player search can list every
-# player across all leagues from the moment any session connects, instead
-# of only the currently selected league. Costs ~9s added to how long the
-# app takes to start listening -- an explicit, deliberate tradeoff (this
-# used to be lazy specifically to avoid that startup cost; see git history
-# if that constraint matters again for a specific deployment target).
-invisible(get_all_players_df())
 
 # ============================================================
 # BASE DE DATOS TAB — full cross-league player table
@@ -1544,7 +1536,20 @@ build_database_master <- function() {
     )
 }
 
-DB_MASTER <- build_database_master()
+# Computed lazily on first access (first session to open the "Base de
+# Datos" tab, in any given running process), not eagerly at app startup.
+# shinyapps.io kills a worker that can't start listening within 60 seconds,
+# and this build (get_all_players_df() + per-position profile scoring +
+# the Transfermarkt join) takes real time -- eagerly precomputing it here
+# blew past that timeout in production. Same "compute on first access,
+# cache the result" pattern as get_all_players_df()/get_all_players_sc_df().
+.db_master_cache <- NULL
+get_db_master <- function() {
+  if (is.null(.db_master_cache)) {
+    .db_master_cache <<- build_database_master()
+  }
+  .db_master_cache
+}
 
 # dedup_transfers() (upstream, inside get_all_players_df()) concatenates
 # Liga/Equipo with " / " for a player who appears under more than one
@@ -1559,16 +1564,6 @@ any_combined_match <- function(combined_col, selected) {
     any(parts %in% selected)
   }, logical(1), USE.NAMES = FALSE)
 }
-
-DB_LIGA_CHOICES        <- split_combined_values(DB_MASTER$Liga)
-DB_ROL_CHOICES         <- sort(unique(stats::na.omit(DB_MASTER$Rol)))
-DB_PERFIL_CHOICES      <- sort(unique(stats::na.omit(DB_MASTER$Perfil)))
-DB_PIE_CHOICES         <- sort(unique(stats::na.omit(DB_MASTER$Pie)))
-DB_NACIONALIDAD_CHOICES <- sort(unique(DB_MASTER$Nacionalidad))
-DB_VENCIMIENTO_CHOICES  <- sort(unique(stats::na.omit(DB_MASTER$contract_year)), decreasing = FALSE)
-DB_EDAD_RANGE    <- range(DB_MASTER$Edad, na.rm = TRUE)
-DB_MINUTOS_RANGE <- range(DB_MASTER$Minutos, na.rm = TRUE)
-DB_VALOR_RANGE   <- range(DB_MASTER$Valor_mercado, na.rm = TRUE)
 
 # Rol (abbreviated position) -> the Perfil names actually possible for it,
 # so picking a Rol can narrow the Perfil picker to only relevant choices.
@@ -2035,25 +2030,27 @@ ui <- fluidPage(
         tags$p(style="color:#666;font-size:0.85em;margin:2px 0 8px;",
                "Todas las ligas del dashboard. Sin filtros aplicados se muestran todos los jugadores; ",
                "cada filtro de categoría admite selección múltiple."),
+        tags$p(style="color:#999;font-size:0.8em;margin:0 0 8px;",
+               "(Los filtros y la tabla tardan unos segundos en poblarse la primera vez que se abre esta pestaña.)"),
         fluidRow(
-          column(3, pickerInput("db_liga", "Liga", choices = DB_LIGA_CHOICES, multiple = TRUE,
+          column(3, pickerInput("db_liga", "Liga", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                         selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_equipo", "Equipo", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                         selectedTextFormat = "count > 3"))),
-          column(3, pickerInput("db_rol", "Posición Principal", choices = DB_ROL_CHOICES, multiple = TRUE,
+          column(3, pickerInput("db_rol", "Posición Principal", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE,
                                                         selectedTextFormat = "count > 3"))),
-          column(3, pickerInput("db_perfil", "Perfil", choices = DB_PERFIL_CHOICES, multiple = TRUE,
+          column(3, pickerInput("db_perfil", "Perfil", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                         selectedTextFormat = "count > 3")))
         ),
         fluidRow(
-          column(3, pickerInput("db_pie", "Pie", choices = DB_PIE_CHOICES, multiple = TRUE,
+          column(3, pickerInput("db_pie", "Pie", choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE,
                                                         selectedTextFormat = "count > 3"))),
-          column(3, pickerInput("db_nacionalidad", "Nacionalidad", choices = DB_NACIONALIDAD_CHOICES,
+          column(3, pickerInput("db_nacionalidad", "Nacionalidad", choices = NULL,
                                 multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                         selectedTextFormat = "count > 3"))),
@@ -2061,17 +2058,16 @@ ui <- fluidPage(
                                 multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
           column(3, pickerInput("db_vencimiento", "Vencimiento contrato (año)",
-                                choices = DB_VENCIMIENTO_CHOICES, multiple = TRUE,
+                                choices = NULL, multiple = TRUE,
                                 options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3")))
         ),
         fluidRow(
           column(3, textInput("db_jugador", "Jugador", placeholder = "Buscar por nombre…")),
-          column(3, sliderInput("db_edad", "Edad", min = DB_EDAD_RANGE[1], max = DB_EDAD_RANGE[2],
-                                value = DB_EDAD_RANGE, step = 1)),
-          column(3, sliderInput("db_valor", "Valor de mercado (€)", min = DB_VALOR_RANGE[1],
-                                max = DB_VALOR_RANGE[2], value = DB_VALOR_RANGE, step = 50000)),
-          column(3, sliderInput("db_minutos", "Minutos jugados", min = DB_MINUTOS_RANGE[1],
-                                max = DB_MINUTOS_RANGE[2], value = DB_MINUTOS_RANGE, step = 50))
+          column(3, sliderInput("db_edad", "Edad", min = 15, max = 45, value = c(15, 45), step = 1)),
+          column(3, sliderInput("db_valor", "Valor de mercado (€)", min = 0, max = 1,
+                                value = c(0, 1), step = 50000)),
+          column(3, sliderInput("db_minutos", "Minutos jugados", min = 0, max = 1,
+                                value = c(0, 1), step = 50))
         ),
         DT::DTOutput("db_table")
       )
@@ -2253,73 +2249,53 @@ server <- function(input, output, session) {
   })
   
   # ---- Populate player search ----
-  # get_all_players_df() is precomputed eagerly at app startup (see its
-  # definition), so this is instant for every session -- no per-league
-  # scoping or lazy loading needed.
-  all_players_for_search <- get_all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
-  updateSelectizeInput(session, "player_search", choices = all_players_for_search,
-                       selected = character(0), server = TRUE)
+  # Scoped to the selected league only -- deliberately NOT the full
+  # cross-league player list. get_all_players_df() takes real time to
+  # compute (dedup across ~17k rows), and shinyapps.io kills a worker that
+  # can't start listening within 60s; even the "compute lazily on first use"
+  # version of cross-league search caused visible stalls the first time any
+  # session touched it. Keeping this league-scoped keeps it instant always,
+  # at the cost of not finding players outside the currently selected league.
+  observeEvent(league_df(), {
+    players <- league_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+    updateSelectizeInput(session, "player_search", choices=players,
+                         selected=character(0), server=TRUE)
+  }, ignoreInit=FALSE)
 
   selected_player <- reactiveVal(NULL)
 
   # Searching a player should make them actually show up in the scatter
-  # plots below -- jump to their league and position-group tab, and clear
-  # the team/position/minutes/age filters so nothing hides their point,
-  # instead of requiring the user to go find and match those filters by hand.
-  apply_search_focus <- function(name, df) {
-    row <- df |> dplyr::filter(player_name == name) |> dplyr::slice_head(n = 1)
-    if (nrow(row) != 1) return(invisible())
-
-    pg_row <- as.character(row$position_group)
-    if (!is.na(pg_row) && nzchar(pg_row) && pg_row %in% names(charts_cfg)) {
-      updateSelectInput(session, "pg", selected = pg_row)
-    }
-    updateSelectInput(session, "team_filter", selected = "Todos los equipos")
-    updateSelectInput(session, "pos_filter", selected = "Todas")
-    updateSelectInput(session, "country_filter", selected = "Todas")
-
-    max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
-    updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
-
-    ages <- compute_age_years(df$birth_date)
-    ages <- ages[is.finite(ages) & ages < 200]
-    amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
-    amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
-    updateSliderInput(session, "age_range", value = c(amin, amax))
-  }
-
-  # Set when a searched player belongs to a different league than the one
-  # currently selected: switching input$league invalidates league_df()
-  # asynchronously, so the pg/filter focus has to wait for that to land
-  # before it can look the player up in the (now-correct) league's data.
-  pending_search_player <- reactiveVal(NULL)
-
+  # plots below -- jump to their position-group tab and clear the team/
+  # position/minutes/age filters so nothing hides their point, instead of
+  # requiring the user to go find and match those filters by hand.
   observeEvent(input$player_search, {
     if (!is.null(input$player_search) && nzchar(input$player_search)) {
       selected_player(input$player_search)
 
-      all_df <- get_all_players_df()
-      prow <- all_df |> dplyr::filter(player_name == input$player_search) |> dplyr::slice_head(n = 1)
-      player_league <- if (nrow(prow) == 1) as.character(prow$.league_label[1]) else NA_character_
+      df  <- league_df()
+      row <- df |> dplyr::filter(player_name == input$player_search) |> dplyr::slice_head(n = 1)
+      if (nrow(row) == 1) {
+        pg_row <- as.character(row$position_group)
+        if (!is.na(pg_row) && nzchar(pg_row) && pg_row %in% names(charts_cfg)) {
+          updateSelectInput(session, "pg", selected = pg_row)
+        }
+        updateSelectInput(session, "team_filter", selected = "Todos los equipos")
+        updateSelectInput(session, "pos_filter", selected = "Todas")
+        updateSelectInput(session, "country_filter", selected = "Todas")
 
-      if (!is.na(player_league) && player_league %in% names(league_map) &&
-          !identical(input$league, player_league)) {
-        pending_search_player(input$player_search)
-        updateSelectInput(session, "league", selected = player_league)
-      } else {
-        apply_search_focus(input$player_search, league_df())
+        max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
+        updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
+
+        ages <- compute_age_years(df$birth_date)
+        ages <- ages[is.finite(ages) & ages < 200]
+        amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
+        amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
+        updateSliderInput(session, "age_range", value = c(amin, amax))
       }
     } else {
       selected_player(NULL)
     }
   }, ignoreInit=TRUE)
-
-  observeEvent(league_df(), {
-    pend <- pending_search_player()
-    if (is.null(pend)) return()
-    pending_search_player(NULL)
-    apply_search_focus(pend, league_df())
-  }, ignoreInit = TRUE)
   
   # ---- Tabs UI ----
   output$tabs_ui <- renderUI({
@@ -3219,37 +3195,70 @@ server <- function(input, output, session) {
   # ============================================================
   # BASE DE DATOS TAB
   # ============================================================
+  # get_db_master() is deferred until the user actually opens this tab --
+  # same reasoning as the Jugadores Similares tab's lazy player/metric
+  # picker: shinyapps.io kills a worker that can't start listening within
+  # 60s, and building this table (get_all_players_df() + per-position
+  # profile scoring + the Transfermarkt join) takes real time.
+  db_choices_populated <- reactiveVal(FALSE)
+  observeEvent(input$app_main_tabs, {
+    req(input$app_main_tabs == "Base de Datos")
+    if (isTRUE(db_choices_populated())) return()
 
-  # Equipo choices narrow to whatever Liga(s) are selected -- DB_MASTER,
-  # DB_LIGA_CHOICES etc. are all precomputed globals (see their definitions
-  # near build_database_master()), so this is instant, no per-session cost.
+    db <- get_db_master()
+
+    updatePickerInput(session, "db_liga", choices = split_combined_values(db$Liga))
+    updatePickerInput(session, "db_equipo", choices = split_combined_values(db$Equipo))
+    updatePickerInput(session, "db_rol", choices = sort(unique(stats::na.omit(db$Rol))))
+    updatePickerInput(session, "db_perfil", choices = sort(unique(stats::na.omit(db$Perfil))))
+    updatePickerInput(session, "db_pie", choices = sort(unique(stats::na.omit(db$Pie))))
+    updatePickerInput(session, "db_nacionalidad", choices = sort(unique(db$Nacionalidad)))
+    updatePickerInput(session, "db_vencimiento",
+                      choices = sort(unique(stats::na.omit(db$contract_year))))
+
+    edad_range    <- range(db$Edad, na.rm = TRUE)
+    minutos_range <- range(db$Minutos, na.rm = TRUE)
+    valor_range   <- range(db$Valor_mercado, na.rm = TRUE)
+    updateSliderInput(session, "db_edad", min = edad_range[1], max = edad_range[2], value = edad_range)
+    updateSliderInput(session, "db_minutos", min = minutos_range[1], max = minutos_range[2], value = minutos_range)
+    updateSliderInput(session, "db_valor", min = valor_range[1], max = valor_range[2], value = valor_range)
+
+    db_choices_populated(TRUE)
+  })
+
+  # Equipo choices narrow to whatever Liga(s) are selected.
   observeEvent(input$db_liga, {
+    req(db_choices_populated())
+    db <- get_db_master()
     pool <- if (length(input$db_liga)) {
-      DB_MASTER[any_combined_match(DB_MASTER$Liga, input$db_liga), ]
+      db[any_combined_match(db$Liga, input$db_liga), ]
     } else {
-      DB_MASTER
+      db
     }
     updatePickerInput(session, "db_equipo",
                       choices  = split_combined_values(pool$Equipo),
                       selected = intersect(input$db_equipo %||% character(0), split_combined_values(pool$Equipo)))
-  }, ignoreNULL = FALSE, ignoreInit = FALSE)
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
   # Perfil choices narrow to whatever Rol(es) (Posición Principal) are
   # selected -- a Delantero can't be "Orquestador" (a Volante sub-profile),
   # so don't offer it once a position is chosen.
   observeEvent(input$db_rol, {
+    req(db_choices_populated())
+    db <- get_db_master()
     valid_perfiles <- if (length(input$db_rol)) {
       sort(unique(unlist(ROL_TO_PERFILES[input$db_rol])))
     } else {
-      DB_PERFIL_CHOICES
+      sort(unique(stats::na.omit(db$Perfil)))
     }
     updatePickerInput(session, "db_perfil",
                       choices  = valid_perfiles,
                       selected = intersect(input$db_perfil %||% character(0), valid_perfiles))
-  }, ignoreNULL = FALSE, ignoreInit = FALSE)
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
   db_filtered <- reactive({
-    df <- DB_MASTER
+    req(db_choices_populated())
+    df <- get_db_master()
 
     if (length(input$db_liga))
       df <- df[any_combined_match(df$Liga, input$db_liga), ]
@@ -3276,8 +3285,9 @@ server <- function(input, output, session) {
     # Only exclude NA market values once the slider has actually been moved
     # off its full default range -- at the default (i.e. not filtering by
     # market value at all) every player should still show up, NA included.
+    valor_full_range <- range(get_db_master()$Valor_mercado, na.rm = TRUE)
     if (!is.null(input$db_valor) &&
-        !isTRUE(all.equal(input$db_valor, DB_VALOR_RANGE, tolerance = 1e-6))) {
+        !isTRUE(all.equal(input$db_valor, valor_full_range, tolerance = 1e-6))) {
       df <- dplyr::filter(df, !is.na(Valor_mercado),
                           dplyr::between(Valor_mercado, input$db_valor[1], input$db_valor[2]))
     }
