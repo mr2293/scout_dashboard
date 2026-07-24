@@ -1711,6 +1711,22 @@ ui <- fluidPage(
       margin-bottom: 20px;
     }
 
+    /* Reusable version of the card above for filter blocks that aren't
+       directly under the page header (e.g. inside a tabPanel) -- same
+       look, plus tighter row/label spacing so stacked filter rows read as
+       one organized block instead of leaving a full form-group gap
+       (Bootstrap's default 15px) after every row. */
+    .filter-card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      padding: 16px 24px 4px;
+      margin-bottom: 18px;
+    }
+    .filter-card .row { margin-bottom: 0; }
+    .filter-card .form-group { margin-bottom: 12px; }
+    .filter-card .irs--shiny { margin-bottom: -8px; }
+
     /* ── FORM LABELS ─────────────────────────────────────── */
     .control-label, label {
       font-size: 0.72rem !important;
@@ -2089,37 +2105,69 @@ ui <- fluidPage(
                "Similitud calculada usando métricas de StatsBomb y datos físicos de SkillCorner. ",
                "Elige un jugador base y, si quieres, restringe qué métricas se usan para el cálculo. ",
                "Haz click en una fila para cargar a ese jugador en la pestaña Dashboard."),
-        fluidRow(
-          column(6, selectizeInput(
-            "sim_player_search", "Jugador base", choices = NULL, multiple = FALSE,
-            options = list(placeholder = "Escribe un nombre…", selectOnTab = TRUE,
-                           maxOptions = 5000, openOnFocus = TRUE)
-          )),
-          column(6, selectizeInput(
-            "sim_metrics", "Métricas a incluir", choices = NULL, multiple = TRUE,
-            options = list(placeholder = "Todas las métricas (por defecto)",
-                           maxOptions = 5000, plugins = list("remove_button"))
-          ))
-        ),
-        fluidRow(
-          column(4, selectizeInput("sim_league_filter", "Liga",
-                                   choices  = names(league_map),
-                                   selected = NULL,
-                                   multiple = TRUE,
-                                   options  = list(placeholder = "Todas las ligas"))),
-          column(4, selectInput("sim_pos_filter", "Posición",
-                                choices  = c("Todas" = ""),
-                                selected = "")),
-          column(4, numericInput("sim_min_similarity", "Similitud mín.",
-                                 value = 0.45, min = -1, max = 1, step = 0.05))
-        ),
-        fluidRow(
-          column(6, sliderInput("sim_age_filter", "Rango de edad",
-                                min = 15, max = 45, value = c(15, 45),
-                                step = 1, width = "100%")),
-          column(6, sliderInput("sim_min_minutes", "Minutos mín. jugados",
-                                min = 0, max = 3000, value = 0,
-                                step = 100, width = "100%"))
+        tags$div(
+          class = "filter-card",
+          fluidRow(
+            column(6, selectizeInput(
+              "sim_player_search", "Jugador base", choices = NULL, multiple = FALSE,
+              options = list(placeholder = "Escribe un nombre…", selectOnTab = TRUE,
+                             maxOptions = 5000, openOnFocus = TRUE)
+            )),
+            column(6, selectizeInput(
+              "sim_metrics", "Métricas a incluir", choices = NULL, multiple = TRUE,
+              options = list(placeholder = "Todas las métricas (por defecto)",
+                             maxOptions = 5000, plugins = list("remove_button"))
+            ))
+          ),
+          fluidRow(
+            column(4, selectizeInput("sim_league_filter", "Liga",
+                                     choices  = names(league_map),
+                                     selected = NULL,
+                                     multiple = TRUE,
+                                     options  = list(placeholder = "Todas las ligas"))),
+            column(4, selectInput("sim_pos_filter", "Posición",
+                                  choices  = c("Todas" = ""),
+                                  selected = "")),
+            column(4, numericInput("sim_min_similarity", "Similitud mín.",
+                                   value = 0.45, min = -1, max = 1, step = 0.05))
+          ),
+          fluidRow(
+            column(6, sliderInput("sim_age_filter", "Rango de edad",
+                                  min = 15, max = 45, value = c(15, 45),
+                                  step = 1, width = "100%")),
+            column(6, sliderInput("sim_min_minutes", "Minutos mín. jugados",
+                                  min = 0, max = 3000, value = 0,
+                                  step = 100, width = "100%"))
+          ),
+          fluidRow(
+            column(3, pickerInput("sim_pie", "Pie", choices = NULL, multiple = TRUE,
+                                  options = pickerOptions(actionsBox = TRUE,
+                                                          selectedTextFormat = "count > 3"))),
+            column(3, pickerInput("sim_nacionalidad", "Nacionalidad", choices = NULL,
+                                  multiple = TRUE,
+                                  options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                          selectedTextFormat = "count > 3"))),
+            column(3, pickerInput("sim_hispanohablante", "Hispanohablante", choices = c("Sí", "No"),
+                                  multiple = TRUE,
+                                  options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
+            column(3, pickerInput("sim_vencimiento", "Vencimiento contrato (año)",
+                                  choices = NULL, multiple = TRUE,
+                                  options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3")))
+          ),
+          fluidRow(
+            column(4,
+                   tags$label("Valor de mercado (€)"),
+                   fluidRow(
+                     column(6, autonumericInput("sim_valor_min", "Mínimo", value = 0,
+                                                currencySymbol = "€", currencySymbolPlacement = "p",
+                                                decimalPlaces = 0, digitGroupSeparator = ",",
+                                                minimumValue = "0")),
+                     column(6, autonumericInput("sim_valor_max", "Máximo", value = 200000000,
+                                                currencySymbol = "€", currencySymbolPlacement = "p",
+                                                decimalPlaces = 0, digitGroupSeparator = ",",
+                                                minimumValue = "0"))
+                   ))
+          )
         ),
         DT::DTOutput("similar_players_sc_table"),
         tags$small(HTML(
@@ -2608,6 +2656,17 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "sim_metrics",
                          choices = names(vm),
                          selected = character(0), server = TRUE)
+
+    # Pie/Nacionalidad/Vencimiento choices come from the same derived
+    # master table used by the "Base de Datos" tab, so both tabs' filters
+    # stay in sync with one build. (No Perfil filter here -- redundant with
+    # "Posición" above, which already narrows by primary position.)
+    db <- get_db_master()
+    updatePickerInput(session, "sim_pie", choices = sort(unique(stats::na.omit(db$Pie))))
+    updatePickerInput(session, "sim_nacionalidad", choices = sort(unique(db$Nacionalidad)))
+    updatePickerInput(session, "sim_vencimiento",
+                      choices = sort(unique(stats::na.omit(db$contract_year))))
+
     sim_choices_populated(TRUE)
   })
 
@@ -2668,6 +2727,14 @@ server <- function(input, output, session) {
                        `Vencimiento contrato` = contract_expires)
     result <- dplyr::left_join(result, tm_vm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
 
+    # Pie/Nacionalidad/Hispanohablante -- same derived master used by the
+    # "Base de Datos" tab, joined here purely to power this tab's own
+    # filters (kept hidden in the rendered table, like Grupo_Posicion is).
+    filt_meta <- get_db_master() |>
+      dplyr::distinct(Jugador, Equipo, .keep_all = TRUE) |>
+      dplyr::select(Jugador, Equipo, Pie, Nacionalidad, Hispanohablante, contract_year)
+    result <- dplyr::left_join(result, filt_meta, by = c("Jugador", "Equipo"))
+
     # "Métricas a incluir" adds each chosen metric as its own extra column
     # (raw value, not part of the cosine similarity computation) so you can
     # eyeball e.g. shots/90 alongside the similarity score, instead of it
@@ -2711,6 +2778,25 @@ server <- function(input, output, session) {
       df <- dplyr::filter(df, Minutos >= min_minutes)
     if (!is.null(min_sim) && is.numeric(min_sim))
       df <- dplyr::filter(df, Similitud >= min_sim)
+
+    if (length(input$sim_pie))
+      df <- dplyr::filter(df, Pie %in% input$sim_pie)
+    if (length(input$sim_nacionalidad))
+      df <- dplyr::filter(df, Nacionalidad %in% input$sim_nacionalidad)
+    if (length(input$sim_hispanohablante))
+      df <- dplyr::filter(df, Hispanohablante %in% input$sim_hispanohablante)
+    if (length(input$sim_vencimiento))
+      df <- dplyr::filter(df, contract_year %in% input$sim_vencimiento)
+    # Market value is a plain min/max box pair (not a slider spanning the
+    # full data range), so it only actively excludes rows once the user
+    # raises the minimum above 0 or lowers the maximum -- matching the
+    # "Base de Datos" tab's filter, except NA market values aren't dropped
+    # by the default range (min 0) the way that tab's does.
+    if (!is.null(input$sim_valor_min) && !is.null(input$sim_valor_max) &&
+        (input$sim_valor_min > 0 || input$sim_valor_max < 200000000)) {
+      df <- dplyr::filter(df, !is.na(`Valor de mercado`),
+                          dplyr::between(`Valor de mercado`, input$sim_valor_min, input$sim_valor_max))
+    }
 
     df
   })
@@ -2948,6 +3034,17 @@ server <- function(input, output, session) {
     extra_cols <- setdiff(names(df), base_cols)
     extra_numeric_cols <- extra_cols[vapply(df[extra_cols], is.numeric, TRUE)]
 
+    # Pie/Nacionalidad/Hispanohablante/contract_year are joined in purely to
+    # power this tab's own filters -- hidden here the same way
+    # Grupo_Posicion (also filter-only) already is. Located by name, not a
+    # fixed index, since they sit after whichever optional "Métricas a
+    # incluir" columns preceded them.
+    filter_only_cols <- intersect(
+      c("Pie", "Nacionalidad", "Hispanohablante", "contract_year"),
+      names(df)
+    )
+    hidden_targets <- match(c("Grupo_Posicion", filter_only_cols), names(df)) - 1L
+
     dt <- DT::datatable(
       df,
       selection = "single",
@@ -2958,7 +3055,7 @@ server <- function(input, output, session) {
         scrollX     = TRUE,
         order       = list(list(7L, "desc")),
         columnDefs  = list(
-          list(visible = FALSE, targets = 3),   # hide Grupo_Posicion (shown in filter)
+          list(visible = FALSE, targets = hidden_targets),  # filter-only columns
           list(width = "90px",  targets = 5),   # Edad
           list(width = "80px",  targets = 6),   # Minutos
           list(width = "85px",  targets = 7)    # Similitud
