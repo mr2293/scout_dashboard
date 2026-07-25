@@ -106,7 +106,22 @@ league_map <- c(
   "Escocia"                  = "Escocia – Premiership",
   "UEFA Champions League"    = "UEFA Champions League",
   "Copa Libertadores"        = "CONMEBOL Libertadores",
-  "UEFA Europa League"       = "UEFA Europa League"
+  "UEFA Europa League"       = "UEFA Europa League",
+  "Australia"                = "Australia",
+  "República Checa"          = "República Checa",
+  "EFL League One"           = "EFL League One",
+  "EFL League Two"           = "EFL League Two",
+  "Ligue 2"                  = "Ligue 2",
+  "Polonia"                  = "Polonia",
+  "Rusia"                    = "Rusia",
+  "Suecia Allsvenskan"       = "Suecia – Allsvenskan",
+  "Suecia Superettan"        = "Suecia – Superettan",
+  "Suiza Super League"       = "Suiza – Super League",
+  "Suiza Challenger League"  = "Suiza – Challenger League",
+  "Noruega"                  = "Noruega",
+  "China"                    = "China",
+  "Perú"                     = "Perú",
+  "USL Championship"         = "USL Championship"
 )
 
 # Leagues that have SC data (joined_leagues keys)
@@ -2268,15 +2283,18 @@ server <- function(input, output, session) {
   # ---- Sync sliders with league ----
   observeEvent(league_df(), {
     df <- league_df()
-    max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm=TRUE))
+    # Round up to a whole number -- player_season_minutes can carry
+    # fractional minutes (e.g. partial-match substitution timestamps),
+    # which otherwise left the slider's upper bound/label showing several
+    # decimal places.
+    max_min <- ceiling(suppressWarnings(max(df$player_season_minutes %||% 0, na.rm=TRUE)))
     lo <- min(450, max_min); hi <- max(1, max_min)
     updateSliderInput(session, "min_minutes", min=0, max=hi, value=c(lo, hi))
-    
-    ages <- compute_age_years(df$birth_date)
-    ages <- ages[is.finite(ages) & ages < 200]
-    amin <- if (length(ages)) max(15, floor(min(ages, na.rm=TRUE))) else 15
-    amax <- if (length(ages)) ceiling(max(ages, na.rm=TRUE)) else 45
-    updateSliderInput(session, "age_range", min=amin, max=max(amin+1,amax), value=c(amin,amax))
+
+    # Age range stays fixed at 15-45 regardless of the selected league's
+    # actual player-age spread, rather than shrinking/growing the slider's
+    # own track to match the data each time.
+    updateSliderInput(session, "age_range", min=15, max=45, value=c(15,45))
 
     teams <- sort(unique(as.character(df$team_name[!is.na(df$team_name) & df$team_name != "NA"])))
     updateSelectInput(session, "team_filter", choices = c("Todos los equipos", teams),
@@ -2362,14 +2380,9 @@ server <- function(input, output, session) {
         updateSelectInput(session, "pos_filter", selected = "Todas")
         updateSelectInput(session, "country_filter", selected = "Todas")
 
-        max_min <- suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE))
+        max_min <- ceiling(suppressWarnings(max(df$player_season_minutes %||% 0, na.rm = TRUE)))
         updateSliderInput(session, "min_minutes", value = c(0, max(1, max_min)))
-
-        ages <- compute_age_years(df$birth_date)
-        ages <- ages[is.finite(ages) & ages < 200]
-        amin <- if (length(ages)) floor(min(ages, na.rm = TRUE)) else 15
-        amax <- if (length(ages)) ceiling(max(ages, na.rm = TRUE)) else 45
-        updateSliderInput(session, "age_range", value = c(amin, amax))
+        updateSliderInput(session, "age_range", value = c(15, 45))
       }
     } else {
       selected_player(NULL)

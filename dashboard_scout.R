@@ -160,6 +160,70 @@ europa_league_2526 <- safe_matchesvector(username, password, season_id = 318, co
 europa_league_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 35)
 europa_league <- c(europa_league_2526, europa_league_2627)
 
+# Football-calendar-year additions (Aug-May season spanning two calendar
+# years, same 318/351 season_id pair as the rest of Europe + Liga MX).
+australia_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 93)
+australia_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 93)
+australia <- c(australia_2526, australia_2627)
+
+chequia_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 76)
+chequia_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 76)
+chequia <- c(chequia_2526, chequia_2627)
+
+efl_1_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 4)
+efl_1_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 4)
+efl_1 <- c(efl_1_2526, efl_1_2627)
+
+efl_2_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 5)
+efl_2_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 5)
+efl_2 <- c(efl_2_2526, efl_2_2627)
+
+ligue_2_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 8)
+ligue_2_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 8)
+ligue_2 <- c(ligue_2_2526, ligue_2_2627)
+
+polonia_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 38)
+polonia_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 38)
+polonia <- c(polonia_2526, polonia_2627)
+
+rusia_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 128)
+rusia_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 128)
+rusia <- c(rusia_2526, rusia_2627)
+
+suecia_allsvenskan_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 75)
+suecia_allsvenskan_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 75)
+suecia_allsvenskan <- c(suecia_allsvenskan_2526, suecia_allsvenskan_2627)
+
+suecia_superettan_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 249)
+suecia_superettan_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 249)
+suecia_superettan <- c(suecia_superettan_2526, suecia_superettan_2627)
+
+suiza_super_league_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 80)
+suiza_super_league_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 80)
+suiza_super_league <- c(suiza_super_league_2526, suiza_super_league_2627)
+
+suiza_challenger_2526 <- safe_matchesvector(username, password, season_id = 318, competition_id = 177)
+suiza_challenger_2627 <- safe_matchesvector(username, password, season_id = 351, competition_id = 177)
+suiza_challenger <- c(suiza_challenger_2526, suiza_challenger_2627)
+
+# Normal-calendar-year additions (Jan-Dec season, same 316/355 season_id
+# pair as the other Americas-calendar competitions above).
+noruega_2025 <- safe_matchesvector(username, password, season_id = 316, competition_id = 88)
+noruega_2026 <- safe_matchesvector(username, password, season_id = 355, competition_id = 88)
+noruega <- c(noruega_2025, noruega_2026)
+
+china_2025 <- safe_matchesvector(username, password, season_id = 316, competition_id = 104)
+china_2026 <- safe_matchesvector(username, password, season_id = 355, competition_id = 104)
+china <- c(china_2025, china_2026)
+
+peru_2025 <- safe_matchesvector(username, password, season_id = 316, competition_id = 97)
+peru_2026 <- safe_matchesvector(username, password, season_id = 355, competition_id = 97)
+peru <- c(peru_2025, peru_2026)
+
+usl_championship_2025 <- safe_matchesvector(username, password, season_id = 316, competition_id = 89)
+usl_championship_2026 <- safe_matchesvector(username, password, season_id = 355, competition_id = 89)
+usl_championship <- c(usl_championship_2025, usl_championship_2026)
+
 # ligamxlineups <- alllineups(username, password, ligamx, parallel = T)
 # ligamxlineups <- cleanlineups(ligamxlineups)
 # 
@@ -347,6 +411,67 @@ jugs_uel <- bind_rows(
   safe_player_season(username, password, season_id = 351, competition_id = 35)
 )
 
+jugs_australia <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 93),
+  safe_player_season(username, password, season_id = 351, competition_id = 93)
+)
+jugs_chequia <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 76),
+  safe_player_season(username, password, season_id = 351, competition_id = 76)
+)
+jugs_efl_1 <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 4),
+  safe_player_season(username, password, season_id = 351, competition_id = 4)
+)
+jugs_efl_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 5),
+  safe_player_season(username, password, season_id = 351, competition_id = 5)
+)
+jugs_ligue_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 8),
+  safe_player_season(username, password, season_id = 351, competition_id = 8)
+)
+jugs_polonia <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 38),
+  safe_player_season(username, password, season_id = 351, competition_id = 38)
+)
+jugs_rusia <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 128),
+  safe_player_season(username, password, season_id = 351, competition_id = 128)
+)
+jugs_suecia_allsvenskan <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 75),
+  safe_player_season(username, password, season_id = 351, competition_id = 75)
+)
+jugs_suecia_superettan <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 249),
+  safe_player_season(username, password, season_id = 351, competition_id = 249)
+)
+jugs_suiza_super_league <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 80),
+  safe_player_season(username, password, season_id = 351, competition_id = 80)
+)
+jugs_suiza_challenger <- bind_rows(
+  safe_player_season(username, password, season_id = 318, competition_id = 177),
+  safe_player_season(username, password, season_id = 351, competition_id = 177)
+)
+jugs_noruega <- bind_rows(
+  safe_player_season(username, password, season_id = 316, competition_id = 88),
+  safe_player_season(username, password, season_id = 355, competition_id = 88)
+)
+jugs_china <- bind_rows(
+  safe_player_season(username, password, season_id = 316, competition_id = 104),
+  safe_player_season(username, password, season_id = 355, competition_id = 104)
+)
+jugs_peru <- bind_rows(
+  safe_player_season(username, password, season_id = 316, competition_id = 97),
+  safe_player_season(username, password, season_id = 355, competition_id = 97)
+)
+jugs_usl_championship <- bind_rows(
+  safe_player_season(username, password, season_id = 316, competition_id = 89),
+  safe_player_season(username, password, season_id = 355, competition_id = 89)
+)
+
 goles_ligamx <- all_player_matches(username, password, ligamx)
 goles_ccl <- all_player_matches(username, password, ccl)
 goles_arg <- all_player_matches(username, password, arg)
@@ -374,6 +499,22 @@ goles_escocia <- all_player_matches(username, password, escocia)
 goles_champions <- all_player_matches(username, password, champions)
 goles_libertadores <- all_player_matches(username, password, libertadores)
 goles_uel <- all_player_matches(username, password, europa_league)
+
+goles_australia <- all_player_matches(username, password, australia)
+goles_chequia <- all_player_matches(username, password, chequia)
+goles_efl_1 <- all_player_matches(username, password, efl_1)
+goles_efl_2 <- all_player_matches(username, password, efl_2)
+goles_ligue_2 <- all_player_matches(username, password, ligue_2)
+goles_polonia <- all_player_matches(username, password, polonia)
+goles_rusia <- all_player_matches(username, password, rusia)
+goles_suecia_allsvenskan <- all_player_matches(username, password, suecia_allsvenskan)
+goles_suecia_superettan <- all_player_matches(username, password, suecia_superettan)
+goles_suiza_super_league <- all_player_matches(username, password, suiza_super_league)
+goles_suiza_challenger <- all_player_matches(username, password, suiza_challenger)
+goles_noruega <- all_player_matches(username, password, noruega)
+goles_china <- all_player_matches(username, password, china)
+goles_peru <- all_player_matches(username, password, peru)
+goles_usl_championship <- all_player_matches(username, password, usl_championship)
 
 # Helper: safely summarise and join goles data (handles NULL/empty match vectors)
 safe_join_goles <- function(jugs_df, goles_df) {
@@ -3351,6 +3492,246 @@ jugs_uel <- jugs_uel|>
 
 jugs_uel <- safe_join_goles(jugs_uel, goles_uel)
 
+# AUSTRALIA (A-LEAGUE) ----
+
+jugs_australia <- jugs_australia |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_australia <- safe_join_goles(jugs_australia, goles_australia)
+
+# REPÚBLICA CHECA ----
+
+jugs_chequia <- jugs_chequia |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_chequia <- safe_join_goles(jugs_chequia, goles_chequia)
+
+# EFL LEAGUE 1 ----
+
+jugs_efl_1 <- jugs_efl_1 |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_efl_1 <- safe_join_goles(jugs_efl_1, goles_efl_1)
+
+# EFL LEAGUE 2 ----
+
+jugs_efl_2 <- jugs_efl_2 |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_efl_2 <- safe_join_goles(jugs_efl_2, goles_efl_2)
+
+# LIGUE 2 ----
+
+jugs_ligue_2 <- jugs_ligue_2 |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_ligue_2 <- safe_join_goles(jugs_ligue_2, goles_ligue_2)
+
+# POLONIA (EKSTRAKLASA) ----
+
+jugs_polonia <- jugs_polonia |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_polonia <- safe_join_goles(jugs_polonia, goles_polonia)
+
+# RUSIA (PREMIER LIGA) ----
+
+jugs_rusia <- jugs_rusia |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_rusia <- safe_join_goles(jugs_rusia, goles_rusia)
+
+# SUECIA - ALLSVENSKAN ----
+
+jugs_suecia_allsvenskan <- jugs_suecia_allsvenskan |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_suecia_allsvenskan <- safe_join_goles(jugs_suecia_allsvenskan, goles_suecia_allsvenskan)
+
+# SUECIA - SUPERETTAN ----
+
+jugs_suecia_superettan <- jugs_suecia_superettan |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_suecia_superettan <- safe_join_goles(jugs_suecia_superettan, goles_suecia_superettan)
+
+# SUIZA - SUPER LEAGUE ----
+
+jugs_suiza_super_league <- jugs_suiza_super_league |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_suiza_super_league <- safe_join_goles(jugs_suiza_super_league, goles_suiza_super_league)
+
+# SUIZA - CHALLENGER LEAGUE ----
+
+jugs_suiza_challenger <- jugs_suiza_challenger |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_suiza_challenger <- safe_join_goles(jugs_suiza_challenger, goles_suiza_challenger)
+
+# NORUEGA (ELITESERIEN) ----
+
+jugs_noruega <- jugs_noruega |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_noruega <- safe_join_goles(jugs_noruega, goles_noruega)
+
+# CHINA (SUPER LEAGUE) ----
+
+jugs_china <- jugs_china |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_china <- safe_join_goles(jugs_china, goles_china)
+
+# PERÚ (LIGA 1) ----
+
+jugs_peru <- jugs_peru |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_peru <- safe_join_goles(jugs_peru, goles_peru)
+
+# USL CHAMPIONSHIP ----
+
+jugs_usl_championship <- jugs_usl_championship |>
+  mutate(position_group = case_when(
+    primary_position == "Goalkeeper" ~ "Portero",
+    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+    TRUE ~ NA_character_
+  ))
+
+jugs_usl_championship <- safe_join_goles(jugs_usl_championship, goles_usl_championship)
+
 # HELPERS ----
 
 LEAGUE_CATALOG <- list(
@@ -3380,7 +3761,22 @@ LEAGUE_CATALOG <- list(
   "Escocia – Premiership"      = jugs_escocia,
   "UEFA Champions League"      = jugs_champions,
   "CONMEBOL Libertadores"      = jugs_libertadores,
-  "UEFA Europa League"         = jugs_uel
+  "UEFA Europa League"         = jugs_uel,
+  "Australia"                  = jugs_australia,
+  "República Checa"            = jugs_chequia,
+  "EFL League One"             = jugs_efl_1,
+  "EFL League Two"             = jugs_efl_2,
+  "Ligue 2"                    = jugs_ligue_2,
+  "Polonia"                    = jugs_polonia,
+  "Rusia"                      = jugs_rusia,
+  "Suecia – Allsvenskan"       = jugs_suecia_allsvenskan,
+  "Suecia – Superettan"        = jugs_suecia_superettan,
+  "Suiza – Super League"       = jugs_suiza_super_league,
+  "Suiza – Challenger League"  = jugs_suiza_challenger,
+  "Noruega"                    = jugs_noruega,
+  "China"                      = jugs_china,
+  "Perú"                       = jugs_peru,
+  "USL Championship"           = jugs_usl_championship
 )
 
 # 3) Position groups menu (consistent labels with your mutate() mapping):
@@ -3426,7 +3822,22 @@ scout_data <- list(
   jugs_escocia      = jugs_escocia,
   jugs_champions    = jugs_champions,
   jugs_libertadores = jugs_libertadores,
-  jugs_uel          = jugs_uel
+  jugs_uel          = jugs_uel,
+  jugs_australia            = jugs_australia,
+  jugs_chequia              = jugs_chequia,
+  jugs_efl_1                = jugs_efl_1,
+  jugs_efl_2                = jugs_efl_2,
+  jugs_ligue_2              = jugs_ligue_2,
+  jugs_polonia              = jugs_polonia,
+  jugs_rusia                = jugs_rusia,
+  jugs_suecia_allsvenskan   = jugs_suecia_allsvenskan,
+  jugs_suecia_superettan    = jugs_suecia_superettan,
+  jugs_suiza_super_league   = jugs_suiza_super_league,
+  jugs_suiza_challenger     = jugs_suiza_challenger,
+  jugs_noruega              = jugs_noruega,
+  jugs_china                = jugs_china,
+  jugs_peru                 = jugs_peru,
+  jugs_usl_championship     = jugs_usl_championship
 )
 
 # Optional: strip attributes you don’t need to shrink size

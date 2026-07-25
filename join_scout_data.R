@@ -1232,7 +1232,22 @@ sb_only_leagues <- list(
   "Bélgica"                  = scout_data$jugs_belgica,
   "Portugal – Primeira Liga" = scout_data$jugs_portugal,
   "Escocia – Premiership"    = scout_data$jugs_escocia,
-  "CONMEBOL Libertadores"    = scout_data$jugs_libertadores
+  "CONMEBOL Libertadores"    = scout_data$jugs_libertadores,
+  "Australia"                 = scout_data$jugs_australia,
+  "República Checa"           = scout_data$jugs_chequia,
+  "EFL League One"            = scout_data$jugs_efl_1,
+  "EFL League Two"            = scout_data$jugs_efl_2,
+  "Ligue 2"                   = scout_data$jugs_ligue_2,
+  "Polonia"                   = scout_data$jugs_polonia,
+  "Rusia"                     = scout_data$jugs_rusia,
+  "Suecia – Allsvenskan"      = scout_data$jugs_suecia_allsvenskan,
+  "Suecia – Superettan"       = scout_data$jugs_suecia_superettan,
+  "Suiza – Super League"      = scout_data$jugs_suiza_super_league,
+  "Suiza – Challenger League" = scout_data$jugs_suiza_challenger,
+  "Noruega"                   = scout_data$jugs_noruega,
+  "China"                     = scout_data$jugs_china,
+  "Perú"                      = scout_data$jugs_peru,
+  "USL Championship"          = scout_data$jugs_usl_championship
 )
 
 LEAGUE_CATALOG_JOINED <- c(joined_leagues, sb_only_leagues)

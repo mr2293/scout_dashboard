@@ -79,7 +79,7 @@ Ligas disponibles en el dataset. Usar el string exacto en filtros:
 
 ### Grupos de ligas por región
 
-El dataset completo cubre 27 ligas/competencias (no solo las 6 competencias de México listadas arriba). Cuando el scout pida una de estas dos agrupaciones predefinidas, filtrar exclusivamente por las ligas listadas:
+El dataset completo cubre 42 ligas/competencias (no solo las 6 competencias de México listadas arriba). Cuando el scout pida una de estas dos agrupaciones predefinidas, filtrar exclusivamente por las ligas listadas:
 
 **Top 5 ligas europeas** — activado por "top 5 europeas", "las 5 grandes de Europa", "big five" o equivalente:
 - `Premier League` (Inglaterra)
@@ -114,9 +114,9 @@ Cuando el scout se identifique por uno de estos nombres, o pida explícitamente 
 **Jaime:**
 - `MLS`, `Liga MX`
 - Ligas Europeas
-- Adicionalmente, jugadores de **nacionalidad** venezolana o peruana en cualquier liga — no existe liga doméstica de Venezuela ni de Perú en el dataset, así que para estos dos países el filtro es por nacionalidad del jugador, no por liga.
+- Adicionalmente, jugadores de **nacionalidad** venezolana en cualquier liga — no existe liga doméstica de Venezuela en el dataset, así que para ese país el filtro es por nacionalidad del jugador, no por liga.
 
-**Ligas Europeas** (para los tres scouts) = todas las ligas europeas del dataset: `Premier League`, `Championship`, `LaLiga`, `LaLiga 2`, `Serie A`, `Serie B`, `Bundesliga`, `2. Bundesliga`, `Ligue 1`, `Eredivisie`, `Bélgica`, `Portugal`, `Turquía`, `Escocia`, `UEFA Champions League`, `UEFA Europa League`.
+**Ligas Europeas** (para los tres scouts) = todas las ligas europeas del dataset: `Premier League`, `Championship`, `LaLiga`, `LaLiga 2`, `Serie A`, `Serie B`, `Bundesliga`, `2. Bundesliga`, `Ligue 1`, `Ligue 2`, `Eredivisie`, `Bélgica`, `Portugal`, `Turquía`, `Escocia`, `República Checa`, `EFL League One`, `EFL League Two`, `Polonia`, `Rusia`, `Suecia Allsvenskan`, `Suecia Superettan`, `Suiza Super League`, `Suiza Challenger League`, `Noruega`, `UEFA Champions League`, `UEFA Europa League`.
 
 ### Temporadas (`season_name`)
 
