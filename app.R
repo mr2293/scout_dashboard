@@ -1210,9 +1210,13 @@ clean_sc_col_name <- function(x) {
 # ============================================================
 build_skillcorner_table <- function(all_sc_df, liga_mx_df,
                                     player_row, league_label) {
-  
+
   pname <- as.character(player_row$player_name[1])
   pg    <- as.character(player_row$position_group[1])
+  # team_name of the specific (season-filtered) row the caller resolved
+  # for this player -- used below to disambiguate which of a player's
+  # possibly-several rows in the raw SC source data to read from.
+  team_hint <- as.character(player_row$team_name[1])
   
   # ---- Porteros not covered by SC ----
   if (identical(pg, "Portero")) {
@@ -1231,19 +1235,36 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   # ---- Look up the player's row directly in the SC source data ----
   # Always try liga_mx_df first for Liga MX (has GI cols), fall back to all_sc_df.
   # A player can have more than one row here now that most leagues pull two
-  # seasons (see dashboard_scout.R) -- the SC crosswalk match is team-scoped,
-  # so a player who transferred between the two pulled seasons matches on
-  # only ONE of their two rows (the one with the team SkillCorner has them
-  # tracked at) and is NA on the other. Blindly taking slice_head(n=1) could
-  # land on the unmatched row and wrongly report "no SC data available" for
-  # a player who does have it -- prefer whichever matching row actually has
-  # a non-NA sc_player_id (the crosswalk join key) when there's more than one.
-  pick_best_sc_row <- function(rows) {
+  # seasons (see dashboard_scout.R) -- e.g. Liga MX 2025/2026 AND the brand
+  # new 2026/2027, which barely has any matches played yet. These raw SC
+  # source data frames aren't season-filtered at all, so a name-only lookup
+  # can land on either row. Two distinct failure modes if it lands on the
+  # wrong one:
+  #  1. The SC crosswalk match is team-scoped, so a player who transferred
+  #     between the two pulled seasons matches on only ONE of their rows
+  #     and is NA sc_player_id on the other -- landing there wrongly
+  #     reports "no SC data available" for a player who has it.
+  #  2. Landing on a technically-matched row from a season with too little
+  #     tracking data yet (like a newly-started 2026/2027) can leave
+  #     physical/GI columns present-but-empty, silently showing a
+  #     half-populated or fully empty table instead of the real one.
+  # Prefer the row whose team_name matches the caller's season-specific
+  # player_row (team_hint) -- disambiguates by season, not just identity --
+  # then among ties prefer a non-NA sc_player_id, then just the first row.
+  pick_best_sc_row <- function(rows, team_hint = NA_character_) {
     if (nrow(rows) <= 1) return(rows)
-    if ("sc_player_id" %in% names(rows)) {
-      has_sc <- !is.na(rows$sc_player_id)
-      if (any(has_sc)) return(rows[which(has_sc)[1], , drop = FALSE])
+    has_sc <- if ("sc_player_id" %in% names(rows)) !is.na(rows$sc_player_id) else rep(FALSE, nrow(rows))
+    if (!is.na(team_hint) && nzchar(team_hint) && "team_name" %in% names(rows)) {
+      # team_hint can be a dedup_transfers() "TeamA / TeamB" combined
+      # string for a player who transferred within the filtered season;
+      # candidate rows here are always single-team, so match against any
+      # part of it rather than requiring an exact string match.
+      hint_parts <- trimws(strsplit(team_hint, "/", fixed = TRUE)[[1]])
+      same_team  <- !is.na(rows$team_name) & rows$team_name %in% hint_parts
+      if (any(same_team & has_sc)) return(rows[which(same_team & has_sc)[1], , drop = FALSE])
+      if (any(same_team)) return(rows[which(same_team)[1], , drop = FALSE])
     }
+    if (any(has_sc)) return(rows[which(has_sc)[1], , drop = FALSE])
     rows |> dplyr::slice_head(n = 1)
   }
 
@@ -1252,7 +1273,7 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   if (is_ligamx && nrow(liga_mx_df) > 0) {
     r <- liga_mx_df |>
       dplyr::filter(player_name == pname) |>
-      pick_best_sc_row()
+      pick_best_sc_row(team_hint)
     message(sprintf("[SC] liga_mx_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }
@@ -1261,7 +1282,7 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   if (is.null(sc_data_row) && nrow(all_sc_df) > 0) {
     r <- all_sc_df |>
       dplyr::filter(player_name == pname) |>
-      pick_best_sc_row()
+      pick_best_sc_row(team_hint)
     message(sprintf("[SC] all_sc_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }
@@ -1666,7 +1687,7 @@ get_db_master <- function() {
 # Liga/Equipo with " / " for a player who appears under more than one
 # league or team -- split those back out for filter choice lists and for
 # checking whether a player's combined string contains a selected value.
-split_combined_values <- function(x) sort(unique(trimws(unlist(strsplit(x, "/", fixed = TRUE)))))
+split_combined_values <- function(x) locale_sort(unique(trimws(unlist(strsplit(x, "/", fixed = TRUE)))))
 any_combined_match <- function(combined_col, selected) {
   if (!length(selected)) return(rep(TRUE, length(combined_col)))
   vapply(combined_col, function(x) {
@@ -2085,7 +2106,7 @@ ui <- fluidPage(
       tags$div(
         id = "filter-panel",
         fluidRow(
-          column(2, selectInput("league", "Liga", choices=names(league_map), selected="Liga MX")),
+          column(2, selectInput("league", "Liga", choices=locale_sort(names(league_map)), selected="Liga MX")),
           column(2, selectInput("pg", "Grupo de posición", choices=names(charts_cfg), selected="Delantero")),
           column(2, selectInput("team_filter", "Equipo", choices="Todos los equipos", selected="Todos los equipos")),
           column(6, selectizeInput(
@@ -2234,7 +2255,7 @@ ui <- fluidPage(
                              maxOptions = 5000, openOnFocus = TRUE)
             )),
             column(2, selectizeInput("sim_league_filter", "Liga",
-                                     choices  = names(league_map),
+                                     choices  = locale_sort(names(league_map)),
                                      selected = NULL,
                                      multiple = TRUE,
                                      options  = list(placeholder = "Todas las ligas"))),
@@ -2503,8 +2524,8 @@ server <- function(input, output, session) {
     cross_liga_tab <- tabPanel(
       title="Cross-Liga", value="cross_liga",
       fluidRow(
-        column(3, selectInput("cross_league1", "Liga 1", choices=names(league_map), selected=input$league)),
-        column(3, selectInput("cross_league2", "Liga 2", choices=names(league_map),
+        column(3, selectInput("cross_league1", "Liga 1", choices=locale_sort(names(league_map)), selected=input$league)),
+        column(3, selectInput("cross_league2", "Liga 2", choices=locale_sort(names(league_map)),
                               selected=setdiff(names(league_map), input$league)[1])),
         column(3, selectInput("cross_xvar", "Eje X", choices=character(0), selected=NULL)),
         column(3, selectInput("cross_yvar", "Eje Y", choices=character(0), selected=NULL))
