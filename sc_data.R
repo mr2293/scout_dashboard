@@ -168,9 +168,22 @@ liga_mx_mitad_2 <- liga_mx_mitad_2 |>
     .groups = "drop"
   )
 
+# NOTE: season_id is deliberately excluded from this join key. mitad_1
+# (passes/pressures) is pulled via competition_edition IDs while mitad_2
+# (physical/off-ball-runs) is pulled via an explicit season param -- these
+# two paths can report different season_id values for the same real
+# player/team/competition, which would silently split a player into two
+# unmatched rows (one GI-only, one physical-only) instead of merging into
+# one. player_id + team_id + competition_id is unique enough on its own
+# within a single current-season pull.
 liga_mx_full <- liga_mx_mitad_1 |>
-  full_join(liga_mx_mitad_2, by = c("player_id", "player_name", "short_name", "player_birthdate", 
-                                    "team_id", "team_name", "competition_id", "season_id"))
+  full_join(liga_mx_mitad_2, by = c("player_id", "player_name", "short_name", "player_birthdate",
+                                    "team_id", "team_name", "competition_id")) |>
+  group_by(player_id) |>
+  summarise(across(everything(), first_non_na), .groups = "drop")
+
+message(sprintf("[SC_DATA] liga_mx_mitad_1=%d rows | liga_mx_mitad_2=%d rows | liga_mx_full=%d rows (n_distinct player_id=%d)",
+                nrow(liga_mx_mitad_1), nrow(liga_mx_mitad_2), nrow(liga_mx_full), n_distinct(liga_mx_full$player_id)))
 
 # ligamx_sc <- list(ligamx = liga_mx_mitad_2)
 # 

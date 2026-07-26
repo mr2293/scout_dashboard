@@ -649,6 +649,16 @@ charts_cfg <- list(
 # the same everywhere the app runs.
 locale_sort <- function(x, locale = "es") stringr::str_sort(x, locale = locale)
 
+# Some source player names carry stray leading/trailing/double spaces
+# (upstream data quality, e.g. "Ali  Ávila Vega" or " Mikael Evagorou-Alao").
+# A plain locale_sort() puts those before "A" since a leading space sorts
+# lower than any letter, which looks broken to a user skimming the dropdown.
+# Sort by a whitespace-squished key but keep the original (unsquished)
+# string as the value, so display/filtering behavior is unchanged.
+locale_sort_names <- function(x) {
+  x[stringr::str_order(stringr::str_squish(x), locale = "es")]
+}
+
 get_league_df <- function(scout_list, league_label) {
   nm <- league_map[[league_label]]
   if (is.null(nm) || is.null(scout_list[[nm]])) {
@@ -2515,7 +2525,7 @@ server <- function(input, output, session) {
   # runs after the initial page paint instead of blocking dashboard startup
   # -- same tradeoff already used for the Jugadores Similares tab's search.
   session$onFlushed(function() {
-    all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort()
+    all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort_names()
     updateSelectizeInput(session, "player_search", choices=all_players,
                          selected=character(0), server=TRUE)
   }, once=TRUE)
@@ -2618,7 +2628,7 @@ server <- function(input, output, session) {
         tags$em("Selecciona un jugador (click en un punto o usa el buscador) para ver el radar.")
       )
     } else {
-      all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort()
+      all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort_names()
       tagList(
         h4("Radar del jugador seleccionado"),
         fluidRow(
@@ -2854,7 +2864,7 @@ server <- function(input, output, session) {
     if (isTRUE(sim_choices_populated())) return()
 
     dat_all <- get_all_players_sc_df()
-    players <- dat_all |> dplyr::distinct(player_name) |> dplyr::pull() |> locale_sort()
+    players <- dat_all |> dplyr::distinct(player_name) |> dplyr::pull() |> locale_sort_names()
     updateSelectizeInput(session, "sim_player_search", choices = players,
                          selected = character(0), server = TRUE)
 
