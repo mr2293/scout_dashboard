@@ -638,6 +638,17 @@ charts_cfg <- list(
 # ============================================================
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
+# Locale-independent alphabetical sort for dropdown choices. Base R's
+# sort()/arrange() collate according to the *deployment* environment's
+# system locale, which on shinyapps.io (and CI) is a bare "C" locale --
+# names with any accented/non-ASCII letter (Álvarez, Škoda, Østergaard,
+# Łukasz, ...) don't sort where a Spanish/English reader expects, and with
+# 42 leagues now spanning a dozen languages this hits often enough to be
+# visibly "out of order". stringr::str_sort(locale=...) uses ICU
+# collation via stringi, independent of the OS locale, so the order is
+# the same everywhere the app runs.
+locale_sort <- function(x, locale = "es") stringr::str_sort(x, locale = locale)
+
 get_league_df <- function(scout_list, league_label) {
   nm <- league_map[[league_label]]
   if (is.null(nm) || is.null(scout_list[[nm]])) {
@@ -1219,21 +1230,38 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   
   # ---- Look up the player's row directly in the SC source data ----
   # Always try liga_mx_df first for Liga MX (has GI cols), fall back to all_sc_df.
+  # A player can have more than one row here now that most leagues pull two
+  # seasons (see dashboard_scout.R) -- the SC crosswalk match is team-scoped,
+  # so a player who transferred between the two pulled seasons matches on
+  # only ONE of their two rows (the one with the team SkillCorner has them
+  # tracked at) and is NA on the other. Blindly taking slice_head(n=1) could
+  # land on the unmatched row and wrongly report "no SC data available" for
+  # a player who does have it -- prefer whichever matching row actually has
+  # a non-NA sc_player_id (the crosswalk join key) when there's more than one.
+  pick_best_sc_row <- function(rows) {
+    if (nrow(rows) <= 1) return(rows)
+    if ("sc_player_id" %in% names(rows)) {
+      has_sc <- !is.na(rows$sc_player_id)
+      if (any(has_sc)) return(rows[which(has_sc)[1], , drop = FALSE])
+    }
+    rows |> dplyr::slice_head(n = 1)
+  }
+
   sc_data_row <- NULL
-  
+
   if (is_ligamx && nrow(liga_mx_df) > 0) {
     r <- liga_mx_df |>
       dplyr::filter(player_name == pname) |>
-      dplyr::slice_head(n = 1)
+      pick_best_sc_row()
     message(sprintf("[SC] liga_mx_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }
-  
+
   # For non-Liga MX, or if Liga MX lookup failed, try all_sc_df
   if (is.null(sc_data_row) && nrow(all_sc_df) > 0) {
     r <- all_sc_df |>
       dplyr::filter(player_name == pname) |>
-      dplyr::slice_head(n = 1)
+      pick_best_sc_row()
     message(sprintf("[SC] all_sc_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }
@@ -1491,6 +1519,58 @@ get_all_players_df <- function() {
     .all_players_df_cache <<- dat
   }
   .all_players_df_cache
+}
+
+# Same cross-league pool as get_all_players_df(), but WITHOUT
+# dedup_transfers() -- a player who appears in two pulled seasons (see
+# dashboard_scout.R's season_id pairs) keeps one row per season here
+# instead of being collapsed into a single weighted-average "Acumulado"
+# row. Needed so player comparisons can pull a *specific* season for a
+# player instead of always the combined one; dedup_same_team() still runs
+# to collapse join-artifact duplicate rows within the same season/team.
+.all_players_raw_df_cache <- NULL
+get_all_players_raw_df <- function() {
+  if (is.null(.all_players_raw_df_cache)) {
+    .all_players_raw_df_cache <<- all_players_df_from_cache(scout, league_map) |>
+      dedup_same_team()
+  }
+  .all_players_raw_df_cache
+}
+
+# Extracts the 4-digit year a season_filter selection is anchored to, so a
+# comparison between two players in leagues on different calendars (Liga
+# MX's "2025/2026" vs. Colombia's "2025") can be matched up. Both season
+# naming schemes start with the relevant year, so "read the first 4
+# digits" works for either one without needing to know which calendar a
+# given league follows. Returns NULL for "Acumulado" (or anything else
+# that isn't a specific season), meaning "use the combined-seasons row".
+season_equivalent_year <- function(season_sel) {
+  if (is.null(season_sel) || !nzchar(season_sel) ||
+      season_sel %in% c("Acumulado", "Todas")) {
+    return(NULL)
+  }
+  m <- regmatches(season_sel, regexpr("^\\d{4}", season_sel))
+  if (length(m) == 0) NULL else m
+}
+
+# Looks up a specific player's row for the season equivalent to
+# target_year (NULL = combined/Acumulado). Falls back to the player's
+# combined-seasons row if that specific season doesn't exist for them
+# (e.g. they weren't in this dataset yet, or their competition/season
+# combo failed to pull) rather than returning nothing.
+get_player_row_for_season <- function(pname, target_year) {
+  if (is.null(target_year)) {
+    return(get_all_players_df() |> dplyr::filter(player_name == pname) |> dplyr::slice_head(n = 1))
+  }
+  raw <- get_all_players_raw_df()
+  matched <- raw |>
+    dplyr::filter(player_name == pname,
+                  startsWith(as.character(season_name), target_year))
+  if (nrow(matched) == 0) {
+    return(get_all_players_df() |> dplyr::filter(player_name == pname) |> dplyr::slice_head(n = 1))
+  }
+  if (nrow(matched) > 1) matched <- dedup_transfers(matched)
+  matched |> dplyr::slice_head(n = 1)
 }
 
 
@@ -2296,12 +2376,12 @@ server <- function(input, output, session) {
     # own track to match the data each time.
     updateSliderInput(session, "age_range", min=15, max=45, value=c(15,45))
 
-    teams <- sort(unique(as.character(df$team_name[!is.na(df$team_name) & df$team_name != "NA"])))
+    teams <- locale_sort(unique(as.character(df$team_name[!is.na(df$team_name) & df$team_name != "NA"])))
     updateSelectInput(session, "team_filter", choices = c("Todos los equipos", teams),
                       selected = "Todos los equipos")
 
     if ("player_country" %in% names(df)) {
-      countries <- sort(unique(df$player_country[!is.na(df$player_country)]))
+      countries <- locale_sort(unique(df$player_country[!is.na(df$player_country)]))
       updateSelectInput(session, "country_filter", choices = c("Todas", countries),
                         selected = "Todas")
     }
@@ -2354,9 +2434,29 @@ server <- function(input, output, session) {
   # runs after the initial page paint instead of blocking dashboard startup
   # -- same tradeoff already used for the Jugadores Similares tab's search.
   session$onFlushed(function() {
-    all_players <- get_all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+    all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort()
     updateSelectizeInput(session, "player_search", choices=all_players,
                          selected=character(0), server=TRUE)
+  }, once=TRUE)
+
+  # Pre-warm the other expensive process-cached tables (Base de Datos,
+  # Jugadores Similares, and the SkillCorner lookup pools used by the
+  # Dashboard tab's own physical-data table) in the background right after
+  # the initial page paint, instead of only computing them the moment a
+  # user opens that tab or selects a player. They were already lazy +
+  # cached (see get_db_master()/get_all_players_sc_df() etc.), which kept
+  # them from blocking *startup* -- but on a cold worker (shinyapps.io
+  # spins up new ones on scale/idle-recycle) the first real interaction
+  # that touches one still had to pay its full computation cost inline,
+  # which is what "laggy" mostly was. This runs once per session but the
+  # underlying caches are process-wide, so only the first session on a
+  # given worker actually pays it -- every session after that on the same
+  # worker gets it for free.
+  session$onFlushed(function() {
+    get_db_master()
+    get_all_players_sc_df()
+    get_all_sc_df()
+    get_liga_mx_sc_df()
   }, once=TRUE)
 
   selected_player <- reactiveVal(NULL)
@@ -2446,7 +2546,7 @@ server <- function(input, output, session) {
         tags$em("Selecciona un jugador (click en un punto o usa el buscador) para ver el radar.")
       )
     } else {
-      all_players <- get_all_players_df() |> arrange(player_name) |> distinct(player_name) |> pull()
+      all_players <- get_all_players_df() |> distinct(player_name) |> pull() |> locale_sort()
       tagList(
         h4("Radar del jugador seleccionado"),
         fluidRow(
@@ -2682,7 +2782,7 @@ server <- function(input, output, session) {
     if (isTRUE(sim_choices_populated())) return()
 
     dat_all <- get_all_players_sc_df()
-    players <- dat_all |> dplyr::arrange(player_name) |> dplyr::distinct(player_name) |> dplyr::pull()
+    players <- dat_all |> dplyr::distinct(player_name) |> dplyr::pull() |> locale_sort()
     updateSelectizeInput(session, "sim_player_search", choices = players,
                          selected = character(0), server = TRUE)
 
@@ -2697,7 +2797,7 @@ server <- function(input, output, session) {
     # "Posición" above, which already narrows by primary position.)
     db <- get_db_master()
     updatePickerInput(session, "sim_pie", choices = sort(unique(stats::na.omit(db$Pie))))
-    updatePickerInput(session, "sim_nacionalidad", choices = sort(unique(db$Nacionalidad)))
+    updatePickerInput(session, "sim_nacionalidad", choices = locale_sort(unique(db$Nacionalidad)))
     updatePickerInput(session, "sim_vencimiento",
                       choices = sort(unique(stats::na.omit(db$contract_year))))
 
@@ -2983,7 +3083,12 @@ server <- function(input, output, session) {
   compare_stats_tbl <- reactive({
     req(input$compare_player, nzchar(input$compare_player))
     dat_all <- get_all_players_df()
-    row <- dat_all |> dplyr::filter(player_name == input$compare_player) |> dplyr::slice_head(n = 1)
+    # Pull the compared player's row for whichever season is equivalent to
+    # the primary player's currently-selected Temporada -- e.g. viewing
+    # Liga MX's "2025/2026" compares against that player's "2025" if
+    # they're in a calendar-year league. "Acumulado" compares
+    # combined-seasons profiles for both, same as before.
+    row <- get_player_row_for_season(input$compare_player, season_equivalent_year(input$season_filter))
     req(nrow(row) == 1)
 
     age_val  <- compute_age_years(row$birth_date)
@@ -3405,7 +3510,7 @@ server <- function(input, output, session) {
     updatePickerInput(session, "db_rol", choices = sort(unique(stats::na.omit(db$Rol))))
     updatePickerInput(session, "db_perfil", choices = sort(unique(stats::na.omit(db$Perfil))))
     updatePickerInput(session, "db_pie", choices = sort(unique(stats::na.omit(db$Pie))))
-    updatePickerInput(session, "db_nacionalidad", choices = sort(unique(db$Nacionalidad)))
+    updatePickerInput(session, "db_nacionalidad", choices = locale_sort(unique(db$Nacionalidad)))
     updatePickerInput(session, "db_vencimiento",
                       choices = sort(unique(stats::na.omit(db$contract_year))))
 
