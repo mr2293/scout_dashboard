@@ -1504,12 +1504,37 @@ dedup_transfers <- function(df) {
   dplyr::bind_rows(singles, dplyr::bind_rows(merged_list))
 }
 
+# ---- Precomputed cache bundle (built once in CI, not on the worker) ----
+# precompute_app_cache.R runs after join_scout_data.R and builds this
+# exact set of derived tables by sourcing this same file, so there's a
+# single source of truth for how each is computed -- the CI runner just
+# has far more memory/CPU headroom to do it than a live shinyapps.io
+# worker does. When data/app_cache.rds is present (i.e. this app was
+# deployed by the pipeline, not run locally straight from a checkout),
+# every get_*() below loads its piece from it instead of recomputing --
+# turns "first session on a fresh worker pays the full dedup/join/
+# profile-scoring cost inline" into a fast readRDS(). Falls back to the
+# original on-the-fly computation when the file isn't there (local dev).
+.app_cache_bundle <- NULL
+.app_cache_path   <- "data/app_cache.rds"
+load_app_cache_bundle <- function() {
+  if (is.null(.app_cache_bundle) && file.exists(.app_cache_path)) {
+    .app_cache_bundle <<- readRDS(.app_cache_path)
+  }
+  .app_cache_bundle
+}
+
 # ---- All players across all leagues (for radar, similarity, search) ----
 # These are pure functions of the static scout/joined_cache data, computed
 # once per app PROCESS and cached (not recomputed per session).
 .all_players_df_cache <- NULL
 get_all_players_df <- function() {
   if (is.null(.all_players_df_cache)) {
+    bundle <- load_app_cache_bundle()
+    if (!is.null(bundle) && !is.null(bundle$all_players_df)) {
+      .all_players_df_cache <<- bundle$all_players_df
+      return(.all_players_df_cache)
+    }
     # dedup_same_team() first shrinks join-artifact duplicate rows (up to 4x
     # per player) down to one before dedup_transfers() does its per-column
     # weighted-average merge -- skipping it made dedup_transfers() churn
@@ -1552,6 +1577,11 @@ get_all_players_df <- function() {
 .all_players_raw_df_cache <- NULL
 get_all_players_raw_df <- function() {
   if (is.null(.all_players_raw_df_cache)) {
+    bundle <- load_app_cache_bundle()
+    if (!is.null(bundle) && !is.null(bundle$all_players_raw_df)) {
+      .all_players_raw_df_cache <<- bundle$all_players_raw_df
+      return(.all_players_raw_df_cache)
+    }
     .all_players_raw_df_cache <<- all_players_df_from_cache(scout, league_map) |>
       dedup_same_team()
   }
@@ -1678,6 +1708,11 @@ build_database_master <- function() {
 .db_master_cache <- NULL
 get_db_master <- function() {
   if (is.null(.db_master_cache)) {
+    bundle <- load_app_cache_bundle()
+    if (!is.null(bundle) && !is.null(bundle$db_master)) {
+      .db_master_cache <<- bundle$db_master
+      return(.db_master_cache)
+    }
     .db_master_cache <<- build_database_master()
   }
   .db_master_cache
@@ -1713,6 +1748,11 @@ ROL_TO_PERFILES <- setNames(
 .all_players_sc_df_cache <- NULL
 get_all_players_sc_df <- function() {
   if (!is.null(.all_players_sc_df_cache)) return(.all_players_sc_df_cache)
+  bundle <- load_app_cache_bundle()
+  if (!is.null(bundle) && !is.null(bundle$all_players_sc_df)) {
+    .all_players_sc_df_cache <<- bundle$all_players_sc_df
+    return(.all_players_sc_df_cache)
+  }
 
   base <- get_all_players_df()
 
@@ -1747,6 +1787,11 @@ get_all_players_sc_df <- function() {
 .all_sc_df_cache <- NULL
 get_all_sc_df <- function() {
   if (is.null(.all_sc_df_cache)) {
+    bundle <- load_app_cache_bundle()
+    if (!is.null(bundle) && !is.null(bundle$all_sc_df)) {
+      .all_sc_df_cache <<- bundle$all_sc_df
+      return(.all_sc_df_cache)
+    }
     dfs <- lapply(SC_LEAGUES, function(lname) {
       df <- joined_cache$joined_leagues[[lname]]
       if (is.null(df) || nrow(df) == 0) return(NULL)
@@ -1766,6 +1811,11 @@ get_all_sc_df <- function() {
 .liga_mx_sc_df_cache <- NULL
 get_liga_mx_sc_df <- function() {
   if (is.null(.liga_mx_sc_df_cache)) {
+    bundle <- load_app_cache_bundle()
+    if (!is.null(bundle) && !is.null(bundle$liga_mx_sc_df)) {
+      .liga_mx_sc_df_cache <<- bundle$liga_mx_sc_df
+      return(.liga_mx_sc_df_cache)
+    }
     df <- joined_cache$joined_leagues[["Liga MX"]]
     .liga_mx_sc_df_cache <<- if (is.null(df) || nrow(df) == 0) {
       data.frame()
@@ -2341,7 +2391,17 @@ ui <- fluidPage(
 # SERVER
 # ============================================================
 server <- function(input, output, session) {
-  
+
+  # Lets the client-side JS retry reconnecting to this *same* R session
+  # (preserving all its reactive/cache state) after a brief WebSocket
+  # drop, instead of immediately showing "Disconnected from the server"
+  # and forcing a full page reload -- which would mean losing this
+  # worker's warm in-memory caches even though nothing actually crashed.
+  # Doesn't help if the R process itself dies (e.g. an OOM kill -- there's
+  # no session left to reconnect to), but does help with the more common
+  # transient network hiccups and shinyapps.io's own connection cycling.
+  session$allowReconnect(TRUE)
+
   # ---- Primary data ----
   # Pre-season-filter, pre-dedup data for the selected league. Used both to
   # populate the season_filter choices and as the base league_df() builds on.

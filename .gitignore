@@ -23,6 +23,7 @@ renv/sandbox/
 data/scout_data.rds
 data/scout_joined.rds
 data/scout_skill_corner.rds
+data/app_cache.rds
 
 # SkillCorner CSV outputs — written by notebooks during the pipeline
 data/passes/
