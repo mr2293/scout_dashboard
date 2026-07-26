@@ -534,6 +534,34 @@ safe_join_goles <- function(jugs_df, goles_df) {
     rename(player_name = player_name.y)
 }
 
+# Helper: derive position_group from primary_position, safely. A
+# newly-added competition's season_id may not exist yet on StatsBomb's
+# side for either half of the 2-season pull (see safe_player_season()
+# above) -- when both halves fail, bind_rows() leaves jugs_df completely
+# empty (0 rows, 0 columns), and a plain mutate(case_when(primary_position
+# == ...)) errors out with "object 'primary_position' not found" instead
+# of just producing zero rows. Skip the mutate in that case so the league
+# ends up as an empty-but-valid data frame -- it'll simply have no players
+# until StatsBomb makes that season available -- rather than halting the
+# whole script.
+safe_add_position_group <- function(df) {
+  if (!"primary_position" %in% names(df)) {
+    df$position_group <- character(0)
+    return(df)
+  }
+  df |>
+    mutate(position_group = case_when(
+      primary_position == "Goalkeeper" ~ "Portero",
+      primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
+      primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
+      primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
+      primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
+      primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
+      primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
+      TRUE ~ NA_character_
+    ))
+}
+
 glimpse(jugs_ligamx)
 
 distinct_positions <- jugs_ligamx |> 
@@ -3494,242 +3522,77 @@ jugs_uel <- safe_join_goles(jugs_uel, goles_uel)
 
 # AUSTRALIA (A-LEAGUE) ----
 
-jugs_australia <- jugs_australia |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_australia <- safe_add_position_group(jugs_australia)
 jugs_australia <- safe_join_goles(jugs_australia, goles_australia)
 
 # REPÚBLICA CHECA ----
 
-jugs_chequia <- jugs_chequia |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_chequia <- safe_add_position_group(jugs_chequia)
 jugs_chequia <- safe_join_goles(jugs_chequia, goles_chequia)
 
 # EFL LEAGUE 1 ----
 
-jugs_efl_1 <- jugs_efl_1 |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_efl_1 <- safe_add_position_group(jugs_efl_1)
 jugs_efl_1 <- safe_join_goles(jugs_efl_1, goles_efl_1)
 
 # EFL LEAGUE 2 ----
 
-jugs_efl_2 <- jugs_efl_2 |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_efl_2 <- safe_add_position_group(jugs_efl_2)
 jugs_efl_2 <- safe_join_goles(jugs_efl_2, goles_efl_2)
 
 # LIGUE 2 ----
 
-jugs_ligue_2 <- jugs_ligue_2 |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_ligue_2 <- safe_add_position_group(jugs_ligue_2)
 jugs_ligue_2 <- safe_join_goles(jugs_ligue_2, goles_ligue_2)
 
 # POLONIA (EKSTRAKLASA) ----
 
-jugs_polonia <- jugs_polonia |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_polonia <- safe_add_position_group(jugs_polonia)
 jugs_polonia <- safe_join_goles(jugs_polonia, goles_polonia)
 
 # RUSIA (PREMIER LIGA) ----
 
-jugs_rusia <- jugs_rusia |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_rusia <- safe_add_position_group(jugs_rusia)
 jugs_rusia <- safe_join_goles(jugs_rusia, goles_rusia)
 
 # SUECIA - ALLSVENSKAN ----
 
-jugs_suecia_allsvenskan <- jugs_suecia_allsvenskan |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_suecia_allsvenskan <- safe_add_position_group(jugs_suecia_allsvenskan)
 jugs_suecia_allsvenskan <- safe_join_goles(jugs_suecia_allsvenskan, goles_suecia_allsvenskan)
 
 # SUECIA - SUPERETTAN ----
 
-jugs_suecia_superettan <- jugs_suecia_superettan |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_suecia_superettan <- safe_add_position_group(jugs_suecia_superettan)
 jugs_suecia_superettan <- safe_join_goles(jugs_suecia_superettan, goles_suecia_superettan)
 
 # SUIZA - SUPER LEAGUE ----
 
-jugs_suiza_super_league <- jugs_suiza_super_league |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_suiza_super_league <- safe_add_position_group(jugs_suiza_super_league)
 jugs_suiza_super_league <- safe_join_goles(jugs_suiza_super_league, goles_suiza_super_league)
 
 # SUIZA - CHALLENGER LEAGUE ----
 
-jugs_suiza_challenger <- jugs_suiza_challenger |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_suiza_challenger <- safe_add_position_group(jugs_suiza_challenger)
 jugs_suiza_challenger <- safe_join_goles(jugs_suiza_challenger, goles_suiza_challenger)
 
 # NORUEGA (ELITESERIEN) ----
 
-jugs_noruega <- jugs_noruega |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_noruega <- safe_add_position_group(jugs_noruega)
 jugs_noruega <- safe_join_goles(jugs_noruega, goles_noruega)
 
 # CHINA (SUPER LEAGUE) ----
 
-jugs_china <- jugs_china |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_china <- safe_add_position_group(jugs_china)
 jugs_china <- safe_join_goles(jugs_china, goles_china)
 
 # PERÚ (LIGA 1) ----
 
-jugs_peru <- jugs_peru |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_peru <- safe_add_position_group(jugs_peru)
 jugs_peru <- safe_join_goles(jugs_peru, goles_peru)
 
 # USL CHAMPIONSHIP ----
 
-jugs_usl_championship <- jugs_usl_championship |>
-  mutate(position_group = case_when(
-    primary_position == "Goalkeeper" ~ "Portero",
-    primary_position %in% c("Centre Back","Right Centre Back","Left Centre Back") ~ "Central",
-    primary_position %in% c("Left Back","Left Wing Back","Right Back","Right Wing Back") ~ "Lateral/Carrilero",
-    primary_position %in% c("Centre Defensive Midfielder","Right Defensive Midfielder","Left Defensive Midfielder") ~ "Medio de Contención",
-    primary_position %in% c("Centre Attacking Midfielder","Left Attacking Midfielder","Left Centre Midfielder","Right Attacking Midfielder","Right Centre Midfielder") ~ "Interior/Mediapunta",
-    primary_position %in% c("Left Midfielder","Left Wing","Right Midfielder","Right Wing") ~ "Volante/Extremo",
-    primary_position %in% c("Centre Forward","Left Centre Forward","Right Centre Forward") ~ "Delantero",
-    TRUE ~ NA_character_
-  ))
-
+jugs_usl_championship <- safe_add_position_group(jugs_usl_championship)
 jugs_usl_championship <- safe_join_goles(jugs_usl_championship, goles_usl_championship)
 
 # HELPERS ----
