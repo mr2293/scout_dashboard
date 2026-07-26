@@ -2439,26 +2439,17 @@ server <- function(input, output, session) {
                          selected=character(0), server=TRUE)
   }, once=TRUE)
 
-  # Pre-warm the other expensive process-cached tables (Base de Datos,
-  # Jugadores Similares, and the SkillCorner lookup pools used by the
-  # Dashboard tab's own physical-data table) in the background right after
-  # the initial page paint, instead of only computing them the moment a
-  # user opens that tab or selects a player. They were already lazy +
-  # cached (see get_db_master()/get_all_players_sc_df() etc.), which kept
-  # them from blocking *startup* -- but on a cold worker (shinyapps.io
-  # spins up new ones on scale/idle-recycle) the first real interaction
-  # that touches one still had to pay its full computation cost inline,
-  # which is what "laggy" mostly was. This runs once per session but the
-  # underlying caches are process-wide, so only the first session on a
-  # given worker actually pays it -- every session after that on the same
-  # worker gets it for free.
-  session$onFlushed(function() {
-    get_db_master()
-    get_all_players_sc_df()
-    get_all_sc_df()
-    get_liga_mx_sc_df()
-  }, once=TRUE)
-
+  # NOTE: previously tried eagerly pre-warming get_db_master() /
+  # get_all_players_sc_df() / get_all_sc_df() / get_liga_mx_sc_df() here
+  # for every session, to avoid paying their cost inline on first tab
+  # open/player click. Reverted -- forcing every session on every worker
+  # to build and hold all of those derived tables at once (each bigger now
+  # with 42 leagues instead of 27) is what pushed a worker's container
+  # over its memory limit and got it OOM-killed, taking every output on
+  # that worker down with it. Lazy + process-cached (computed only the
+  # first time a session actually opens that tab / needs SC data) is
+  # slower on a cold worker's first touch but doesn't risk crashing the
+  # whole app for everyone on it.
   selected_player <- reactiveVal(NULL)
 
   # Searching a player should make them actually show up in the scatter
