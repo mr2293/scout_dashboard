@@ -1525,13 +1525,18 @@ dedup_transfers <- function(df) {
 # turns "first session on a fresh worker pays the full dedup/join/
 # profile-scoring cost inline" into a fast readRDS(). Falls back to the
 # original on-the-fly computation when the file isn't there (local dev).
-.app_cache_bundle <- NULL
-.app_cache_path   <- "data/app_cache.rds"
-load_app_cache_bundle <- function() {
-  if (is.null(.app_cache_bundle) && file.exists(.app_cache_path)) {
-    .app_cache_bundle <<- readRDS(.app_cache_path)
-  }
-  .app_cache_bundle
+# One file per table under data/app_cache/, not a single combined bundle:
+# a shared bundle object means the FIRST get_*() call anyone makes -- even
+# just get_all_players_df() for the Dashboard's player-search dropdown --
+# pulls all six tables into memory at once via a single readRDS(), which
+# was enough to OOM a fresh worker within ~20s of startup, before a
+# session ever reached a tab that actually needed the others. Loading
+# each table from its own file means a getter only pays for the piece it
+# needs, when it needs it.
+.app_cache_dir <- "data/app_cache"
+load_app_cache_piece <- function(name) {
+  path <- file.path(.app_cache_dir, paste0(name, ".rds"))
+  if (file.exists(path)) readRDS(path) else NULL
 }
 
 # ---- All players across all leagues (for radar, similarity, search) ----
@@ -1540,9 +1545,9 @@ load_app_cache_bundle <- function() {
 .all_players_df_cache <- NULL
 get_all_players_df <- function() {
   if (is.null(.all_players_df_cache)) {
-    bundle <- load_app_cache_bundle()
-    if (!is.null(bundle) && !is.null(bundle$all_players_df)) {
-      .all_players_df_cache <<- bundle$all_players_df
+    piece <- load_app_cache_piece("all_players_df")
+    if (!is.null(piece)) {
+      .all_players_df_cache <<- piece
       return(.all_players_df_cache)
     }
     # dedup_same_team() first shrinks join-artifact duplicate rows (up to 4x
@@ -1587,9 +1592,9 @@ get_all_players_df <- function() {
 .all_players_raw_df_cache <- NULL
 get_all_players_raw_df <- function() {
   if (is.null(.all_players_raw_df_cache)) {
-    bundle <- load_app_cache_bundle()
-    if (!is.null(bundle) && !is.null(bundle$all_players_raw_df)) {
-      .all_players_raw_df_cache <<- bundle$all_players_raw_df
+    piece <- load_app_cache_piece("all_players_raw_df")
+    if (!is.null(piece)) {
+      .all_players_raw_df_cache <<- piece
       return(.all_players_raw_df_cache)
     }
     .all_players_raw_df_cache <<- all_players_df_from_cache(scout, league_map) |>
@@ -1718,9 +1723,9 @@ build_database_master <- function() {
 .db_master_cache <- NULL
 get_db_master <- function() {
   if (is.null(.db_master_cache)) {
-    bundle <- load_app_cache_bundle()
-    if (!is.null(bundle) && !is.null(bundle$db_master)) {
-      .db_master_cache <<- bundle$db_master
+    piece <- load_app_cache_piece("db_master")
+    if (!is.null(piece)) {
+      .db_master_cache <<- piece
       return(.db_master_cache)
     }
     .db_master_cache <<- build_database_master()
@@ -1758,9 +1763,9 @@ ROL_TO_PERFILES <- setNames(
 .all_players_sc_df_cache <- NULL
 get_all_players_sc_df <- function() {
   if (!is.null(.all_players_sc_df_cache)) return(.all_players_sc_df_cache)
-  bundle <- load_app_cache_bundle()
-  if (!is.null(bundle) && !is.null(bundle$all_players_sc_df)) {
-    .all_players_sc_df_cache <<- bundle$all_players_sc_df
+  piece <- load_app_cache_piece("all_players_sc_df")
+  if (!is.null(piece)) {
+    .all_players_sc_df_cache <<- piece
     return(.all_players_sc_df_cache)
   }
 
@@ -1797,9 +1802,9 @@ get_all_players_sc_df <- function() {
 .all_sc_df_cache <- NULL
 get_all_sc_df <- function() {
   if (is.null(.all_sc_df_cache)) {
-    bundle <- load_app_cache_bundle()
-    if (!is.null(bundle) && !is.null(bundle$all_sc_df)) {
-      .all_sc_df_cache <<- bundle$all_sc_df
+    piece <- load_app_cache_piece("all_sc_df")
+    if (!is.null(piece)) {
+      .all_sc_df_cache <<- piece
       return(.all_sc_df_cache)
     }
     dfs <- lapply(SC_LEAGUES, function(lname) {
@@ -1821,9 +1826,9 @@ get_all_sc_df <- function() {
 .liga_mx_sc_df_cache <- NULL
 get_liga_mx_sc_df <- function() {
   if (is.null(.liga_mx_sc_df_cache)) {
-    bundle <- load_app_cache_bundle()
-    if (!is.null(bundle) && !is.null(bundle$liga_mx_sc_df)) {
-      .liga_mx_sc_df_cache <<- bundle$liga_mx_sc_df
+    piece <- load_app_cache_piece("liga_mx_sc_df")
+    if (!is.null(piece)) {
+      .liga_mx_sc_df_cache <<- piece
       return(.liga_mx_sc_df_cache)
     }
     df <- joined_cache$joined_leagues[["Liga MX"]]

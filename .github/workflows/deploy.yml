@@ -68,13 +68,16 @@ jobs:
       - name: Join StatsBomb + SkillCorner datasets
         run: Rscript join_scout_data.R
 
-      # Builds data/app_cache.rds: the expensive cross-league derived
+      # Builds data/app_cache/*.rds: the expensive cross-league derived
       # tables (get_all_players_df(), get_db_master(),
       # get_all_players_sc_df(), etc.) that app.R would otherwise compute
       # lazily on a live worker's first touch of each tab. Doing it here,
       # on a runner with far more memory headroom than a shinyapps.io
-      # worker, and bundling the result, is what stopped worker containers
-      # from getting OOM-killed under normal use.
+      # worker is what stopped worker containers from getting OOM-killed
+      # under normal use. One file per table (not one combined bundle) so
+      # a worker only pays for the table its first-touched getter actually
+      # needs, instead of a single readRDS() pulling all six into memory
+      # for the very first getter call of the session.
       - name: Precompute app cache
         run: Rscript precompute_app_cache.R
 
@@ -96,7 +99,7 @@ jobs:
               appName     = 'club-america-scouting_dashboard',
               appFiles    = c('app.R', 'radars.R', 'chatbot.R', 'scout_chat_system_prompt.md',
                                'secrets.R', 'data/scout_joined.rds', 'data/transfermarkt_crosswalk.csv',
-                               'data/app_cache.rds'),
+                               list.files('data/app_cache', full.names = TRUE)),
               forceUpdate = TRUE
             )
           "
