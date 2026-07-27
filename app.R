@@ -2140,6 +2140,37 @@ ui <- fluidPage(
       font-size: 0.87rem !important;
       background: #f9fafb !important;
     }
+
+    /* ── SPINNER OVERLAY (Jugadores Similares table) ────────── */
+    .spinner-container { position: relative; }
+    .spinner-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.65);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner-overlay.active { display: flex; }
+    .spinner-overlay .spinner-icon {
+      width: 42px; height: 42px;
+      border: 4px solid #d1d5db;
+      border-top-color: #C1121F;
+      border-radius: 50%;
+      animation: spinner-rotate 0.8s linear infinite;
+    }
+    @keyframes spinner-rotate { to { transform: rotate(360deg); } }
+
+    /* ── RESULT COUNT / RESET FILTERS ────────────────────── */
+    .sim-result-count {
+      color: #6b7280; font-size: 0.82rem; margin: 2px 0 8px;
+    }
+    #sim_reset_filters {
+      background: #f3f4f6 !important; border: 1.5px solid #d1d5db !important;
+      color: #374151 !important; font-weight: 600 !important;
+      border-radius: 7px !important; font-size: 0.8rem !important;
+    }
   "))),
 
   # ── Header ────────────────────────────────────────────────
@@ -2158,6 +2189,24 @@ ui <- fluidPage(
       if (btn) { btn.disabled = busy; btn.innerText = busy ? 'Enviando…' : 'Enviar'; }
       if (!busy && box) { box.focus(); }
     });
+
+    // Per-output spinner overlay for the Jugadores Similares table --
+    // shiny:outputinvalidated fires right when this specific output starts
+    // recomputing (base player change, métricas change, or a debounced
+    // filter tick), shiny:value/shiny:error fire when it's done either way.
+    (function() {
+      var targetId = 'similar_players_sc_table';
+      function setSpinner(active) {
+        var el = document.getElementById(targetId + '_spinner');
+        if (el) el.classList.toggle('active', active);
+      }
+      $(document).on('shiny:outputinvalidated', function(event) {
+        if (event.name === targetId) setSpinner(true);
+      });
+      $(document).on('shiny:value shiny:error', function(event) {
+        if (event.name === targetId) setSpinner(false);
+      });
+    })();
   ")),
 
   tabsetPanel(
@@ -2369,9 +2418,19 @@ ui <- fluidPage(
                                   "% minutos jugados (vs. máx. en su liga)",
                                   min = 0, max = 100, value = c(0, 100),
                                   step = 5, post = "%", width = "100%"))
+          ),
+          fluidRow(
+            column(12, style = "text-align: right; padding-bottom: 8px;",
+                   actionButton("sim_reset_filters", "Reset filtros"))
           )
         ),
-        DT::DTOutput("similar_players_sc_table"),
+        uiOutput("sim_result_count"),
+        tags$div(
+          class = "spinner-container",
+          DT::DTOutput("similar_players_sc_table"),
+          tags$div(id = "similar_players_sc_table_spinner", class = "spinner-overlay",
+                   tags$div(class = "spinner-icon"))
+        ),
         tags$small(HTML(
           "Interpretación (coseno):<br>
              <b>≥ 0.60</b> = Muy similares &nbsp;|&nbsp;
@@ -2981,16 +3040,35 @@ server <- function(input, output, session) {
     result
   })
 
+  # ---- Debounced continuous filters (Jugadores Similares) ----
+  # Sliders/number boxes fire on every drag tick or keystroke; bundling
+  # them into one 400ms-debounced reactive means dragging a slider
+  # re-filters once after you stop moving it, not on every intermediate
+  # tick. Discrete pickers (liga, posición, pie, nacionalidad, ...) stay
+  # undebounced below since they only change on a deliberate click/select.
+  sim_continuous_filters_raw <- reactive({
+    list(
+      min_sim     = input$sim_min_similarity,
+      valor_min   = input$sim_valor_min,
+      valor_max   = input$sim_valor_max,
+      age_range   = input$sim_age_filter,
+      min_minutes = input$sim_min_minutes,
+      pct_range   = input$sim_pct_minutos
+    )
+  })
+  sim_continuous_filters <- debounce(sim_continuous_filters_raw, 400)
+
   # ---- Filtered similarity table ----
   similar_players_sc_filtered <- reactive({
     df <- similar_players_sc()
     if (nrow(df) == 0) return(df)
 
+    cf          <- sim_continuous_filters()
     league_sel  <- input$sim_league_filter
     pos_sel     <- input$sim_pos_filter
-    age_range   <- input$sim_age_filter
-    min_sim     <- input$sim_min_similarity
-    min_minutes <- input$sim_min_minutes
+    age_range   <- cf$age_range
+    min_sim     <- cf$min_sim
+    min_minutes <- cf$min_minutes
 
     if (length(league_sel) > 0 && !("" %in% league_sel))
       df <- dplyr::filter(df, Liga %in% league_sel)
@@ -3016,17 +3094,47 @@ server <- function(input, output, session) {
     # raises the minimum above 0 or lowers the maximum -- matching the
     # "Base de Datos" tab's filter, except NA market values aren't dropped
     # by the default range (min 0) the way that tab's does.
-    if (!is.null(input$sim_valor_min) && !is.null(input$sim_valor_max) &&
-        (input$sim_valor_min > 0 || input$sim_valor_max < 200000000)) {
+    if (!is.null(cf$valor_min) && !is.null(cf$valor_max) &&
+        (cf$valor_min > 0 || cf$valor_max < 200000000)) {
       df <- dplyr::filter(df, !is.na(`Valor de mercado`),
-                          dplyr::between(`Valor de mercado`, input$sim_valor_min, input$sim_valor_max))
+                          dplyr::between(`Valor de mercado`, cf$valor_min, cf$valor_max))
     }
-    pct_range <- input$sim_pct_minutos
+    pct_range <- cf$pct_range
     if (!is.null(pct_range) && length(pct_range) == 2)
       df <- dplyr::filter(df, is.na(`% Minutos`) |
                           dplyr::between(`% Minutos`, pct_range[1], pct_range[2]))
 
     df
+  })
+
+  # ---- Result count ("Mostrando X de Y jugadores") ----
+  output$sim_result_count <- renderUI({
+    req(input$sim_player_search, nzchar(input$sim_player_search))
+    total <- nrow(similar_players_sc())
+    if (total == 0) return(NULL)
+    shown <- nrow(similar_players_sc_filtered())
+    tags$div(class = "sim-result-count",
+             sprintf("Mostrando %d de %d jugadores", shown, total))
+  })
+
+  # ---- Reset filtros (Jugadores Similares) ----
+  # Restores every filter to its default -- deliberately leaves
+  # sim_player_search (the base player) alone, since resetting *what*
+  # you're comparing against isn't what "reset filters" implies here.
+  observeEvent(input$sim_reset_filters, {
+    updateSelectizeInput(session, "sim_league_filter", selected = character(0))
+    updateSelectInput(session, "sim_pos_filter", selected = "")
+    updateNumericInput(session, "sim_min_similarity", value = 0.45)
+    updateSelectizeInput(session, "sim_metrics", selected = character(0))
+    updatePickerInput(session, "sim_pie", selected = character(0))
+    updatePickerInput(session, "sim_nacionalidad", selected = character(0))
+    updatePickerInput(session, "sim_hispanohablante", selected = character(0))
+    updatePickerInput(session, "sim_vencimiento", selected = character(0))
+    updateAutonumericInput(session, "sim_valor_min", value = 0)
+    updateAutonumericInput(session, "sim_valor_max", value = 200000000)
+    updateSliderInput(session, "sim_age_filter", value = c(15, 45))
+    updateSliderInput(session, "sim_min_minutes", value = 0)
+    updateSliderInput(session, "sim_pct_minutos", value = c(0, 100))
   })
 
   observe({
