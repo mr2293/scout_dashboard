@@ -1733,6 +1733,32 @@ get_db_master <- function() {
   .db_master_cache
 }
 
+# ---- Slim Jugador/Equipo -> Perfil/Pie/Nacionalidad/... lookup ----
+# db_master carries every raw StatsBomb column (539 cols, ~60MB in memory)
+# so the "Base de Datos" tab's "Métricas a incluir" picker can reach any of
+# them -- but Jugadores Similares only ever needs these 7 columns for its
+# own filters. Precomputed separately (~1.7MB) so a session that goes
+# straight to Jugadores Similares without ever opening Base de Datos
+# doesn't have to pull the full 539-column table into memory just to read
+# 7 of them (confirmed via shinyapps.io OOM logs on 2026-07-27: this was
+# loaded fresh, on top of get_all_players_sc_df(), in the same reactive
+# that builds the similarity pool -- exactly the kind of avoidable peak
+# this getter exists to cut).
+.sim_filt_meta_cache <- NULL
+get_sim_filt_meta <- function() {
+  if (is.null(.sim_filt_meta_cache)) {
+    piece <- load_app_cache_piece("sim_filt_meta")
+    if (!is.null(piece)) {
+      .sim_filt_meta_cache <<- piece
+      return(.sim_filt_meta_cache)
+    }
+    .sim_filt_meta_cache <<- get_db_master() |>
+      dplyr::distinct(Jugador, Equipo, .keep_all = TRUE) |>
+      dplyr::select(Jugador, Equipo, Perfil, Pie, Nacionalidad, Hispanohablante, contract_year)
+  }
+  .sim_filt_meta_cache
+}
+
 # dedup_transfers() (upstream, inside get_all_players_df()) concatenates
 # Liga/Equipo with " / " for a player who appears under more than one
 # league or team -- split those back out for filter choice lists and for
@@ -2938,10 +2964,12 @@ server <- function(input, output, session) {
                          selected = character(0), server = TRUE)
 
     # Pie/Nacionalidad/Vencimiento choices come from the same derived
-    # master table used by the "Base de Datos" tab, so both tabs' filters
-    # stay in sync with one build. (No Perfil filter here -- redundant with
-    # "Posición" above, which already narrows by primary position.)
-    db <- get_db_master()
+    # master table used by the "Base de Datos" tab (via the slim
+    # get_sim_filt_meta() subset, not the full 539-col db_master -- see
+    # its definition for why), so both tabs' filters stay in sync with one
+    # build. (No Perfil filter here -- redundant with "Posición" above,
+    # which already narrows by primary position.)
+    db <- get_sim_filt_meta()
     updatePickerInput(session, "sim_pie", choices = sort(unique(stats::na.omit(db$Pie))))
     updatePickerInput(session, "sim_nacionalidad", choices = locale_sort(unique(db$Nacionalidad)))
     updatePickerInput(session, "sim_vencimiento",
@@ -3013,9 +3041,7 @@ server <- function(input, output, session) {
     # the "Base de Datos" tab. Pie/Nacionalidad/Hispanohablante/
     # contract_year power this tab's own filters and stay hidden in the
     # rendered table (like Grupo_Posicion); Perfil is shown as a column.
-    filt_meta <- get_db_master() |>
-      dplyr::distinct(Jugador, Equipo, .keep_all = TRUE) |>
-      dplyr::select(Jugador, Equipo, Perfil, Pie, Nacionalidad, Hispanohablante, contract_year)
+    filt_meta <- get_sim_filt_meta()
     result <- dplyr::left_join(result, filt_meta, by = c("Jugador", "Equipo"))
 
     # "Métricas a incluir" adds each chosen metric as its own extra column

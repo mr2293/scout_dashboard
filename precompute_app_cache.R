@@ -57,7 +57,11 @@ app_cache <- list(
   db_master          = get_db_master(),
   all_players_sc_df  = get_all_players_sc_df(),
   all_sc_df          = get_all_sc_df(),
-  liga_mx_sc_df      = get_liga_mx_sc_df()
+  liga_mx_sc_df      = get_liga_mx_sc_df(),
+  # Slim 7-column subset of db_master (see get_sim_filt_meta() in app.R)
+  # so Jugadores Similares doesn't have to pull the full ~60MB/539-col
+  # db_master into memory just to read Perfil/Pie/Nacionalidad/etc.
+  sim_filt_meta      = get_sim_filt_meta()
 )
 
 message(sprintf("Done in %.1f min", as.numeric(difftime(Sys.time(), t0, units = "mins"))))
