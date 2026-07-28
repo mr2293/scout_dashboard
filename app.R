@@ -2522,9 +2522,28 @@ server <- function(input, output, session) {
     seasons <- if ("season_name" %in% names(df)) {
       sort(unique(as.character(df$season_name[!is.na(df$season_name)])))
     } else character(0)
+
+    # Default to the most recent season, UNLESS it's too sparse to be
+    # useful yet (e.g. a brand-new season in its first few weeks) -- in
+    # that case default to "Acumulado" instead. Landing on an
+    # almost-empty season by default was the root cause behind several
+    # things looking broken at once: the Minutos jugados slider
+    # collapsing to a single point (see its fix above, same 500-minute
+    # threshold), the SkillCorner table showing "Sin datos", and the
+    # comparison radar/stat table not rendering at all -- none of those
+    # were actually separate bugs, just req()/insufficient-data guards
+    # correctly declining to render a season with barely any stats yet.
+    default_season <- "Acumulado"
+    if (length(seasons)) {
+      latest <- tail(seasons, 1)
+      latest_max_min <- suppressWarnings(max(
+        df$player_season_minutes[df$season_name == latest], na.rm = TRUE))
+      if (is.finite(latest_max_min) && latest_max_min >= 500) default_season <- latest
+    }
+
     updateSelectInput(session, "season_filter",
                       choices  = c(seasons, "Acumulado"),
-                      selected = if (length(seasons)) tail(seasons, 1) else "Acumulado")
+                      selected = default_season)
   }, ignoreInit = FALSE)
 
   # ---- Primary data: season-filtered (or accumulated), transfers merged ----
@@ -2549,7 +2568,12 @@ server <- function(input, output, session) {
     # which otherwise left the slider's upper bound/label showing several
     # decimal places.
     max_min <- ceiling(suppressWarnings(max(df$player_season_minutes %||% 0, na.rm=TRUE)))
-    lo <- min(450, max_min); hi <- max(1, max_min)
+    # A brand-new season (e.g. 2026/2027 in its first weeks) can have every
+    # player under 450 minutes -- min(450, max_min) would then collapse
+    # both handles onto the same point at the far right instead of showing
+    # a usable range. Below 500 minutes total, just start the slider at 0.
+    lo <- if (max_min < 500) 0 else 450
+    hi <- max(1, max_min)
     updateSliderInput(session, "min_minutes", min=0, max=hi, value=c(lo, hi))
 
     # Age range stays fixed at 15-45 regardless of the selected league's
