@@ -62,30 +62,6 @@ jobs:
           SB_USERNAME: ${{ secrets.SB_USERNAME }}
           SB_PASSWORD: ${{ secrets.SB_PASSWORD }}
 
-      # TEMPORARY -- for pulling a fresh player_name/team_name list out to
-      # refresh the Transfermarkt crosswalk after the 15-league expansion.
-      # Remove these two steps once that one-off pull is done.
-      - name: (TEMP) Extract player list for Transfermarkt refresh
-        run: |
-          Rscript -e '
-            scout_data <- readRDS("data/scout_data.rds")
-            rows <- lapply(scout_data, function(df) {
-              if (is.null(df) || !is.data.frame(df) || nrow(df) == 0) return(NULL)
-              if (!all(c("player_name","team_name") %in% names(df))) return(NULL)
-              unique(df[, c("player_name","team_name")])
-            })
-            players <- unique(do.call(rbind, rows))
-            write.csv(players, "sb_players_list_fresh.csv", row.names = FALSE)
-            cat("Wrote", nrow(players), "player rows\n")
-          '
-
-      - name: (TEMP) Upload fresh player list artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sb-players-list-fresh
-          path: sb_players_list_fresh.csv
-          retention-days: 5
-
       - name: Process SkillCorner data
         run: Rscript sc_data.R
 
