@@ -1929,6 +1929,14 @@ ui <- fluidPage(
       margin-top: 4px;
       letter-spacing: 0.3px;
     }
+    #app-header { position: relative; }
+    #app-header .app-logo {
+      position: absolute;
+      top: 22px;
+      right: 10px;
+      height: 56px;
+      width: auto;
+    }
 
     /* ── FILTER CARD ─────────────────────────────────────── */
     #filter-panel {
@@ -2202,6 +2210,7 @@ ui <- fluidPage(
   # ── Header ────────────────────────────────────────────────
   tags$div(
     id = "app-header",
+    tags$img(class = "app-logo", src = "escudo.png", alt = "Club América"),
     tags$h2("Scouting Dashboard — Club América"),
     tags$div(class = "app-subtitle",
              "Análisis de rendimiento · StatsBomb + SkillCorner")
