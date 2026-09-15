@@ -1782,6 +1782,17 @@ ROL_TO_PERFILES <- setNames(
   unname(ROL_ABBR)
 )
 
+# Same mapping, keyed by Grupo_Posicion (the long position-group name, e.g.
+# "Central") instead of the abbreviated Rol -- for the "Jugadores Similares"
+# tab's "Posición" filter (sim_pos_filter), which uses Grupo_Posicion rather
+# than Rol.
+GRUPO_POSICION_TO_PERFILES <- setNames(
+  lapply(names(ROL_ABBR), function(pg) {
+    names(PROFILE_METRIC_DEFS[[POSITION_GROUP_TO_PROFILE_GROUP[[pg]]]])
+  }),
+  names(ROL_ABBR)
+)
+
 # ---- All players enriched with SC physical cols (for SC-based similarity) ----
 # Merges physical SC columns from joined_leagues onto the SB player rows by name.
 # Only players in SC leagues will have SC values; the rest get NA (handled by
@@ -2420,14 +2431,17 @@ ui <- fluidPage(
             ))
           ),
           fluidRow(
-            column(3, pickerInput("sim_pie", "Pie", choices = NULL, multiple = TRUE,
+            column(2, pickerInput("sim_perfil", "Perfil", choices = NULL, multiple = TRUE,
+                                  options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
+                                                          selectedTextFormat = "count > 3"))),
+            column(2, pickerInput("sim_pie", "Pie", choices = NULL, multiple = TRUE,
                                   options = pickerOptions(actionsBox = TRUE,
                                                           selectedTextFormat = "count > 3"))),
             column(3, pickerInput("sim_nacionalidad", "Nacionalidad", choices = NULL,
                                   multiple = TRUE,
                                   options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE,
                                                           selectedTextFormat = "count > 3"))),
-            column(3, pickerInput("sim_hispanohablante", "Hispanohablante", choices = c("Sí", "No"),
+            column(2, pickerInput("sim_hispanohablante", "Hispanohablante", choices = c("Sí", "No"),
                                   multiple = TRUE,
                                   options = pickerOptions(actionsBox = TRUE, selectedTextFormat = "count > 3"))),
             column(3, pickerInput("sim_vencimiento", "Vencimiento contrato (año)",
@@ -2988,13 +3002,13 @@ server <- function(input, output, session) {
                          choices = names(vm),
                          selected = character(0), server = TRUE)
 
-    # Pie/Nacionalidad/Vencimiento choices come from the same derived
-    # master table used by the "Base de Datos" tab (via the slim
+    # Perfil/Pie/Nacionalidad/Vencimiento choices come from the same
+    # derived master table used by the "Base de Datos" tab (via the slim
     # get_sim_filt_meta() subset, not the full 539-col db_master -- see
     # its definition for why), so both tabs' filters stay in sync with one
-    # build. (No Perfil filter here -- redundant with "Posición" above,
-    # which already narrows by primary position.)
+    # build.
     db <- get_sim_filt_meta()
+    updatePickerInput(session, "sim_perfil", choices = sort(unique(stats::na.omit(db$Perfil))))
     updatePickerInput(session, "sim_pie", choices = sort(unique(stats::na.omit(db$Pie))))
     updatePickerInput(session, "sim_nacionalidad", choices = locale_sort(unique(db$Nacionalidad)))
     updatePickerInput(session, "sim_vencimiento",
@@ -3002,6 +3016,23 @@ server <- function(input, output, session) {
 
     sim_choices_populated(TRUE)
   })
+
+  # Perfil choices narrow to whichever Posición is selected -- same
+  # "Base de Datos" behavior (there via db_rol -> db_perfil), keyed here by
+  # Grupo_Posicion since sim_pos_filter uses that instead of the abbreviated
+  # Rol. See GRUPO_POSICION_TO_PERFILES.
+  observeEvent(input$sim_pos_filter, {
+    req(sim_choices_populated())
+    db <- get_sim_filt_meta()
+    valid_perfiles <- if (!is.null(input$sim_pos_filter) && nzchar(input$sim_pos_filter)) {
+      sort(unique(GRUPO_POSICION_TO_PERFILES[[input$sim_pos_filter]]))
+    } else {
+      sort(unique(stats::na.omit(db$Perfil)))
+    }
+    updatePickerInput(session, "sim_perfil",
+                      choices  = valid_perfiles,
+                      selected = intersect(input$sim_perfil %||% character(0), valid_perfiles))
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
   # ---- Similarity using SB + SC data ----
   # Base player for this comparison comes from its own search box
@@ -3132,6 +3163,8 @@ server <- function(input, output, session) {
     if (!is.null(min_sim) && is.numeric(min_sim))
       df <- dplyr::filter(df, Similitud >= min_sim)
 
+    if (length(input$sim_perfil))
+      df <- dplyr::filter(df, Perfil %in% input$sim_perfil)
     if (length(input$sim_pie))
       df <- dplyr::filter(df, Pie %in% input$sim_pie)
     if (length(input$sim_nacionalidad))
@@ -3177,6 +3210,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, "sim_pos_filter", selected = "")
     updateNumericInput(session, "sim_min_similarity", value = 0.45)
     updateSelectizeInput(session, "sim_metrics", selected = character(0))
+    updatePickerInput(session, "sim_perfil", selected = character(0))
     updatePickerInput(session, "sim_pie", selected = character(0))
     updatePickerInput(session, "sim_nacionalidad", selected = character(0))
     updatePickerInput(session, "sim_hispanohablante", selected = character(0))
