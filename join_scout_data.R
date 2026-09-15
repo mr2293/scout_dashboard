@@ -700,7 +700,6 @@ canonicalize_team <- function(x) {
 manual_matches <- tribble(
   ~sc_player_id, ~sb_player_id, ~league,
   # Liga MX
-  1028129,  43478,   "Liga MX",          # Edgar Ivan Lopez Rodriguez -> Edgar López
   5078,     8283,    "Liga MX",          # João Pedro Geraldino -> João Pedro
   11482,    6572,    "Liga MX",          # Juan Pedro Ramírez López -> Juanpe
   24584,    23849,   "Liga MX",          # Francisco José Villalba -> Fran Villalba
@@ -741,7 +740,6 @@ manual_matches <- tribble(
   # Brasil
   29737,    31013,   "Brasil – Série A",  # Fabrizio Germán Angileri -> Fabricio Angileri (Corinthians)
   13942,    11299,   "Brasil – Série A",  # Christopher Ramos De la Flor -> Chris Ramos (Botafogo)
-  122012,   129800,  "Brasil – Série A",  # Matheus Leonardo Sales Cardoso -> Matheus Alexandre (Sport)
   24843,    44092,   "Brasil – Série A",  # Leonardo Rech Ortiz -> Léo Ortiz (Flamengo)
   # Colombia
   525235,   364863,  "Colombia",          # Geindry Steven Cuervo Holguín -> Gendry Cuervo (Envigado)
@@ -780,7 +778,6 @@ manual_matches <- tribble(
   14002,    11671,   "LaLiga",              # Juan Camilo Hernández Suárez -> Cucho Hernández (Real Betis)
   62275,    24499,   "LaLiga",              # Roger Brugué Ayguadé -> Brugui (Levante)
   # Liga MX (new)
-  1018138,  37360,   "Liga MX",             # Andres Pereira (SC id 1018138) -> Federico Pereira (Toluca)
   34352,    37360,   "Liga MX",             # Andrés Federico Pereira Castelnoble -> Federico Pereira (Toluca)
   34835,    43478,   "Liga MX",             # Edgar Iván López -> Edgar López (Tigres)
   36149,    43622,   "Liga MX",             # Erick Antonio Lira Méndez -> Erik Lira (Cruz Azul)
@@ -1061,7 +1058,12 @@ build_crosswalk_v4 <- function(sb_df, sc_df, league_name,
       by = "sc_player_id"
     )
   
-  crosswalk <- bind_rows(algo_crosswalk, league_manual)
+  # league_manual left-joins onto sb_df/sc_df by id alone (no season filter),
+  # so a manual entry for a player with rows in more than one pulled season
+  # produces one identical (sb_player_id, sc_player_id) pair per season --
+  # collapse those back to a single row per pair.
+  crosswalk <- bind_rows(algo_crosswalk, league_manual) |>
+    distinct(sb_player_id, sc_player_id, .keep_all = TRUE)
   
   unmatched_sb <- sb_rem |>
     mutate(league = league_name, side = "statsbomb") |>
@@ -1711,8 +1713,7 @@ message("Done.")
 # final_list$sc_short_name[394]
 # 
 # names <- final_list |>
-#   select(player_first_name, player_last_name, player_known_name, sc_short_name, sc_player_name)
-# 
+#   select(player_first_name, player_last_name, player_known_name, sc_short_name, sc_player_n
 # arg_list_fin <- fis_data[[2]]
 # 
 # unique(arg_list_fin$position_group)

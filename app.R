@@ -2532,23 +2532,15 @@ server <- function(input, output, session) {
       sort(unique(as.character(df$season_name[!is.na(df$season_name)])))
     } else character(0)
 
-    # Default to the most recent season, UNLESS it's too sparse to be
-    # useful yet (e.g. a brand-new season in its first few weeks) -- in
-    # that case default to "Acumulado" instead. Landing on an
-    # almost-empty season by default was the root cause behind several
-    # things looking broken at once: the Minutos jugados slider
-    # collapsing to a single point (see its fix above, same 500-minute
-    # threshold), the SkillCorner table showing "Sin datos", and the
-    # comparison radar/stat table not rendering at all -- none of those
-    # were actually separate bugs, just req()/insufficient-data guards
-    # correctly declining to render a season with barely any stats yet.
+    # Always default to "Acumulado" rather than the most recent season.
+    # A season can look sufficiently played-in by StatsBomb minutes while
+    # still having little or no SkillCorner tracking data yet (SkillCorner
+    # lags behind StatsBomb's own data delivery) -- defaulting to the
+    # latest season on that basis alone risked landing on a season where
+    # the SkillCorner table renders empty despite matched players having
+    # real data in an earlier season. "Acumulado" always has the fullest
+    # picture available across every pulled season.
     default_season <- "Acumulado"
-    if (length(seasons)) {
-      latest <- tail(seasons, 1)
-      latest_max_min <- suppressWarnings(max(
-        df$player_season_minutes[df$season_name == latest], na.rm = TRUE))
-      if (is.finite(latest_max_min) && latest_max_min >= 500) default_season <- latest
-    }
 
     updateSelectInput(session, "season_filter",
                       choices  = c(seasons, "Acumulado"),

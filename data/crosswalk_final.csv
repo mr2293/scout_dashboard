@@ -437,14 +437,12 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 359970,Luis Puente,Atlante,839070,Luis Fernando Puente Prado,Club de Fútbol Pachuca,p5_token_no_team,Liga MX,NA,NA,NA,NA,NA,NA,NA
 45608,Walter Portales,Atlante,973074,Walter Alberto Portales Chávez,Club de Fútbol Puebla de la Franja,p5_token_no_team,Liga MX,NA,NA,NA,NA,NA,NA,NA
 47114,Tony Leone,Pumas UNAM,36467,Antonio Jermiah Leone Larios,Club de Fútbol Monterrey,p5b_nickname_no_team,Liga MX,NA,NA,NA,NA,NA,NA,NA
-43478,Iván López,Tigres UANL,1028129,NA,NA,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 8283,João Pedro,Atlético San Luis,5078,João Pedro Geraldino dos Santos Galvão,Atlético de San Luis,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 6572,Juanpe,Atlético San Luis,11482,Juan Pedro Ramírez López,Atlético de San Luis,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 23849,Fran Villalba,Santos Laguna,24584,Francisco José Villalba Rodrigo,Club Santos Laguna,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 33360,Mourad El Ghezouani,Tijuana,25644,Mourad Daoudi El Ghezouani,Xoloitcuintles Club Tijuana,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 482805,D.Ramírez Castillo,Pumas UNAM,1018107,Dennis Yael Ramírez Castillo,Club Universidad Nacional,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 195724,Alemão,Pachuca,142458,Alexandre Zurawski,Club de Fútbol Pachuca,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
-37360,Federico Pereira,Toluca,1018138,Andres Pereira,Deportivo Toluca Fútbol Club,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 37360,Federico Pereira,Toluca,34352,Andrés Federico Pereira Castelnoble,Deportivo Toluca Fútbol Club,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 43478,Iván López,Tigres UANL,34835,Edgar Iván López,Club de Fútbol Tigres de la UNAL,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
 43622,Erik Lira,Cruz Azul,36149,Erick Antonio Lira Méndez,Cruz Azul Fútbol Club,manual,Liga MX,NA,NA,NA,NA,NA,NA,NA
@@ -1188,9 +1186,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 79172,Gustavo,Coritiba Fbc,31848,Gustavo Leonardo Cuéllar Gallego,Grêmio FB Porto Alegrense,p5b_nickname_no_team,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25419,Luan,São Paulo,31857,Luan de Freitas Molarinho Chagas,Juventude RS,p5b_nickname_no_team,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 31013,Fabrizio Angileri,Corinthians,29737,Fabrizio Germán Angileri,Sport Club Corinthians Paulista,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-31013,Fabrizio Angileri,Corinthians,29737,Fabrizio Germán Angileri,Sport Club Corinthians Paulista,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 11299,Chris Ramos,Botafogo,13942,Christopher Ramos De la Flor,Botafogo de Futebol e Regatas,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-129800,Matheus Alexandre,Clube do Remo,122012,Matheus Leonardo Sales Cardoso,SC do Recife,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 44092,Léo Ortiz,Flamengo,24843,Leonardo Rech Ortiz,CR Flamengo,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25764,NA,NA,31535,Anderson Luis de Carvalho,Juventude RS,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25245,Caio Paulista,Grêmio,31671,Caio Fernando de Oliveira,Clube Atlético Mineiro,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
@@ -1202,7 +1198,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 20824,Tchê Tchê,Vasco da Gama,12397,Danilo das Neves Pinheiro,CR Vasco da Gama,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 31954,Dodi,Grêmio,31704,Douglas Moreira Fagundes,Grêmio FB Porto Alegrense,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25123,Dudu,Atlético Mineiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-25123,Dudu,Atlético Mineiro,24856,Eduardo Pereira Rodrigues,Clube Atlético Mineiro,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25327,Eric Ramires,Red Bull Bragantino,23980,Eric dos Santos Rodrigues,Red Bull Bragantino,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25159,Erick,Bahia,25176,Erick Luis Conrado Carvalho,Esporte Clube Bahia,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 26557,Chico Kim,Mirassol Futebol Clube,31644,Felipe Costa,Mirassol Futebol Clube,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
@@ -1213,7 +1208,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 436677,NA,NA,978489,Gustavo Teixeira Lopes da Conceição,Fortaleza EC,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 113297,Igor Cariús,Mirassol Futebol Clube,43397,Igor Aquino da Silva,SC do Recife,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 170305,NA,NA,142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-170305,NA,NA,142916,Jhonatan dos Santos Rosa,Red Bull Bragantino,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 473805,Zé Lucas,Cruzeiro,1005311,José Lucas Gomes da Silva,SC do Recife,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25171,NA,NA,28283,José Romário Silva de Souza,SC do Recife,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 21236,NA,NA,31767,João Pedro Vilardi Pinto,EC Vitória,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
@@ -1223,8 +1217,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 395580,NA,NA,181600,Mateus Carvalho dos Santos,CR Vasco da Gama,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 129800,Matheus Alexandre,Clube do Remo,25264,Matheus Alexandre Anastácio de Souza,SC do Recife,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 211232,Matheus Bidu,Corinthians,175854,Matheus Lima Beltrão Oliveira,Sport Club Corinthians Paulista,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
-196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 196863,Matheuzinho,EC Vitória,633848,Matheus Martins Fogaça de Paula,EC Vitória,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 25527,Marinho,EC Vitória,28342,Mário Sérgio Santos Costa,Fortaleza EC,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
 24016,Vitinho,Botafogo,29932,Victor Alexander da Silva,Botafogo de Futebol e Regatas,manual,Brasil – Série A,NA,NA,NA,NA,NA,NA,NA
@@ -1736,7 +1728,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 35737,Dilan Zúñiga,Palestino,28428,Dilan Patricio Zúñiga Espinoza Valenzuela,Club Deportivo Palestino,manual,Chile,NA,NA,NA,NA,NA,NA,NA
 102512,Maicol Andrés León Muñoz,Huachipato,43535,Maicol Andrés León Muñoz,Club Deportivo Huachipato,manual,Chile,NA,NA,NA,NA,NA,NA,NA
 443560,Felipe Faúndez,O'Higgins,922030,Felipe Faúndez,Club Deportivo O'Higgins,manual,Chile,NA,NA,NA,NA,NA,NA,NA
-443560,Felipe Faúndez,O'Higgins,922030,Felipe Faúndez,Club Deportivo O'Higgins,manual,Chile,NA,NA,NA,NA,NA,NA,NA
 463019,L.Molina Canto,Deportivo Ñublense SADP,741346,Lucas Molina,Nublense,manual,Chile,NA,NA,NA,NA,NA,NA,NA
 428798,Ian James,Sporting Kansas City,817424,Ian James,Sporting Kansas City,p1_exact_name_team,MLS,NA,NA,NA,NA,NA,NA,NA
 22068,Dejan Joveljić,Sporting Kansas City,12364,Dejan Joveljić,Sporting Kansas City,p1_exact_name_team,MLS,NA,NA,NA,NA,NA,NA,NA
@@ -2163,7 +2154,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 18920,Shapi Suleymanov,Sporting Kansas City,15869,Magomed-Shapi Suleymanov,Sporting Kansas City,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 429014,Harbor Miller,LA Galaxy,817415,Harbor Michael  Miller,LA Galaxy,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 47159,Guilherme Biro,Austin FC,32940,Guilherme da Trindade Dubas,Austin,manual,MLS,NA,NA,NA,NA,NA,NA,NA
-47159,Guilherme Biro,Austin FC,32940,Guilherme da Trindade Dubas,Austin,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 16761,Alex Roldán,Seattle Sounders,31171,Alexander Roldán Leon,Seattle Sounders,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 12573,NA,NA,31134,José Guillermo Rodríguez,Sporting Kansas City,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 13449,Kim Ki-Hee,Seattle Sounders,25477,Kee-Hee Kim,Seattle Sounders,manual,MLS,NA,NA,NA,NA,NA,NA,NA
@@ -2171,7 +2161,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 25349,NA,NA,31520,Ocimar de Almeida Júnior,Houston Dynamo,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 271465,NA,NA,171787,Pedro Henrique Fonseca de Araújo Martins,FC Dallas,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 230617,NA,NA,141706,Rwan Philipe Rodrigues de Souza Cruz,Real Salt Lake,manual,MLS,NA,NA,NA,NA,NA,NA,NA
-18242,Tim Ream,Charlotte,10373,Timothy Michael Ream,Charlotte FC,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 18242,Tim Ream,Charlotte,10373,Timothy Michael Ream,Charlotte FC,manual,MLS,NA,NA,NA,NA,NA,NA,NA
 21551,Sven Botman,Newcastle United,13491,Sven Botman,Newcastle United,p1_exact_name_team,Premier League,NA,NA,NA,NA,NA,NA,NA
 134092,Lewis Hall,Newcastle United,68884,Lewis Hall,Newcastle United,p1_exact_name_team,Premier League,NA,NA,NA,NA,NA,NA,NA
@@ -2519,44 +2508,26 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 541313,Álex Sánchez,Elche,531625,Alejandro  San Cristóbal Sánchez,Getafe CF,p5b_nickname_no_team,LaLiga,NA,NA,NA,NA,NA,NA,NA
 6697,Dani Ceballos,Real Madrid,2190,Daniel Ceballos Fernández,Real Madrid CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 12194,Santi Comesaña,Villarreal,13881,Santiago Comesaña Veiga,Villarreal CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-12194,Santi Comesaña,Villarreal,13881,Santiago Comesaña Veiga,Villarreal CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-6596,José Gayá,Valencia,5398,José Luis Gayá Peña,Valencia CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 6596,José Gayá,Valencia,5398,José Luis Gayá Peña,Valencia CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 41084,Juanlu Sánchez,Sevilla,69308,Juan Luis Sánchez Velasco,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-41084,Juanlu Sánchez,Sevilla,69308,Juan Luis Sánchez Velasco,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-255811,Youssef Enríquez,Deportivo Alavés,120550,Youssef Enriquez Lekhedim,Deportivo Alavés,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 255811,Youssef Enríquez,Deportivo Alavés,120550,Youssef Enriquez Lekhedim,Deportivo Alavés,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 5199,Koke,Atlético Madrid,5942,Jorge Resurrección Merodio,Atlético Madrid,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-5199,Koke,Atlético Madrid,5942,Jorge Resurrección Merodio,Atlético Madrid,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-10595,Raphinha,Barcelona,16062,Raphael Dias Belloli,FC Barcelona,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 10595,Raphinha,Barcelona,16062,Raphael Dias Belloli,FC Barcelona,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 30486,Pedri,Barcelona,25738,Pedro González López,FC Barcelona,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-30486,Pedri,Barcelona,25738,Pedro González López,FC Barcelona,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 68574,Nico Williams,Athletic Club,35342,Nicholas Williams Arthuer,Athletic Club de Bilbao,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-68574,Nico Williams,Athletic Club,35342,Nicholas Williams Arthuer,Athletic Club de Bilbao,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-32122,Johnny,Atlético Madrid,31814,João Lucas De Souza Cardoso,Atlético Madrid,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 32122,Johnny,Atlético Madrid,31814,João Lucas De Souza Cardoso,Atlético Madrid,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 11166,Marcão,Sevilla,16261,Marcos do Nascimento Teixeira,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 39073,Ilaix Moriba,Celta Vigo,35630,Moriba Kourouma Kourouma,RC Celta de Vigo,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-39073,Ilaix Moriba,Celta Vigo,35630,Moriba Kourouma Kourouma,RC Celta de Vigo,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-6802,Jonny Otto,Deportivo Alavés,12242,Jonathan Castro Otto,Deportivo Alavés,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 6802,Jonny Otto,Deportivo Alavés,12242,Jonathan Castro Otto,Deportivo Alavés,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 36728,Mateu Morey,Mallorca,24084,Mateu Jaume Morey Bauzà,RCD Mallorca,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 49303,Pep Chavarría,Rayo Vallecano,32127,Josep María Chavarría Pérez,Rayo Vallecano,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 195724,Alemão,Rayo Vallecano,142458,Alexandre Zurawski,Rayo Vallecano,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-195724,Alemão,Rayo Vallecano,142458,Alexandre Zurawski,Rayo Vallecano,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-359115,Andrés Castrin,Sevilla,117268,Andrés  López Gallo,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 359115,Andrés Castrin,Sevilla,117268,Andrés  López Gallo,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 6587,Toni Lato,Mallorca,13519,Antonio Latorre Grueso,RCD Mallorca,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 39538,Peque Fernández,Sevilla,53346,Gerard Fernández Castellano,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-39538,Peque Fernández,Sevilla,53346,Gerard Fernández Castellano,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-419557,Oso,Sevilla,892503,Joaquin Martínez Gauna,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 419557,Oso,Sevilla,892503,Joaquin Martínez Gauna,Sevilla FC,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 30054,Pepelu,Valencia,29176,José Luis García Vayá,Valencia CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-30054,Pepelu,Valencia,29176,José Luis García Vayá,Valencia CF,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 11671,Cucho Hernández,Real Betis,14002,Juan Camilo Hernández Suárez,Real Betis Balompié,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-11671,Cucho Hernández,Real Betis,14002,Juan Camilo Hernández Suárez,Real Betis Balompié,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
-24499,Roger Brugué,Levante UD,62275,Roger Brugué Ayguadé,Levante UD,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 24499,Roger Brugué,Levante UD,62275,Roger Brugué Ayguadé,Levante UD,manual,LaLiga,NA,NA,NA,NA,NA,NA,NA
 399501,Giorgi Guliashvili,Racing Santander,31013,Giorgi Guliashvili,Racing Santander,p1_exact_name_team,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 441643,Maguette Gueye,Racing Santander,174412,Maguette Gueye,Racing Santander,p1_exact_name_team,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
@@ -2924,24 +2895,16 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 449300,A. Alvarez,Celta de Vigo B,1023973,Jorge Álvarez,Sociedad Deportiva Huesca,p5_token_no_team,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 394211,Thiago Helguera,Mirandés,647233,Thiago Helguera Merello Volante,CD Mirandes,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 41603,Dani Villahermosa,FC Andorra,26157,Daniel Villahermosa Martínez,FC Andorra,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-41603,Dani Villahermosa,Real Oviedo,26157,Daniel Villahermosa Martínez,FC Andorra,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-25830,Grego Sierra,Burgos,11612,Gregorio Sierra Pérez,Burgos CF,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 25830,Grego Sierra,Burgos,11612,Gregorio Sierra Pérez,Burgos CF,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 17027,Sergi Guardiola,Córdoba CF,13970,Sergio Guardiola Navarro,Cordoba CF,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 20063,Javi Ontiveros,Cádiz,23204,Javier Ontiveros Parra,Cadiz CF,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 39344,Xavi Sintes,Córdoba CF,41327,Xavier Sintes Egea,Cordoba CF,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 136328,Guille Bueno,Real Valladolid,66228,Guillermo Bueno López,Real Valladolid,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 39637,Juanmi Latasa,Real Valladolid,41319,Juan Miguel Latasa Fernández Layos,Real Valladolid,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-39637,Juanmi Latasa,Real Valladolid,41319,Juan Miguel Latasa Fernández Layos,Real Valladolid,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 11669,Gonzalo Melero,Leganés,14001,Gonzalo Julián Melero Manzanares,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 406828,Álex Rubio,Albacete,69346,Alejandro Meléndez Ruiz,Albacete Balompie,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-406828,Álex Rubio,Albacete,69346,Alejandro Meléndez Ruiz,Albacete Balompie,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 140421,Marvel,Leganés,70523,Marvelous Antolín Garzón,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 140431,Javi Villar,Albacete,70530,Javier Villar del Fraile,Albacete Balompie,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
-6908,Iván Alejo,Real Valladolid,11552,Iván Alejo Peralta,Real Valladolid,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 6908,Iván Alejo,Real Valladolid,11552,Iván Alejo Peralta,Real Valladolid,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 136414,Luis Asué,Leganés,35954,Luís Henrique de Barros Lopes,CD Leganés,manual,LaLiga 2,NA,NA,NA,NA,NA,NA,NA
 7163,Riccardo Orsolini,Bologna,14048,Riccardo Orsolini,Bologna,p1_exact_name_team,Serie A,NA,NA,NA,NA,NA,NA,NA
@@ -3017,7 +2980,6 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 404060,Mariano Troilo,Parma Calcio 1913,728068,Mariano Emir Troilo,Parma,p5_token_no_team,Serie A,NA,NA,NA,NA,NA,NA,NA
 31259,Enrico Delprato,Parma Calcio 1913,27588,Enrico Del Prato,Parma,p6_fuzzy_noTeam_0.021,Serie A,NA,NA,NA,NA,NA,NA,NA
 10322,Dodô,Fiorentina,16057,Domilson Cordeiro dos Santos,Fiorentina,manual,Serie A,NA,NA,NA,NA,NA,NA,NA
-10322,Dodô,Fiorentina,16057,Domilson Cordeiro dos Santos,Fiorentina,manual,Serie A,NA,NA,NA,NA,NA,NA,NA
 3961,N'Golo Kanté,Fenerbahçe,7828,N'Golo Kanté,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 6301,Youssef En-Nesyri,Fenerbahçe,11846,Youssef En-Nesyri,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 199653,Dorgeles Nene,Fenerbahçe,116557,Dorgeles Nene,Fenerbahce,p1_exact_name_team,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
@@ -3036,11 +2998,7 @@ sb_player_id,player_name_sb,team_name_sb,sc_player_id,player_name_sc,team_name_s
 30976,Jhon Durán,Fenerbahçe,66458,Jhon Jader Durán Palacios,Fenerbahce,p3_token_same_team,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 5719,Asensio,Fenerbahçe,6751,Marco Asensio Willemsen,Fenerbahce,p3_token_same_team,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 39444,Archie Brown,Fenerbahçe,31221,Archibald Norman Brown,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
-39444,Archie Brown,Fenerbahçe,31221,Archibald Norman Brown,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 9904,Fred,Fenerbahçe,12008,Frederico Rodrigues de Paul Santos,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
-43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
-43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
-43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 43133,Talisca,Fenerbahçe,35125,Anderson Souza Conceição,Fenerbahce,manual,Turquía – Süper Lig,NA,NA,NA,NA,NA,NA,NA
 36845,Malick Thiaw,Newcastle United,24996,Malick Thiaw,Newcastle United,p1_exact_name_team,UEFA Champions League,NA,NA,NA,NA,NA,NA,NA
 30752,Sandro Tonali,Newcastle United,19844,Sandro Tonali,Newcastle United,p1_exact_name_team,UEFA Champions League,NA,NA,NA,NA,NA,NA,NA
