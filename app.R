@@ -1223,10 +1223,18 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
 
   pname <- as.character(player_row$player_name[1])
   pg    <- as.character(player_row$position_group[1])
-  # team_name of the specific (season-filtered) row the caller resolved
-  # for this player -- used below to disambiguate which of a player's
-  # possibly-several rows in the raw SC source data to read from.
-  team_hint <- as.character(player_row$team_name[1])
+  # team_name/season_name of the specific row the caller resolved for this
+  # player -- used below to disambiguate which of a player's possibly-
+  # several rows in the raw SC source data to read from. season_hint is
+  # NA/empty under "Acumulado" (which merges seasons and has no single
+  # season_name of its own) -- pick_best_sc_row() falls back to
+  # team_hint + most-recent-season in that case.
+  team_hint   <- as.character(player_row$team_name[1])
+  season_hint <- if ("season_name" %in% names(player_row)) {
+    as.character(player_row$season_name[1])
+  } else {
+    NA_character_
+  }
   
   # ---- Porteros not covered by SC ----
   if (identical(pg, "Portero")) {
@@ -1258,23 +1266,50 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   #     tracking data yet (like a newly-started 2026/2027) can leave
   #     physical/GI columns present-but-empty, silently showing a
   #     half-populated or fully empty table instead of the real one.
-  # Prefer the row whose team_name matches the caller's season-specific
-  # player_row (team_hint) -- disambiguates by season, not just identity --
-  # then among ties prefer a non-NA sc_player_id, then just the first row.
-  pick_best_sc_row <- function(rows, team_hint = NA_character_) {
+  # season_name is now the primary disambiguator (a player who stayed at
+  # the same club across two seasons is the common case, so team_hint alone
+  # can't tell those rows apart -- it only ever separated a genuine
+  # mid-season transfer). Falls back to team_hint + most-recent-season when
+  # season_hint is unusable (NA/empty, e.g. under "Acumulado"), then to
+  # having real SC data at all, then just the first row.
+  pick_most_recent_season <- function(rows) {
+    if (nrow(rows) <= 1 || !("season_name" %in% names(rows))) {
+      return(rows |> dplyr::slice_head(n = 1))
+    }
+    sn <- rows$season_name
+    if (all(is.na(sn))) return(rows |> dplyr::slice_head(n = 1))
+    rows[order(sn, decreasing = TRUE, na.last = TRUE)[1], , drop = FALSE]
+  }
+
+  pick_best_sc_row <- function(rows, team_hint = NA_character_, season_hint = NA_character_) {
     if (nrow(rows) <= 1) return(rows)
     has_sc <- if ("sc_player_id" %in% names(rows)) !is.na(rows$sc_player_id) else rep(FALSE, nrow(rows))
-    if (!is.na(team_hint) && nzchar(team_hint) && "team_name" %in% names(rows)) {
-      # team_hint can be a dedup_transfers() "TeamA / TeamB" combined
-      # string for a player who transferred within the filtered season;
-      # candidate rows here are always single-team, so match against any
-      # part of it rather than requiring an exact string match.
-      hint_parts <- trimws(strsplit(team_hint, "/", fixed = TRUE)[[1]])
-      same_team  <- !is.na(rows$team_name) & rows$team_name %in% hint_parts
-      if (any(same_team & has_sc)) return(rows[which(same_team & has_sc)[1], , drop = FALSE])
-      if (any(same_team)) return(rows[which(same_team)[1], , drop = FALSE])
+    # team_hint can be a dedup_transfers() "TeamA / TeamB" combined string
+    # for a player who transferred within the filtered season; candidate
+    # rows here are always single-team, so match against any part of it
+    # rather than requiring an exact string match.
+    hint_parts <- if (!is.na(team_hint) && nzchar(team_hint)) {
+      trimws(strsplit(team_hint, "/", fixed = TRUE)[[1]])
+    } else character(0)
+    same_team <- if (length(hint_parts) && "team_name" %in% names(rows)) {
+      !is.na(rows$team_name) & rows$team_name %in% hint_parts
+    } else rep(FALSE, nrow(rows))
+
+    if (!is.na(season_hint) && nzchar(season_hint) && "season_name" %in% names(rows)) {
+      same_season <- !is.na(rows$season_name) & rows$season_name == season_hint
+      if (any(same_season & same_team & has_sc)) return(rows[which(same_season & same_team & has_sc)[1], , drop = FALSE])
+      if (any(same_season & same_team)) return(rows[which(same_season & same_team)[1], , drop = FALSE])
+      if (any(same_season & has_sc)) return(rows[which(same_season & has_sc)[1], , drop = FALSE])
+      if (any(same_season)) return(rows[which(same_season)[1], , drop = FALSE])
     }
-    if (any(has_sc)) return(rows[which(has_sc)[1], , drop = FALSE])
+
+    # No usable season hint (e.g. "Acumulado") -- fall back to team, then
+    # to any row with real SC data, preferring the most recent season among
+    # ties so Acumulado shows the fullest/most current picture rather than
+    # an arbitrary season.
+    if (any(same_team & has_sc)) return(pick_most_recent_season(rows[same_team & has_sc, , drop = FALSE]))
+    if (any(same_team)) return(pick_most_recent_season(rows[same_team, , drop = FALSE]))
+    if (any(has_sc)) return(pick_most_recent_season(rows[has_sc, , drop = FALSE]))
     rows |> dplyr::slice_head(n = 1)
   }
 
@@ -1283,7 +1318,7 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   if (is_ligamx && nrow(liga_mx_df) > 0) {
     r <- liga_mx_df |>
       dplyr::filter(player_name == pname) |>
-      pick_best_sc_row(team_hint)
+      pick_best_sc_row(team_hint, season_hint)
     message(sprintf("[SC] liga_mx_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }
@@ -1292,7 +1327,7 @@ build_skillcorner_table <- function(all_sc_df, liga_mx_df,
   if (is.null(sc_data_row) && nrow(all_sc_df) > 0) {
     r <- all_sc_df |>
       dplyr::filter(player_name == pname) |>
-      pick_best_sc_row(team_hint)
+      pick_best_sc_row(team_hint, season_hint)
     message(sprintf("[SC] all_sc_df lookup rows matched: %d", nrow(r)))
     if (nrow(r) > 0) sc_data_row <- r
   }

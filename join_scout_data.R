@@ -15,6 +15,20 @@ scout_data <- readRDS("data/scout_data.rds")
 sc_cache   <- readRDS("data/scout_skill_corner.rds")
 fis_data   <- sc_cache$fis_data
 
+# SkillCorner numeric season_id -> the exact season_name string StatsBomb
+# uses for the same real season (see notebooks/physical.ipynb's "ID DE
+# TEMPORADAS" comment for where these ids come from). Lets join_sb_sc_fixed()
+# align each StatsBomb player-season row with the matching SkillCorner
+# player-season row instead of cross-joining every season pulled on one
+# side against every season pulled on the other. Extend this whenever a
+# new season is added to the SkillCorner pulls.
+SC_SEASON_ID_TO_SB_SEASON_NAME <- c(
+  "128" = "2025",       # calendar-year leagues (Argentina, Brasil, Colombia, Chile, MLS, ...)
+  "129" = "2025/2026",  # cross-year leagues (Liga MX, LaLiga, Premier League, ...)
+  "130" = "2026",
+  "131" = "2026/2027"
+)
+
 # =============================================================================
 # 1. NORMALIZATION
 # =============================================================================
@@ -1199,18 +1213,58 @@ join_sb_sc_fixed <- function(sb_df, sc_df, crosswalk, league_name) {
     select(sb_player_id, sc_player_id, match_type) |>
     mutate(sb_player_id = as.character(sb_player_id),
            sc_player_id = as.character(sc_player_id))
-  
+
   sb_cols         <- names(sb_df)
   sc_cols         <- names(sc_df)
   sc_cols_to_keep <- sc_cols[!sc_cols %in% c(sb_cols, "player_id", "player_name", "team_name")]
   sc_slim <- sc_df |>
     mutate(player_id = as.character(player_id)) |>
     select(player_id, all_of(sc_cols_to_keep))
-  
-  sb_df |>
+
+  # Derive a season_name comparable to the SB side's own season_name, from
+  # whichever season-identity column this sc_df happens to carry --
+  # Liga MX's merged liga_mx_full uses "season_id_physical" (see sc_data.R),
+  # every other league's raw per-league physical pull uses a plain
+  # "season_id". See SC_SEASON_ID_TO_SB_SEASON_NAME for the mapping.
+  sc_season_id_col <- intersect(c("season_id_physical", "season_id"), names(sc_slim))
+  sc_slim$.sc_season_name <- if (length(sc_season_id_col)) {
+    unname(SC_SEASON_ID_TO_SB_SEASON_NAME[as.character(sc_slim[[sc_season_id_col[1]]])])
+  } else {
+    NA_character_
+  }
+
+  # Most sc_player_ids only ever have one row (a single season pulled), in
+  # which case there's nothing to disambiguate. Only players with more than
+  # one sc row for the same sc_player_id (currently: Liga MX players with
+  # physical data in both season 129 and season 131) need their SC row
+  # matched to the SB row's own season -- without this, each SB season-row
+  # would cross-join against every SC season-row for that player, e.g.
+  # pairing 2025/2026 StatsBomb stats with 2026/2027 SkillCorner numbers.
+  multi_season_sc_ids <- sc_slim |>
+    count(player_id) |>
+    filter(n > 1) |>
+    pull(player_id)
+
+  # relationship = "many-to-many" is expected and intentional whenever a
+  # matched player has more than one row on each side (multiple SB seasons
+  # x multiple SC seasons) -- the season filtering right below resolves it
+  # back down to at most one row per SB row.
+  joined <- sb_df |>
     mutate(player_id = as.character(player_id)) |>
     left_join(cw, by = c("player_id" = "sb_player_id")) |>
-    left_join(sc_slim, by = c("sc_player_id" = "player_id"))
+    left_join(sc_slim, by = c("sc_player_id" = "player_id"), relationship = "many-to-many")
+
+  if (length(multi_season_sc_ids) && "season_name" %in% names(joined)) {
+    is_ambiguous <- joined$sc_player_id %in% multi_season_sc_ids
+    season_ok    <- is.na(joined$.sc_season_name) |
+                     joined$.sc_season_name == joined$season_name
+    # Drop the rows this SB row's own season doesn't match rather than
+    # leaving the wrong season's SC numbers attached -- showing no SC data
+    # for that season is safer than showing mislabeled data.
+    joined <- joined[!is_ambiguous | season_ok, ]
+  }
+
+  joined |> select(-any_of(".sc_season_name"))
 }
 
 message("\n=== Rebuilding scout_joined.rds ===")

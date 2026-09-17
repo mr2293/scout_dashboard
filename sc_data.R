@@ -146,13 +146,20 @@ liga_mx_mitad_2 <- ligamx_fisico |>
 
 # n_distinct(liga_mx_mitad_2$player_name)
 
-# The columns that define a "unique player-season identity" in your merged table
+# The columns that define a "unique player-season identity" in your merged table.
+# season_id IS included here (unlike the final join below) -- physical and
+# off-ball-runs are both pulled via the same explicit "season" param (see
+# physical.ipynb's Liga MX cell, which now pulls seasons 129 [25/26] and 131
+# [26/27] separately), so season_id is a reliable, single-source identity at
+# this stage. Without it here, a player present in both seasons would get
+# silently collapsed into one row blending two different seasons' numbers.
 player_key <- c(
   "short_name",
   "player_birthdate",
   "team_id",
   "team_name",
-  "competition_id"
+  "competition_id",
+  "season_id"
   )
 
 # Helper: return first non-NA value (works for numeric/character/date/logical)
@@ -166,20 +173,32 @@ liga_mx_mitad_2 <- liga_mx_mitad_2 |>
   summarise(
     across(everything(), first_non_na),
     .groups = "drop"
-  )
+  ) |>
+  # Renamed before the final join below so it can be used as an explicit,
+  # unambiguous grouping key there -- rather than relying on dplyr's
+  # automatic .x/.y suffixing of the "season_id" column that also exists on
+  # the mitad_1 side (see the NOTE at that join for why the two sides'
+  # season_id values aren't compared directly against each other).
+  rename(season_id_physical = season_id, season_name_physical = season_name)
 
-# NOTE: season_id is deliberately excluded from this join key. mitad_1
-# (passes/pressures) is pulled via competition_edition IDs while mitad_2
-# (physical/off-ball-runs) is pulled via an explicit season param -- these
-# two paths can report different season_id values for the same real
+# NOTE: mitad_1's own season_id is deliberately excluded from this join key.
+# mitad_1 (passes/pressures) is pulled via competition_edition IDs while
+# mitad_2 (physical/off-ball-runs) is pulled via an explicit season param --
+# these two paths can report different season_id values for the same real
 # player/team/competition, which would silently split a player into two
 # unmatched rows (one GI-only, one physical-only) instead of merging into
 # one. player_id + team_id + competition_id is unique enough on its own
 # within a single current-season pull.
+#
+# season_id_physical (mitad_2's own, renamed above) IS used below, though --
+# it's the only reliable season identity now that mitad_2 can carry more
+# than one real season (see player_key above), and without it the final
+# group_by(player_id) would re-collapse those seasons back into one blended
+# row exactly the same way the internal mitad_2 collapse would have.
 liga_mx_full <- liga_mx_mitad_1 |>
   full_join(liga_mx_mitad_2, by = c("player_id", "player_name", "short_name", "player_birthdate",
                                     "team_id", "team_name", "competition_id")) |>
-  group_by(player_id) |>
+  group_by(player_id, season_id_physical) |>
   summarise(across(everything(), first_non_na), .groups = "drop")
 
 message(sprintf("[SC_DATA] liga_mx_mitad_1=%d rows | liga_mx_mitad_2=%d rows | liga_mx_full=%d rows (n_distinct player_id=%d)",
