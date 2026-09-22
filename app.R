@@ -682,6 +682,35 @@ compute_age_years <- function(birth_date_chr) {
   age
 }
 
+# Bulk version of the same "TeamA / TeamB" problem build_transfermarkt_rows()
+# handles for a single player: tm_crosswalk keys on one team_name, but
+# dedup_transfers() (upstream, inside get_all_players_df()) has already
+# collapsed a mid-season transfer into one row with a combined team_name --
+# a plain left_join() on that string never matches any crosswalk row,
+# silently dropping tm_player_id/market value/contract/agent for every
+# transferred player (confirmed 2026-09-22: 3,731 of 3,748 "unmatched"
+# db_master rows were exactly this, not a real crosswalk gap). Splits
+# team_col the same way build_transfermarkt_rows() does, tries each part
+# against tm_lookup, and keeps the first match found per row.
+join_tm_crosswalk <- function(dat, tm_lookup, player_col = "player_name", team_col = "team_name") {
+  dat_id <- dat |> dplyr::mutate(.row_id = dplyr::row_number())
+
+  team_map <- dat_id |>
+    dplyr::select(.row_id, .player = dplyr::all_of(player_col), .team = dplyr::all_of(team_col)) |>
+    dplyr::mutate(team_split = strsplit(.team, " / ", fixed = TRUE)) |>
+    tidyr::unnest(team_split) |>
+    dplyr::mutate(team_split = trimws(team_split))
+
+  matched <- team_map |>
+    dplyr::inner_join(tm_lookup, by = c(".player" = "player_name", "team_split" = "team_name")) |>
+    dplyr::distinct(.row_id, .keep_all = TRUE)
+
+  tm_cols <- setdiff(names(tm_lookup), c("player_name", "team_name"))
+  dat_id |>
+    dplyr::left_join(dplyr::select(matched, .row_id, dplyr::all_of(tm_cols)), by = ".row_id") |>
+    dplyr::select(-.row_id)
+}
+
 # Looks up Transfermarkt market value / contract expiry / agent for a
 # player+team and returns them as three Métrica/Valor/Percentil rows,
 # falling back to "–" when there's no match in the crosswalk.
@@ -1731,7 +1760,7 @@ build_database_master <- function() {
       Edad           = as.integer(compute_age_years(birth_date))
     ) |>
     dplyr::left_join(profiles, by = "player_id") |>
-    dplyr::left_join(tm_lookup, by = c("player_name", "team_name")) |>
+    join_tm_crosswalk(tm_lookup) |>
     dplyr::mutate(
       Hispanohablante = dplyr::if_else(player_country %in% HISPANOHABLANTE_COUNTRIES, "Sí", "No"),
       Rol             = unname(ROL_ABBR[position_group]),
@@ -3127,7 +3156,7 @@ server <- function(input, output, session) {
       dplyr::transmute(player_name, team_name,
                        `Valor de mercado` = round(suppressWarnings(as.numeric(market_value_eur)), 3),
                        `Vencimiento contrato` = contract_expires)
-    result <- dplyr::left_join(result, tm_vm_vc, by = c("Jugador" = "player_name", "Equipo" = "team_name"))
+    result <- join_tm_crosswalk(result, tm_vm_vc, player_col = "Jugador", team_col = "Equipo")
 
     # Pie/Nacionalidad/Hispanohablante/Perfil -- same derived master used by
     # the "Base de Datos" tab. Pie/Nacionalidad/Hispanohablante/
