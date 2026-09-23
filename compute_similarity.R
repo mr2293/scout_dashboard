@@ -1,7 +1,7 @@
 # ============================================================
 # compute_similarity.R
 #
-# Precomputes each non-goalkeeper player's top-20 most similar players
+# Precomputes each non-goalkeeper player's top-N most similar players
 # (cosine similarity over StatsBomb + SkillCorner per-90 metrics) and syncs
 # the result to a MongoDB collection ("player_similarity") for the
 # colleague's Vercel dashboard's player-profile modal to look up instantly.
@@ -35,7 +35,7 @@ suppressWarnings(suppressMessages({
 MONGO_URI        <- Sys.getenv("MONGO_URI")
 MONGO_DB         <- Sys.getenv("MONGO_DB")
 MONGO_COLLECTION <- Sys.getenv("MONGO_SIMILARITY_COLLECTION", "player_similarity")
-TOP_K            <- 20
+TOP_K            <- 50
 BLOCK            <- 1000  # rows per matrix-multiply block, keeps peak memory to BLOCK x n instead of n x n
 
 if (!nzchar(MONGO_URI) || !nzchar(MONGO_DB)) {
@@ -92,7 +92,7 @@ tm_ids <- pool$transfermarkt_id
 message(sprintf("Computing top-%d similar players for %d players in blocks of %d ...", TOP_K, n, BLOCK))
 t0 <- Sys.time()
 
-# One row per player: { transfermarkt_id, top: [{transfermarkt_id, similarity}, ...] }.
+# One row per player: { transfermarkt_id, top: [{transfermarkt_id, similarity, z}, ...] }.
 # Building the nested list directly (not a flat data.frame) since mongolite
 # inserts a data.frame with a list-column as a proper embedded array.
 out_transfermarkt_id <- integer(n)
@@ -107,10 +107,23 @@ for (start in seq(1, n, by = BLOCK)) {
     row <- block_sims[r, ]
     row[i] <- -Inf  # exclude self
     top_idx <- order(row, decreasing = TRUE)[seq_len(min(TOP_K, n - 1))]
+
+    # z-score of each shown similarity against the player's OWN full
+    # similarity distribution (all n-1 other players, self excluded) --
+    # a raw cosine value on its own doesn't say whether e.g. 0.4 is a
+    # strong or weak match for THIS player, since that depends on how
+    # spread out their particular metric profile is; the z-score does
+    # ("2.1 SD above what a random player looks like to them").
+    others <- row[-i]
+    mu     <- mean(others)
+    sdv    <- stats::sd(others)
+    z_all  <- if (is.finite(sdv) && sdv > 0) (row - mu) / sdv else rep(0, length(row))
+
     out_transfermarkt_id[i] <- tm_ids[i]
     out_top[[i]] <- data.frame(
       transfermarkt_id = tm_ids[top_idx],
-      similarity = round(pmin(pmax(row[top_idx], -1), 1), 4)
+      similarity = round(pmin(pmax(row[top_idx], -1), 1), 4),
+      z = round(z_all[top_idx], 3)
     )
   }
   message(sprintf("  ...%d/%d done (%.0fs elapsed)", end, n, as.numeric(Sys.time() - t0, units = "secs")))
