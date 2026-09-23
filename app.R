@@ -779,6 +779,53 @@ var_map <- function(df_pg) {
   setNames(keep, display)
 }
 
+# Top-level (not inside server()) so both the live "Jugadores Similares"
+# tab and compute_similarity.R (the weekly precompute job for the Node
+# dashboard's player-profile similarity table) share one implementation.
+build_similarity_pool <- function(dat, pg = NULL) {
+  # `position_group != "Portero"` evaluates to NA (not TRUE) for a player
+  # with no position_group at all, and dplyr::filter() drops NA rows same
+  # as FALSE -- silently excluding ~600 players who were never goalkeepers,
+  # they just have no position_group value. is.na(...) | ... explicitly
+  # keeps them instead (confirmed 2026-09-23: this was cutting the
+  # similarity pool from 21,100 down to 18,710 well before any other,
+  # intentional filtering).
+  df <- if (is.null(pg)) dplyr::filter(dat, is.na(position_group) | position_group != "Portero")
+        else dplyr::filter(dat, !is.na(position_group) & position_group == pg)
+  vm   <- var_map(df)
+  keep <- unname(vm)
+  pool     <- dplyr::select(df, player_name, team_name, primary_position,
+                            player_season_90s_played, dplyr::all_of(keep)) |>
+    dplyr::distinct(player_name, .keep_all=TRUE)
+  na_rate  <- vapply(pool[keep], function(v) mean(is.na(v)), numeric(1))
+  keep1    <- keep[na_rate <= 0.60]
+  pool     <- dplyr::select(pool, player_name, team_name, primary_position,
+                            player_season_90s_played, dplyr::all_of(keep1))
+  if (length(keep1)) {
+    for (cn in keep1) {
+      v <- pool[[cn]]
+      v[!is.finite(v)] <- NA
+      m <- if (all(is.na(v))) 0 else mean(v, na.rm=TRUE)
+      v[is.na(v)] <- m; pool[[cn]] <- as.numeric(v)
+    }
+    sdv  <- vapply(pool[keep1], stats::sd, numeric(1))
+    # A column can still come out NA here (e.g. a metric that's constant
+    # or entirely Inf/NaN before imputation); treat that the same as
+    # "no variance" and drop it, rather than let an NA slip into
+    # all_of() below and crash the select.
+    keep2 <- keep1[!is.na(sdv) & sdv > 1e-8]
+    pool  <- dplyr::select(pool, player_name, team_name, primary_position,
+                           player_season_90s_played, dplyr::all_of(keep2))
+  } else { keep2 <- character(0) }
+  list(pool=pool, metric_cols=keep2)
+}
+
+cosine_sim_to_i <- function(M, i) {
+  M <- scale(M); M[is.na(M)] <- 0
+  rn <- sqrt(rowSums(M^2)); rn[rn==0|!is.finite(rn)] <- 1
+  Mn <- M/rn; drop(Mn %*% Mn[i,])
+}
+
 make_scatter <- function(dat, x, y, title, subtitle, xlab, ylab, src, selected = NULL) {
   if (is.null(dat) || nrow(dat) == 0) {
     p <- ggplot() +
@@ -3009,42 +3056,10 @@ server <- function(input, output, session) {
   }, ignoreInit = TRUE)
 
   # ---- Similarity ----
-  build_similarity_pool <- function(dat, pg = NULL) {
-    df <- if (is.null(pg)) dplyr::filter(dat, position_group != "Portero")
-          else dplyr::filter(dat, position_group == pg)
-    vm   <- var_map(df)
-    keep <- unname(vm)
-    pool     <- dplyr::select(df, player_name, team_name, primary_position,
-                              player_season_90s_played, dplyr::all_of(keep)) |>
-      dplyr::distinct(player_name, .keep_all=TRUE)
-    na_rate  <- vapply(pool[keep], function(v) mean(is.na(v)), numeric(1))
-    keep1    <- keep[na_rate <= 0.60]
-    pool     <- dplyr::select(pool, player_name, team_name, primary_position,
-                              player_season_90s_played, dplyr::all_of(keep1))
-    if (length(keep1)) {
-      for (cn in keep1) {
-        v <- pool[[cn]]
-        v[!is.finite(v)] <- NA
-        m <- if (all(is.na(v))) 0 else mean(v, na.rm=TRUE)
-        v[is.na(v)] <- m; pool[[cn]] <- as.numeric(v)
-      }
-      sdv  <- vapply(pool[keep1], stats::sd, numeric(1))
-      # A column can still come out NA here (e.g. a metric that's constant
-      # or entirely Inf/NaN before imputation); treat that the same as
-      # "no variance" and drop it, rather than let an NA slip into
-      # all_of() below and crash the select.
-      keep2 <- keep1[!is.na(sdv) & sdv > 1e-8]
-      pool  <- dplyr::select(pool, player_name, team_name, primary_position,
-                             player_season_90s_played, dplyr::all_of(keep2))
-    } else { keep2 <- character(0) }
-    list(pool=pool, metric_cols=keep2)
-  }
-  
-  cosine_sim_to_i <- function(M, i) {
-    M <- scale(M); M[is.na(M)] <- 0
-    rn <- sqrt(rowSums(M^2)); rn[rn==0|!is.finite(rn)] <- 1
-    Mn <- M/rn; drop(Mn %*% Mn[i,])
-  }
+  # build_similarity_pool()/cosine_sim_to_i() now live at top-level (see
+  # near var_map(), above server()) so compute_similarity.R can reuse the
+  # exact same algorithm via source("app.R") without a live Shiny session --
+  # moved, not rewritten; behavior here is unchanged.
 
   # ---- Populate the similarity tab's own player search + metric picker ----
   # (cross-league, independent of the Dashboard tab's league/pg filters).
