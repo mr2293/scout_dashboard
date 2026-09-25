@@ -908,10 +908,14 @@ add_datascore <- function(dat) {
 # arquero.
 AMERICA_FIT_MODELS <- list(
   "Central" = c(
-    # Presión/posicionamiento (~40%)
-    "player_season_padj_pressures_90" = 0.15,
-    "player_season_average_x_defensive_action" = 0.15,
-    "player_season_padj_interceptions_90" = 0.10,
+    # Presión/posicionamiento (~40%, recortado para hacerle lugar a
+    # Defensive Actions Above Expectation -- v7 de StatsBomb, no estaba
+    # disponible en v4: acciones defensivas por encima de lo esperado según
+    # la posición, calidad sobre volumen en vez de solo contar acciones)
+    "player_season_padj_pressures_90" = 0.12,
+    "player_season_average_x_defensive_action" = 0.12,
+    "player_season_padj_interceptions_90" = 0.08,
+    "player_season_defensive_actions_above_expectation" = 0.08,
     # Con el balón (~42%, recortado para hacerle lugar a Turnovers abajo)
     "player_season_obv_pass_90" = 0.17,
     "player_season_passing_ratio" = 0.13,
@@ -925,10 +929,12 @@ AMERICA_FIT_MODELS <- list(
     "player_season_turnovers_90" = 0.08
   ),
   "Lateral/Carrilero" = c(
-    # Presión (~35%)
-    "player_season_padj_pressures_90" = 0.15,
-    "player_season_pressure_regains_90" = 0.10,
-    "player_season_aggressive_actions_90" = 0.10,
+    # Presión (~35%, recortado para Defensive Actions Above Expectation --
+    # ver comentario en Central sobre esta métrica de v7)
+    "player_season_padj_pressures_90" = 0.12,
+    "player_season_pressure_regains_90" = 0.08,
+    "player_season_aggressive_actions_90" = 0.08,
+    "player_season_defensive_actions_above_expectation" = 0.07,
     # Con el balón (~57%, recortado)
     "player_season_deep_progressions_90" = 0.18,
     "player_season_obv_pass_90" = 0.13,
@@ -941,18 +947,25 @@ AMERICA_FIT_MODELS <- list(
   "Medio de Contención" = c(
     # Presión/recuperación (~45%) -- Average X Pressure suma ALTURA de la
     # presión (dónde presiona) a lo que Presiones (PAdj) ya mide en
-    # FRECUENCIA (cuánto presiona); recortado del resto del bloque de
-    # presión, no del bloque con balón.
-    "player_season_padj_pressures_90" = 0.12,
-    "player_season_pressure_regains_90" = 0.08,
-    "player_season_counterpressure_regains_90" = 0.08,
-    "player_season_ball_recoveries_90" = 0.09,
-    "player_season_average_x_pressure" = 0.08,
-    # Con el balón (~47%, recortado)
-    "player_season_obv_pass_90" = 0.17,
-    "player_season_forward_pass_proportion" = 0.13,
-    "player_season_passing_ratio" = 0.09,
-    "player_season_deep_progressions_90" = 0.08,
+    # FRECUENCIA (cuánto presiona); Defensive Actions Above Expectation (v7,
+    # ver comentario en Central) agrega CALIDAD sobre volumen. Recortado del
+    # resto del bloque de presión, no del bloque con balón.
+    "player_season_padj_pressures_90" = 0.10,
+    "player_season_pressure_regains_90" = 0.07,
+    "player_season_counterpressure_regains_90" = 0.07,
+    "player_season_ball_recoveries_90" = 0.08,
+    "player_season_average_x_pressure" = 0.07,
+    "player_season_defensive_actions_above_expectation" = 0.06,
+    # Con el balón (~47%, recortado) -- Transition OBV (90) (v7, no estaba
+    # en v4) mide OBV generado específicamente en jugadas de transición: en
+    # un equipo que presiona para recuperar y salir rápido, el mediocentro
+    # es el pivote que arranca esa transición, no solo circula en posesión
+    # estática.
+    "player_season_obv_pass_90" = 0.15,
+    "player_season_forward_pass_proportion" = 0.11,
+    "player_season_passing_ratio" = 0.08,
+    "player_season_deep_progressions_90" = 0.07,
+    "player_season_transition_obv_90" = 0.06,
     # Seguridad con el balón (~8%)
     "player_season_turnovers_90" = 0.08
   ),
@@ -962,12 +975,16 @@ AMERICA_FIT_MODELS <- list(
     "player_season_counterpressures_90" = 0.07,
     "player_season_fhalf_pressures_90" = 0.08,
     "player_season_average_x_pressure" = 0.08,
-    # Con el balón (~62%, recortado)
-    "player_season_deep_progressions_90" = 0.13,
-    "player_season_through_balls_90" = 0.13,
-    "player_season_op_xa_90" = 0.13,
-    "player_season_obv_pass_90" = 0.13,
-    "player_season_carries_90" = 0.10,
+    # Con el balón (~62%, recortado) -- Transition OBV (90) (v7, ver
+    # comentario en Medio de Contención): un interior/mediapunta es de los
+    # que más se beneficia del espacio que deja una transición rápida tras
+    # una recuperación alta.
+    "player_season_deep_progressions_90" = 0.12,
+    "player_season_through_balls_90" = 0.11,
+    "player_season_op_xa_90" = 0.12,
+    "player_season_obv_pass_90" = 0.11,
+    "player_season_carries_90" = 0.09,
+    "player_season_transition_obv_90" = 0.07,
     # Seguridad con el balón (~8%)
     "player_season_turnovers_90" = 0.08
   ),
@@ -977,11 +994,15 @@ AMERICA_FIT_MODELS <- list(
     "player_season_padj_pressures_90" = 0.07,
     "player_season_fhalf_pressures_90" = 0.08,
     "player_season_average_x_pressure" = 0.08,
-    # Con el balón (~62%, recortado)
-    "player_season_carries_90" = 0.18,
-    "player_season_deep_progressions_90" = 0.18,
-    "player_season_np_xg_90" = 0.13,
-    "player_season_dribble_ratio" = 0.13,
+    # Con el balón (~62%, recortado) -- Transition OBV (90) (v7, ver
+    # comentario en Medio de Contención): un extremo rápido es exactamente
+    # el perfil que un equipo de presión alta usa para castigar en
+    # transición.
+    "player_season_carries_90" = 0.16,
+    "player_season_deep_progressions_90" = 0.16,
+    "player_season_np_xg_90" = 0.12,
+    "player_season_dribble_ratio" = 0.11,
+    "player_season_transition_obv_90" = 0.07,
     # Seguridad con el balón (~8%)
     "player_season_turnovers_90" = 0.08
   ),
@@ -996,10 +1017,14 @@ AMERICA_FIT_MODELS <- list(
     # tiros libres una métrica que acá busca medir participación en la
     # circulación que termina en tiro durante fase abierta (presión +
     # transición), no en jugadas de pelota parada.
-    "player_season_np_xg_90" = 0.17,
-    "player_season_touches_inside_box_90" = 0.17,
-    "player_season_obv_dribble_carry_90" = 0.09,
-    "player_season_op_xgchain_90" = 0.09,
+    "player_season_np_xg_90" = 0.15,
+    "player_season_touches_inside_box_90" = 0.15,
+    "player_season_obv_dribble_carry_90" = 0.08,
+    "player_season_op_xgchain_90" = 0.08,
+    # Transition OBV (90) (v7, ver comentario en Medio de Contención): un
+    # delantero que castiga cuando el equipo recupera y sale rápido, no solo
+    # cuando ataca una defensa ya organizada.
+    "player_season_transition_obv_90" = 0.06,
     # Seguridad con el balón (~8%)
     "player_season_turnovers_90" = 0.08
   )
