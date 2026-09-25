@@ -1,5 +1,5 @@
 jupyter
 nbconvert
 pandas
-skillcorner
+skillcorner>=3.0.0
 skillcornerviz
