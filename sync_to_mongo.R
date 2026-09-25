@@ -7,15 +7,15 @@
 # so his app can join his Transfermarkt collection to this one and surface
 # StatsBomb/SkillCorner metrics in his UI.
 #
-# Not wired into .github/workflows/deploy.yml yet -- add a step calling
-# this script (after "Precompute app cache", using the same
-# `source("app.R")` pattern precompute_app_cache.R already uses) once
-# MONGO_URI is confirmed working. Doing that before the connection is
-# tested would fail the whole scheduled deploy the next time it runs.
+# Wired into .github/workflows/deploy.yml as the "Sync to MongoDB (Club
+# América dashboard)" step, right after "Precompute app cache" -- runs
+# every Tuesday ~6am CDMX alongside the ShinyApps data refresh, using the
+# same fresh StatsBomb/SkillCorner pull. MONGO_URI/MONGO_DB come from
+# repo secrets there; no Vercel redeploy needed since that app reads
+# Mongo live.
 #
 # Requires:
-#   - the `mongolite` R package (not yet in renv.lock -- run
-#     `renv::install("mongolite"); renv::snapshot()` once locally)
+#   - the `mongolite` R package (already in renv.lock)
 #   - env vars MONGO_URI (connection string) and MONGO_DB (database name)
 #   - optionally MONGO_SB_SC_COLLECTION (defaults to "sb_sc_metrics")
 #

@@ -81,6 +81,15 @@ jobs:
       - name: Precompute app cache
         run: Rscript precompute_app_cache.R
 
+      # Pushes the same fresh SB+SC data into MongoDB for the Club América
+      # scouting dashboard (Vercel/Next.js app) -- that app reads live from
+      # Mongo, so no Vercel redeploy is needed for it to pick up this data.
+      - name: Sync to MongoDB (Club América dashboard)
+        run: Rscript sync_to_mongo.R
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+
       - name: Write secrets.R for the scouting chatbot
         run: |
           echo "Sys.setenv(ANTHROPIC_API_KEY = \"$ANTHROPIC_API_KEY\")" > secrets.R
