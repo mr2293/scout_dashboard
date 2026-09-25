@@ -36,8 +36,17 @@ safe_matchesvector <- function(...) {
     integer(0)
   })
 }
-safe_player_season <- function(...) {
-  tryCatch(player_season(...), error = function(e) {
+
+# version = "v7" acá (no en cada uno de los 40+ llamados de abajo) --
+# player_season() de StatsBombR por default pide "v4"; v7 es la versión más
+# reciente de player-season stats de StatsBomb al día de hoy. Poner el
+# override una sola vez acá, en vez de agregarlo a cada safe_player_season(...)
+# suelto, es lo que garantiza que ningún llamado se quede pegado en v4 por
+# error de copy-paste -- cualquier llamado que SÍ necesite pasar su propia
+# version explícita todavía puede hacerlo (queda en "..." antes que este
+# default con nombre).
+safe_player_season <- function(..., version = "v7") {
+  tryCatch(player_season(..., version = version), error = function(e) {
     message("  [WARN] player_season failed (", conditionMessage(e), ") -- skipping, returning empty")
     tibble()
   })

@@ -840,6 +840,25 @@ DATASCORE_MODELS <- list(
 # modelo de pesos en vez de varios perfiles compitiendo entre sí -- no hace
 # falta el paso de "elegir el mejor" porque acá solo hay un resultado por
 # jugador, no una competencia entre sub-perfiles.
+# Reescala un vector de scores (los NA se preservan tal cual) al rango
+# [1, 99] usando el mínimo/máximo REAL de ese mismo vector -- así el mejor
+# jugador de cada grupo llega a 99 y el peor a 1, en vez de quedarse en el
+# ~0-90 que deja el promedio ponderado de percentiles sin reescalar (rara
+# vez toca los extremos: exige ser top/bottom en TODAS las métricas del
+# modelo a la vez, no solo en una). Un grupo con un solo valor válido, o
+# donde todos valen lo mismo, cae en 50 en vez de dividir por cero.
+.rescale_to_1_99 <- function(x) {
+  valid <- x[!is.na(x)]
+  if (!length(valid)) return(x)
+  rng <- range(valid)
+  if (diff(rng) == 0) {
+    x[!is.na(x)] <- 50
+    return(x)
+  }
+  x[!is.na(x)] <- 1 + (valid - rng[1]) / diff(rng) * 98
+  x
+}
+
 add_datascore <- function(dat) {
   dat$DataScore <- NA_real_
   dat$Cobertura_DataScore <- NA_real_
@@ -849,7 +868,7 @@ add_datascore <- function(dat) {
     if (!length(idx)) next
     sub <- dat[idx, , drop = FALSE]
     res <- .weighted_profile_score(sub, DATASCORE_MODELS[[pg]])
-    dat$DataScore[idx] <- res$score
+    dat$DataScore[idx] <- .rescale_to_1_99(res$score)
     dat$Cobertura_DataScore[idx] <- res$coverage * 100
   }
 
@@ -893,70 +912,96 @@ AMERICA_FIT_MODELS <- list(
     "player_season_padj_pressures_90" = 0.15,
     "player_season_average_x_defensive_action" = 0.15,
     "player_season_padj_interceptions_90" = 0.10,
-    # Con el balón (~50%)
-    "player_season_obv_pass_90" = 0.20,
-    "player_season_passing_ratio" = 0.15,
-    "player_season_deep_progressions_90" = 0.15,
+    # Con el balón (~42%, recortado para hacerle lugar a Turnovers abajo)
+    "player_season_obv_pass_90" = 0.17,
+    "player_season_passing_ratio" = 0.13,
+    "player_season_deep_progressions_90" = 0.12,
     # Aéreo (necesario contra el rebote de una línea alta)
-    "player_season_aerial_ratio" = 0.10
+    "player_season_aerial_ratio" = 0.10,
+    # Seguridad con el balón (~8%) -- una línea alta se expone a la espalda
+    # si se pierde el balón con descuido; Turnovers (menor = mejor, ver
+    # LOWER_IS_BETTER_METRICS) ya incluye pases fallidos, regates fallidos y
+    # pérdidas de control, no solo balones robados por el rival.
+    "player_season_turnovers_90" = 0.08
   ),
   "Lateral/Carrilero" = c(
     # Presión (~35%)
     "player_season_padj_pressures_90" = 0.15,
     "player_season_pressure_regains_90" = 0.10,
     "player_season_aggressive_actions_90" = 0.10,
-    # Con el balón (~60%)
-    "player_season_deep_progressions_90" = 0.20,
-    "player_season_obv_pass_90" = 0.15,
-    "player_season_crosses_90" = 0.15,
-    "player_season_box_cross_ratio" = 0.10,
-    "player_season_passing_ratio" = 0.05
+    # Con el balón (~57%, recortado)
+    "player_season_deep_progressions_90" = 0.18,
+    "player_season_obv_pass_90" = 0.13,
+    "player_season_crosses_90" = 0.13,
+    "player_season_box_cross_ratio" = 0.09,
+    "player_season_passing_ratio" = 0.04,
+    # Seguridad con el balón (~8%)
+    "player_season_turnovers_90" = 0.08
   ),
   "Medio de Contención" = c(
-    # Presión/recuperación (~45%)
-    "player_season_padj_pressures_90" = 0.15,
-    "player_season_pressure_regains_90" = 0.10,
-    "player_season_counterpressure_regains_90" = 0.10,
-    "player_season_ball_recoveries_90" = 0.10,
-    # Con el balón (~55%)
-    "player_season_obv_pass_90" = 0.20,
-    "player_season_forward_pass_proportion" = 0.15,
-    "player_season_passing_ratio" = 0.10,
-    "player_season_deep_progressions_90" = 0.10
+    # Presión/recuperación (~45%) -- Average X Pressure suma ALTURA de la
+    # presión (dónde presiona) a lo que Presiones (PAdj) ya mide en
+    # FRECUENCIA (cuánto presiona); recortado del resto del bloque de
+    # presión, no del bloque con balón.
+    "player_season_padj_pressures_90" = 0.12,
+    "player_season_pressure_regains_90" = 0.08,
+    "player_season_counterpressure_regains_90" = 0.08,
+    "player_season_ball_recoveries_90" = 0.09,
+    "player_season_average_x_pressure" = 0.08,
+    # Con el balón (~47%, recortado)
+    "player_season_obv_pass_90" = 0.17,
+    "player_season_forward_pass_proportion" = 0.13,
+    "player_season_passing_ratio" = 0.09,
+    "player_season_deep_progressions_90" = 0.08,
+    # Seguridad con el balón (~8%)
+    "player_season_turnovers_90" = 0.08
   ),
   "Interior/Mediapunta" = c(
-    # Presión (~30%)
-    "player_season_padj_pressures_90" = 0.10,
-    "player_season_counterpressures_90" = 0.10,
-    "player_season_fhalf_pressures_90" = 0.10,
-    # Con el balón (~70%)
-    "player_season_deep_progressions_90" = 0.15,
-    "player_season_through_balls_90" = 0.15,
-    "player_season_op_xa_90" = 0.15,
-    "player_season_obv_pass_90" = 0.15,
-    "player_season_carries_90" = 0.10
+    # Presión (~30%) -- Average X Pressure agrega altura, no solo frecuencia
+    "player_season_padj_pressures_90" = 0.07,
+    "player_season_counterpressures_90" = 0.07,
+    "player_season_fhalf_pressures_90" = 0.08,
+    "player_season_average_x_pressure" = 0.08,
+    # Con el balón (~62%, recortado)
+    "player_season_deep_progressions_90" = 0.13,
+    "player_season_through_balls_90" = 0.13,
+    "player_season_op_xa_90" = 0.13,
+    "player_season_obv_pass_90" = 0.13,
+    "player_season_carries_90" = 0.10,
+    # Seguridad con el balón (~8%)
+    "player_season_turnovers_90" = 0.08
   ),
   "Volante/Extremo" = c(
-    # Presión (~30%)
-    "player_season_counterpressure_regains_90" = 0.10,
-    "player_season_padj_pressures_90" = 0.10,
-    "player_season_fhalf_pressures_90" = 0.10,
-    # Con el balón (~70%)
-    "player_season_carries_90" = 0.20,
-    "player_season_deep_progressions_90" = 0.20,
-    "player_season_np_xg_90" = 0.15,
-    "player_season_dribble_ratio" = 0.15
+    # Presión (~30%) -- Average X Pressure agrega altura, no solo frecuencia
+    "player_season_counterpressure_regains_90" = 0.07,
+    "player_season_padj_pressures_90" = 0.07,
+    "player_season_fhalf_pressures_90" = 0.08,
+    "player_season_average_x_pressure" = 0.08,
+    # Con el balón (~62%, recortado)
+    "player_season_carries_90" = 0.18,
+    "player_season_deep_progressions_90" = 0.18,
+    "player_season_np_xg_90" = 0.13,
+    "player_season_dribble_ratio" = 0.13,
+    # Seguridad con el balón (~8%)
+    "player_season_turnovers_90" = 0.08
   ),
   "Delantero" = c(
-    # Presión (~40%)
-    "player_season_fhalf_pressures_90" = 0.15,
-    "player_season_padj_pressures_90" = 0.15,
-    "player_season_aggressive_actions_90" = 0.10,
-    # Con el balón (~60%)
-    "player_season_np_xg_90" = 0.20,
-    "player_season_touches_inside_box_90" = 0.20,
-    "player_season_obv_dribble_carry_90" = 0.10,
-    "player_season_xgchain_90" = 0.10
+    # Presión (~40%) -- Average X Pressure agrega altura, no solo frecuencia
+    "player_season_fhalf_pressures_90" = 0.12,
+    "player_season_padj_pressures_90" = 0.12,
+    "player_season_aggressive_actions_90" = 0.08,
+    "player_season_average_x_pressure" = 0.08,
+    # Con el balón (~52%, recortado) -- Op Xgchain (90) en vez de Xgchain
+    # (90): variante solo de jugada abierta, sin contaminar con córners/
+    # tiros libres una métrica que acá busca medir participación en la
+    # circulación que termina en tiro durante fase abierta (presión +
+    # transición), no en jugadas de pelota parada.
+    "player_season_np_xg_90" = 0.17,
+    "player_season_touches_inside_box_90" = 0.17,
+    "player_season_obv_dribble_carry_90" = 0.09,
+    "player_season_op_xgchain_90" = 0.09,
+    # Seguridad con el balón (~8%)
+    "player_season_turnovers_90" = 0.08
   )
 )
 
@@ -971,7 +1016,7 @@ add_america_fit <- function(dat) {
     if (!length(idx)) next
     sub <- dat[idx, , drop = FALSE]
     res <- .weighted_profile_score(sub, AMERICA_FIT_MODELS[[pg]])
-    dat$DataScoreAmerica[idx] <- res$score
+    dat$DataScoreAmerica[idx] <- .rescale_to_1_99(res$score)
     dat$Cobertura_DataScoreAmerica[idx] <- res$coverage * 100
   }
 
