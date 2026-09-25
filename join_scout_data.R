@@ -1107,7 +1107,13 @@ shared_leagues <- list(
   "Serie A"               = list(sb = scout_data$jugs_serie_a,   sc = fis_data$serie_a_fisico),
   "Turquía – Süper Lig"   = list(sb = scout_data$jugs_turquia,   sc = fis_data$tur_fisico),
   "UEFA Champions League" = list(sb = scout_data$jugs_champions, sc = fis_data$champions_fisico),
-  "UEFA Europa League"    = list(sb = scout_data$jugs_uel,       sc = fis_data$uel_fisico)
+  "UEFA Europa League"    = list(sb = scout_data$jugs_uel,       sc = fis_data$uel_fisico),
+  "Paraguay"                 = list(sb = scout_data$jugs_paraguay,   sc = fis_data$paraguay_fisico),
+  "Uruguay"                  = list(sb = scout_data$jugs_uruguay,    sc = fis_data$uruguay_fisico),
+  "Perú"                     = list(sb = scout_data$jugs_peru,       sc = fis_data$peru_fisico),
+  "Bundesliga"               = list(sb = scout_data$jugs_bundesliga, sc = fis_data$bundesliga_fisico),
+  "Bélgica"                  = list(sb = scout_data$jugs_belgica,    sc = fis_data$belgica_fisico),
+  "Portugal – Primeira Liga" = list(sb = scout_data$jugs_portugal,   sc = fis_data$portugal_fisico)
 )
 
 message("=== Building v4 crosswalks ===\n")
@@ -1277,16 +1283,17 @@ joined_leagues <- imap(shared_leagues, function(pair, league_name) {
 sb_only_leagues <- list(
   "Concacaf Champions Cup"   = scout_data$jugs_ccl,
   "Ecuador"                  = scout_data$jugs_ecuador,
-  "Paraguay"                 = scout_data$jugs_paraguay,
-  "Uruguay"                  = scout_data$jugs_uruguay,
+  # Championship (EFL)/2. Bundesliga/Ligue 1/Eredivisie/Escocia/Rusia stay
+  # SB-only -- physical.ipynb has cells for all six, but this SkillCorner
+  # account currently gets 0 rows back for every one of them (confirmed with
+  # no thresholds applied either), a licensing/data-access gap rather than a
+  # code issue. Move them up into shared_leagues once that's resolved and
+  # physical.ipynb actually writes their CSVs.
   "Championship (EFL)"       = scout_data$jugs_championship,
   "Serie B"                  = scout_data$jugs_serie_b,
-  "Bundesliga"               = scout_data$jugs_bundesliga,
   "2. Bundesliga"            = scout_data$jugs_bundesliga_2,
   "Ligue 1"                  = scout_data$jugs_ligue_1,
   "Eredivisie"               = scout_data$jugs_eredivisie,
-  "Bélgica"                  = scout_data$jugs_belgica,
-  "Portugal – Primeira Liga" = scout_data$jugs_portugal,
   "Escocia – Premiership"    = scout_data$jugs_escocia,
   "CONMEBOL Libertadores"    = scout_data$jugs_libertadores,
   "Australia"                 = scout_data$jugs_australia,
@@ -1302,7 +1309,6 @@ sb_only_leagues <- list(
   "Suiza – Challenger League" = scout_data$jugs_suiza_challenger,
   "Noruega"                   = scout_data$jugs_noruega,
   "China"                     = scout_data$jugs_china,
-  "Perú"                      = scout_data$jugs_peru,
   "USL Championship"          = scout_data$jugs_usl_championship
 )
 

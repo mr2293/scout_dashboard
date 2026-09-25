@@ -133,6 +133,20 @@ serie_a_fisico <- read_csv("data/physical/seriea_physical_standardized.csv")
 tur_fisico <- read_csv("data/physical/tur_physical_standardized.csv")
 uel_fisico <- read_csv("data/physical/uel_physical_standardized.csv")
 champions_fisico <- read_csv("data/physical/ucl_physical_standardized.csv")
+# Paraguay/Uruguay/Peru/Bundesliga/Bélgica/Portugal: added once physical.ipynb
+# started pulling them (see its cells) -- Championship/2.Bundesliga/Ligue 1/
+# Eredivisie/Escocia/Rusia are NOT read here because physical.ipynb's cells
+# for those currently return 0 rows for this SkillCorner account (a
+# licensing/data-access gap, not a code bug) and so never write a CSV --
+# read_csv() on a missing file would abort this whole script. Add them here
+# once that account access is confirmed and the notebook actually writes
+# their files.
+paraguay_fisico <- read_csv("data/physical/paraguay_physical_standardized.csv")
+uruguay_fisico <- read_csv("data/physical/uruguay_physical_standardized.csv")
+peru_fisico <- read_csv("data/physical/peru_physical_standardized.csv")
+bundesliga_fisico <- read_csv("data/physical/bundesliga_physical_standardized.csv")
+belgica_fisico <- read_csv("data/physical/belgica_physical_standardized.csv")
+portugal_fisico <- read_csv("data/physical/portugal_physical_standardized.csv")
 
 # 4 Data Frames Combinados ----
 # season_label (not season_id) is the join key here -- season_id survived
@@ -260,7 +274,13 @@ LEAGUE_CATALOG_FIS <- list(
   "Serie A"               = serie_a_fisico,
   "Turquía – Süper Lig"   = tur_fisico,
   "UEFA Champions League" = champions_fisico,
-  "UEFA Europa League"    = uel_fisico
+  "UEFA Europa League"    = uel_fisico,
+  "Paraguay"              = paraguay_fisico,
+  "Uruguay"               = uruguay_fisico,
+  "Perú"                  = peru_fisico,
+  "Bundesliga"            = bundesliga_fisico,
+  "Bélgica"               = belgica_fisico,
+  "Portugal – Primeira Liga" = portugal_fisico
 )
 
 # --- CACHE: bundle physical dfs into one RDS ------------------------------
@@ -282,7 +302,13 @@ fis_data <- list(
   serie_a_fisico   = serie_a_fisico,
   tur_fisico       = tur_fisico,
   champions_fisico = champions_fisico,
-  uel_fisico       = uel_fisico
+  uel_fisico       = uel_fisico,
+  paraguay_fisico  = paraguay_fisico,
+  uruguay_fisico   = uruguay_fisico,
+  peru_fisico      = peru_fisico,
+  bundesliga_fisico = bundesliga_fisico,
+  belgica_fisico   = belgica_fisico,
+  portugal_fisico  = portugal_fisico
 )
 
 # Optional: basic sanity check (helps avoid silent NULLs)
