@@ -16,16 +16,11 @@ library(lubridate)
 library(scales)
 library(fmsb)
 
-# Canonical Liga MX season label, defined locally here so every Liga MX
-# pull -- whether identified by SkillCorner's "season" param (physical,
-# off-ball-runs) or by "competition_edition" (passes, pressures) -- resolves
-# to the exact same string ("2025/2026" or "2026/2027") instead of relying
-# on SkillCorner's own season_id/season_name to agree with each other
-# across those two different pull methods (they don't always -- see the
-# NOTE further down, at liga_mx_mitad_1's join). Extend both whenever a new
-# season/edition gets added to notebooks/physical.ipynb or
-# notebooks/data_scout_dashboard.ipynb.
-LIGA_MX_EDITION_TO_SEASON    <- c("1169" = "2025/2026", "1441" = "2025/2026", "1654" = "2026/2027")
+# Canonical Liga MX season label for the physical/off-ball-runs pull method
+# (season_id -> label). Passes/pressures no longer need an R-side
+# equivalent (LIGA_MX_EDITION_TO_SEASON used to live here) -- they arrive
+# with season_label already resolved, computed in Python from the same
+# edition->season mapping (see notebooks/data_scout_dashboard.ipynb).
 LIGA_MX_SEASON_ID_TO_SEASON  <- c("129" = "2025/2026", "131" = "2026/2027")
 
 # Datos Desmarques ----
@@ -34,88 +29,20 @@ ligamx_des <- read_csv("data/off_ball_runs/ligamx_obr_normalized.csv")
 
 # write_csv(ligamx_des, "/Users/mateorodriguez/Desktop/ligamx_des.csv")
 
-# Datos Pases ----
-
-ligamx_passes_pm <- read_csv("data/passes/ligamx_per_match.csv")
-ligamx_passes_p100o <- read_csv("data/passes/ligamx_per_100_pass_opportunities.csv")
-ligamx_passes_p30mtip <- read_csv("data/passes/ligamx_per_30_min_tip.csv")
-
-liga_mx_passes <- ligamx_passes_pm |>
-  full_join(ligamx_passes_p100o, by = c("player_id", "player_name", "short_name", "player_birthdate", "match_id", "match_name",
-                                        "match_date", "team_id", "team_name", "competition_id", "competition_name", "season_id", 
-                                        "season_name", "competition_edition_id", "position", "group", "result", "venue", "third",
-                                        "channel", "minutes_played_per_match", "adjusted_min_tip_per_match", "quality_check",
-                                        "pass_completion_ratio_to_runs", "count_opportunities_to_pass_to_runs_in_sample")) |>
-  full_join(ligamx_passes_p30mtip, by = c("player_id", "player_name", "short_name", "player_birthdate", "match_id", "match_name",
-                                        "match_date", "team_id", "team_name", "competition_id", "competition_name", "season_id", 
-                                        "season_name", "competition_edition_id", "position", "group", "result", "venue", "third",
-                                        "channel", "minutes_played_per_match", "adjusted_min_tip_per_match", "quality_check",
-                                        "pass_completion_ratio_to_runs", "count_opportunities_to_pass_to_runs_in_sample"))
-
-
-# season_label from competition_edition_id (via LIGA_MX_EDITION_TO_SEASON)
-# rather than trusting season_id/season_name as returned here -- see the
-# canonical-label note above. Grouping by it below keeps two different real
-# seasons' matches from being averaged together into one nonsense row now
-# that edition 1654 (26/27) is pulled alongside 1169/1441 (25/26).
-liga_mx_passes <- liga_mx_passes |>
-  mutate(season_label = unname(LIGA_MX_EDITION_TO_SEASON[as.character(competition_edition_id)]))
-
-# Build 1-row-per-player-season table (averages across matches within that season)
-liga_mx_passes_season <- liga_mx_passes |>
-  group_by(player_id, player_name, season_label) |>
-  summarise(
-    # keep player/team/competition “info” columns (take first non-NA)
-    short_name       = dplyr::first(short_name[!is.na(short_name)]),
-    player_birthdate = dplyr::first(player_birthdate[!is.na(player_birthdate)]),
-    team_id          = dplyr::first(team_id[!is.na(team_id)]),
-    team_name        = dplyr::first(team_name[!is.na(team_name)]),
-    competition_id   = dplyr::first(competition_id[!is.na(competition_id)]),
-    competition_name = dplyr::first(competition_name[!is.na(competition_name)]),
-
-    # useful season-level counts
-    games_played = n_distinct(match_id),
-
-    # average ALL numeric performance metrics, but do NOT average ID columns / match_id
-    across(
-      where(is.numeric) & !any_of(c("player_id", "team_id", "competition_id", "match_id")),
-      ~ mean(.x, na.rm = TRUE)
-    ),
-    .groups = "drop"
-  )
-
-# write_csv(liga_mx_passes_season, "/Users/mateorodriguez/Desktop/liga_mx_passes_season.csv")
-
-# Datos Presiones ----
-
-ligamx_pres <- read_csv("data/pressures/ligamx_on_ball_pressures.csv")
-
-ligamx_pres <- ligamx_pres |>
-  mutate(season_label = unname(LIGA_MX_EDITION_TO_SEASON[as.character(competition_edition_id)]))
-
-ligamx_pres_season <- ligamx_pres |>
-  group_by(player_id, player_name, season_label) |>
-  summarise(
-    # keep player/team/competition “info” columns (take first non-NA)
-    short_name       = dplyr::first(short_name[!is.na(short_name)]),
-    player_birthdate = dplyr::first(player_birthdate[!is.na(player_birthdate)]),
-    team_id          = dplyr::first(team_id[!is.na(team_id)]),
-    team_name        = dplyr::first(team_name[!is.na(team_name)]),
-    competition_id   = dplyr::first(competition_id[!is.na(competition_id)]),
-    competition_name = dplyr::first(competition_name[!is.na(competition_name)]),
-    
-    # useful season-level counts
-    games_played = n_distinct(match_id),
-    
-    # average ALL numeric performance metrics, but do NOT average ID columns / match_id
-    across(
-      where(is.numeric) & !any_of(c("player_id", "team_id", "competition_id", "match_id")),
-      ~ mean(.x, na.rm = TRUE)
-    ),
-    .groups = "drop"
-  )
-
-# write_csv(ligamx_pres_season, "/Users/mateorodriguez/Desktop/ligamx_pres_season.csv")
+# Datos Pases y Presiones ----
+#
+# Both arrive already aggregated to one row per player per SEASON (with
+# season_label already resolved) directly from
+# notebooks/data_scout_dashboard.ipynb's Game Intelligence V2 pull -- V2's
+# aggregated endpoints (group_by="player,team") pre-aggregate server-side,
+# unlike V1 which returned one row per match and required this script to
+# do its own match-level aggregation (the R code that used to live here,
+# reading ligamx_passes_pm/p100o/p30mtip and ligamx_on_ball_pressures.csv
+# and averaging them down to one row per player-season, is gone -- V2
+# already produces that shape). See that notebook's passes/pressures cells
+# for the full migration note.
+liga_mx_passes_season <- read_csv("data/passes/ligamx_passes_season.csv")
+ligamx_pres_season <- read_csv("data/pressures/ligamx_pressures_season.csv")
 
 # Datos Físicos ----
 
@@ -178,13 +105,23 @@ if ("player_short_name" %in% names(ligamx_fisico)) {
 }
 ligamx_fisico <- ligamx_fisico |> select(-any_of("competition_name"))
 
+# competition_id also dropped here (like competition_name above) rather than
+# used as a join key -- once two comp_ids (97 Liga MX + 610 Clausura) get
+# combined into one player-season row, both ligamx_fisico (physical.ipynb)
+# and ligamx_des (off_ball_runs, above) each resolve competition_id somewhat
+# arbitrarily (via "last" over whichever comp appeared last for that
+# player), and a mismatch there would silently fail to match an otherwise-
+# identical player-season row. ligamx_fisico's own competition_id survives
+# the join below and is what player_key groups on afterwards; the remaining
+# keys (identity + season_id/season_name + match/minute counts) are already
+# enough to uniquely identify a player-season without ligamx_des's copy too.
 ligamx_des <- ligamx_des |>
-  select(-any_of("competition_name"))
+  select(-any_of(c("competition_name", "competition_id")))
 
 liga_mx_mitad_2 <- ligamx_fisico |>
-  full_join(ligamx_des, by = c("player_id", "player_name", "short_name", "player_birthdate", "team_id", "team_name", 
-                              "competition_id", "season_id", "season_name", "count_match",
-                               "count_match_failed", "minutes_played_per_match")) 
+  full_join(ligamx_des, by = c("player_id", "player_name", "short_name", "player_birthdate", "team_id", "team_name",
+                              "season_id", "season_name", "count_match",
+                               "count_match_failed", "minutes_played_per_match"))
 
 # n_distinct(liga_mx_mitad_2$player_name)
 
