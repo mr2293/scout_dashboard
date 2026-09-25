@@ -856,6 +856,128 @@ add_datascore <- function(dat) {
   dat
 }
 
+# ============================================================
+# DATA SCORE AMÉRICA -- fit con el estilo de juego del cuerpo técnico
+# actual, distinto de DataScore (nivel general) y Perfil (estilo de
+# jugador). Basado en el promedio de team_season() de StatsBombR para las
+# 4 temporadas del DT en Pachuca (2021/22 a 2024/25) + la temporada actual
+# en América (2026/27, ver america_stats.R) -- 5 temporadas que muestran
+# una identidad muy estable pese al cambio de club:
+#
+#              Pachuca 21-24 (rango)     América 26/27
+#   PPDA            ~9-10                    9.35    (presión MUY intensa)
+#   Directness       ~0.85-0.87              0.855   (juego directo/vertical)
+#   Posesión         ~50-56%                 56.3%
+#   Def. distance    ~44-49                  48.3    (línea alta)
+#   Passing ratio    ~0.82-0.83              0.828
+#
+# Conclusión: presión muy agresiva + línea defensiva alta, PERO a la vez
+# posesión media-alta y buen % de pase -- no es un equipo que solo
+# presiona y despeja, recupera alto Y RESUELVE con el balón. Los pesos de
+# cada grupo reflejan las DOS mitades de esa identidad a propósito: un
+# bloque de presión/posicionamiento sin balón (~30-45% según la posición)
+# y un bloque más grande de acciones CON el balón (pase de progresión,
+# OBV de pase, deep progressions, creación) -- la primera versión de este
+# modelo pesaba casi todo hacia la presión y subestimaba que la
+# resolución con balón es la otra mitad de cómo juega este equipo.
+#
+# Pesos fijos elegidos a mano según qué tan marcado es cada rasgo (mismo
+# criterio que DATASCORE_MODELS/PROFILE_METRIC_DEFS arriba: juicio
+# futbolístico, no una distancia numérica calculada contra el vector de
+# equipos_alamada). Sin modelo de Portero, igual que DataScore -- "encaje
+# con el estilo de presión/verticalidad" no aplica de la misma forma a un
+# arquero.
+AMERICA_FIT_MODELS <- list(
+  "Central" = c(
+    # Presión/posicionamiento (~40%)
+    "player_season_padj_pressures_90" = 0.15,
+    "player_season_average_x_defensive_action" = 0.15,
+    "player_season_padj_interceptions_90" = 0.10,
+    # Con el balón (~50%)
+    "player_season_obv_pass_90" = 0.20,
+    "player_season_passing_ratio" = 0.15,
+    "player_season_deep_progressions_90" = 0.15,
+    # Aéreo (necesario contra el rebote de una línea alta)
+    "player_season_aerial_ratio" = 0.10
+  ),
+  "Lateral/Carrilero" = c(
+    # Presión (~35%)
+    "player_season_padj_pressures_90" = 0.15,
+    "player_season_pressure_regains_90" = 0.10,
+    "player_season_aggressive_actions_90" = 0.10,
+    # Con el balón (~60%)
+    "player_season_deep_progressions_90" = 0.20,
+    "player_season_obv_pass_90" = 0.15,
+    "player_season_crosses_90" = 0.15,
+    "player_season_box_cross_ratio" = 0.10,
+    "player_season_passing_ratio" = 0.05
+  ),
+  "Medio de Contención" = c(
+    # Presión/recuperación (~45%)
+    "player_season_padj_pressures_90" = 0.15,
+    "player_season_pressure_regains_90" = 0.10,
+    "player_season_counterpressure_regains_90" = 0.10,
+    "player_season_ball_recoveries_90" = 0.10,
+    # Con el balón (~55%)
+    "player_season_obv_pass_90" = 0.20,
+    "player_season_forward_pass_proportion" = 0.15,
+    "player_season_passing_ratio" = 0.10,
+    "player_season_deep_progressions_90" = 0.10
+  ),
+  "Interior/Mediapunta" = c(
+    # Presión (~30%)
+    "player_season_padj_pressures_90" = 0.10,
+    "player_season_counterpressures_90" = 0.10,
+    "player_season_fhalf_pressures_90" = 0.10,
+    # Con el balón (~70%)
+    "player_season_deep_progressions_90" = 0.15,
+    "player_season_through_balls_90" = 0.15,
+    "player_season_op_xa_90" = 0.15,
+    "player_season_obv_pass_90" = 0.15,
+    "player_season_carries_90" = 0.10
+  ),
+  "Volante/Extremo" = c(
+    # Presión (~30%)
+    "player_season_counterpressure_regains_90" = 0.10,
+    "player_season_padj_pressures_90" = 0.10,
+    "player_season_fhalf_pressures_90" = 0.10,
+    # Con el balón (~70%)
+    "player_season_carries_90" = 0.20,
+    "player_season_deep_progressions_90" = 0.20,
+    "player_season_np_xg_90" = 0.15,
+    "player_season_dribble_ratio" = 0.15
+  ),
+  "Delantero" = c(
+    # Presión (~40%)
+    "player_season_fhalf_pressures_90" = 0.15,
+    "player_season_padj_pressures_90" = 0.15,
+    "player_season_aggressive_actions_90" = 0.10,
+    # Con el balón (~60%)
+    "player_season_np_xg_90" = 0.20,
+    "player_season_touches_inside_box_90" = 0.20,
+    "player_season_obv_dribble_carry_90" = 0.10,
+    "player_season_xgchain_90" = 0.10
+  )
+)
+
+# Mismo mecanismo que add_datascore() (ver más arriba) -- un solo número
+# por jugador, sin competencia entre sub-perfiles.
+add_america_fit <- function(dat) {
+  dat$DataScoreAmerica <- NA_real_
+  dat$Cobertura_DataScoreAmerica <- NA_real_
+
+  for (pg in names(AMERICA_FIT_MODELS)) {
+    idx <- which(dat$position_group == pg)
+    if (!length(idx)) next
+    sub <- dat[idx, , drop = FALSE]
+    res <- .weighted_profile_score(sub, AMERICA_FIT_MODELS[[pg]])
+    dat$DataScoreAmerica[idx] <- res$score
+    dat$Cobertura_DataScoreAmerica[idx] <- res$coverage * 100
+  }
+
+  dat
+}
+
 
 
 # ============================================================
@@ -2252,6 +2374,7 @@ build_database_master <- function() {
   # player_id below) -- no join needed here since it mutates the same rows
   # in place.
   dat <- add_datascore(dat)
+  dat <- add_america_fit(dat)
 
   id_str <- as.character(dat$country_id)
   player_country <- unname(country_id_names[id_str])
