@@ -237,106 +237,393 @@ LOWER_IS_BETTER_METRICS <- paste0("player_season_", c(
   "penalties_faced_90", "penalties_conceded_90"
 ))
 
-# Sub-profile metric lists, copied from scout_chat_system_prompt.md's
-# "Perfiles Club América" section. Deliberately StatsBomb-only (dropping
-# that doc's SkillCorner physical/Game-Intelligence metrics, e.g. psv99,
-# sprint_*, count_*_per_30_tip): SkillCorner physical coverage is 13 of 27
-# leagues, and Game Intelligence is Liga MX only, so including them would
-# make a player's Perfil depend on which league happens to have SkillCorner
-# data rather than on football profile -- inconsistent across the dashboard.
+# Metrics where a LOWER raw value is the better outcome (per
+# scout_chat_system_prompt.md's "Reglas de interpretación direccional").
+# Their percentile gets inverted (100 - pct) before folding into a profile's
+# composite score, so higher composite always means "closer fit" for every
+# sub-profile. Restricted to StatsBomb per-90 metrics -- see note below.
+LOWER_IS_BETTER_METRICS <- paste0("player_season_", c(
+  "fouls_90", "yellow_cards_90", "second_yellow_cards_90", "red_cards_90",
+  "errors_90", "turnovers_90", "dispossessions_90", "failed_dribbles_90",
+  "dribbled_past_90", "shots_faced_90", "goals_faced_90", "np_xg_faced_90",
+  "np_psxg_faced_90", "ot_shots_faced_90", "npot_psxg_faced_90",
+  "penalties_faced_90", "penalties_conceded_90"
+))
+
+# Sub-profile metric WEIGHTS (each profile's weights sum to 1.00), ported
+# from DataScore_StatsBomb.ipynb (2026-09-24 version, BLOQUES 6-13) -- that
+# notebook validates its own weights sum to exactly 1.00 per profile before
+# ever using them (see its BLOQUE 14), so this file trusts that instead of
+# re-deriving/re-checking the numbers here. Metric names there are StatsBomb
+# IQ export labels ("Pass OBV", "PAdj Interceptions"); mapped by hand to this
+# app's player_season_* columns below -- every one of the 64 distinct metrics
+# used across these profiles resolved to a real column name that matches
+# established StatsBomb naming, but that mapping has NOT been checked against
+# the actual non-NA coverage of each column in this app's live `dat` (539
+# columns, richer than the ~205-column set synced to the Next.js dashboard's
+# Mongo `sb_sc_metrics`). Run audit_profile_metric_coverage(dat) (defined
+# below assign_player_profiles()) once after pulling this in, and fix any
+# column that comes back missing/all-NA before trusting these profiles --
+# a handful of mappings (Successful Crosses, Successful Dribbles, LBP OBV F3
+# vs FHalf, Post Shot xG) were the least certain of the 64 and are the most
+# likely to need a different real column name.
+#
+# Portero keeps its ORIGINAL plain metric lists (untouched -- the notebook
+# has no goalkeeper model) but is now expressed the same way as every other
+# group: a named weight vector, just with equal weights per metric --
+# mathematically identical to the old rowMeans()/na.rm behavior, so GK
+# profile assignment does not change at all. Only the mechanism is shared;
+# the goalkeeper OUTCOME is not affected by any of this refactor.
+.equal_weights <- function(metrics) {
+  w <- rep(1 / length(metrics), length(metrics))
+  names(w) <- metrics
+  w
+}
+
+# Still used by Portero's metric lists below (kept from the previous
+# version of this file).
 .psn <- function(...) paste0("player_season_", c(...))
+
+DFC_WEIGHTED_PROFILES <- list(
+    "Posicional" = c(
+      "player_season_obv_defensive_action_90" = 0.16,
+      "player_season_padj_clearances_90" = 0.14,
+      "player_season_blocks_per_shot" = 0.12,
+      "player_season_aerial_ratio" = 0.12,
+      "player_season_dribble_faced_ratio" = 0.1,
+      "player_season_challenge_ratio" = 0.08,
+      "player_season_padj_interceptions_90" = 0.1,
+      "player_season_errors_90" = 0.08,
+      "player_season_clearance_90" = 0.05,
+      "player_season_passing_ratio" = 0.05
+    ),
+    "Anticipador" = c(
+      "player_season_padj_interceptions_90" = 0.22,
+      "player_season_defensive_action_regains_90" = 0.16,
+      "player_season_padj_tackles_90" = 0.14,
+      "player_season_obv_defensive_action_90" = 0.14,
+      "player_season_average_x_defensive_action" = 0.08,
+      "player_season_fhalf_ball_recoveries_90" = 0.08,
+      "player_season_pressure_regains_90" = 0.06,
+      "player_season_aggressive_actions_90" = 0.06,
+      "player_season_challenge_ratio" = 0.06
+    ),
+    "Físico" = c(
+      "player_season_aerial_ratio" = 0.24,
+      "player_season_aerial_wins_90" = 0.12,
+      "player_season_challenge_ratio" = 0.14,
+      "player_season_dribble_faced_ratio" = 0.12,
+      "player_season_padj_tackles_90" = 0.1,
+      "player_season_obv_defensive_action_90" = 0.1,
+      "player_season_fouls_90" = 0.06,
+      "player_season_aggressive_actions_90" = 0.06,
+      "player_season_clearance_90" = 0.06
+    ),
+    "Progresivo" = c(
+      "player_season_obv_pass_90" = 0.2,
+      "player_season_obv_lbp_90" = 0.15,
+      "player_season_deep_progressions_90" = 0.15,
+      "player_season_lbp_pass_ratio" = 0.1,
+      "player_season_pressured_passing_ratio" = 0.1,
+      "player_season_passing_ratio" = 0.08,
+      "player_season_op_passes_90" = 0.06,
+      "player_season_lbp_completed_90" = 0.06,
+      "player_season_obv_dribble_carry_90" = 0.05,
+      "player_season_carries_90" = 0.05
+    )
+  )
+
+LAT_WEIGHTED_PROFILES <- list(
+    "Defensivo" = c(
+      "player_season_obv_defensive_action_90" = 0.18,
+      "player_season_padj_tackles_90" = 0.14,
+      "player_season_padj_interceptions_90" = 0.12,
+      "player_season_challenge_ratio" = 0.1,
+      "player_season_dribble_faced_ratio" = 0.1,
+      "player_season_pressure_regains_90" = 0.08,
+      "player_season_ball_recoveries_90" = 0.08,
+      "player_season_aerial_ratio" = 0.06,
+      "player_season_errors_90" = 0.07,
+      "player_season_obv_pass_90" = 0.07
+    ),
+    "Ofensivo" = c(
+      "player_season_obv_dribble_carry_90" = 0.16,
+      "player_season_deep_progressions_90" = 0.14,
+      "player_season_crosses_90" = 0.12,
+      "player_season_box_cross_ratio" = 0.1,
+      "player_season_op_xa_90" = 0.1,
+      "player_season_op_passes_into_box_90" = 0.1,
+      "player_season_op_key_passes_90" = 0.08,
+      "player_season_carries_90" = 0.08,
+      "player_season_touches_inside_box_90" = 0.06,
+      "player_season_obv_pass_90" = 0.06
+    ),
+    "Equilibrado" = c(
+      "player_season_obv_defensive_action_90" = 0.12,
+      "player_season_padj_tackles_90" = 0.1,
+      "player_season_padj_interceptions_90" = 0.08,
+      "player_season_challenge_ratio" = 0.08,
+      "player_season_obv_pass_90" = 0.1,
+      "player_season_deep_progressions_90" = 0.1,
+      "player_season_obv_dribble_carry_90" = 0.08,
+      "player_season_op_xa_90" = 0.07,
+      "player_season_crosses_90" = 0.06,
+      "player_season_pressure_regains_90" = 0.07,
+      "player_season_passing_ratio" = 0.07,
+      "player_season_touches_inside_box_90" = 0.07
+    ),
+    "Organizador" = c(
+      "player_season_obv_pass_90" = 0.18,
+      "player_season_op_passes_90" = 0.12,
+      "player_season_passing_ratio" = 0.1,
+      "player_season_pressured_passing_ratio" = 0.1,
+      "player_season_deep_progressions_90" = 0.12,
+      "player_season_obv_lbp_90" = 0.1,
+      "player_season_lbp_pass_ratio" = 0.08,
+      "player_season_op_f3_passes_90" = 0.07,
+      "player_season_crosses_90" = 0.06,
+      "player_season_op_passes_into_box_90" = 0.04,
+      "player_season_obv_dribble_carry_90" = 0.03
+    )
+  )
+
+VOLANTE_WEIGHTED_PROFILES <- list(
+    "Destructor" = c(
+      "player_season_obv_defensive_action_90" = 0.18,
+      "player_season_padj_interceptions_90" = 0.16,
+      "player_season_padj_tackles_90" = 0.14,
+      "player_season_padj_pressures_90" = 0.1,
+      "player_season_pressure_regains_90" = 0.1,
+      "player_season_counterpressure_regains_90" = 0.08,
+      "player_season_ball_recoveries_90" = 0.08,
+      "player_season_challenge_ratio" = 0.06,
+      "player_season_dribble_faced_ratio" = 0.05,
+      "player_season_fhalf_ball_recoveries_90" = 0.05
+    ),
+    "Orquestador" = c(
+      "player_season_op_passes_90" = 0.2,
+      "player_season_xgbuildup_90" = 0.16,
+      "player_season_obv_pass_90" = 0.13,
+      "player_season_deep_progressions_90" = 0.11,
+      "player_season_passing_ratio" = 0.09,
+      "player_season_pressured_passing_ratio" = 0.08,
+      "player_season_lbp_90" = 0.07,
+      "player_season_xgchain_90" = 0.06,
+      "player_season_obv_lbp_90" = 0.05,
+      "player_season_op_f3_passes_90" = 0.05
+    ),
+    "Organizador" = c(
+      "player_season_obv_pass_90" = 0.18,
+      "player_season_deep_progressions_90" = 0.14,
+      "player_season_obv_lbp_90" = 0.14,
+      "player_season_lbp_pass_ratio" = 0.1,
+      "player_season_pressured_passing_ratio" = 0.1,
+      "player_season_passing_ratio" = 0.1,
+      "player_season_lbp_completed_90" = 0.08,
+      "player_season_op_f3_passes_90" = 0.06,
+      "player_season_forward_pass_proportion" = 0.05,
+      "player_season_op_passes_90" = 0.05
+    ),
+    "Box to Box" = c(
+      "player_season_carries_90" = 0.12,
+      "player_season_obv_dribble_carry_90" = 0.1,
+      "player_season_deep_progressions_90" = 0.1,
+      "player_season_padj_pressures_90" = 0.1,
+      "player_season_pressure_regains_90" = 0.1,
+      "player_season_padj_tackles_and_interceptions_90" = 0.1,
+      "player_season_fhalf_ball_recoveries_90" = 0.08,
+      "player_season_touches_inside_box_90" = 0.08,
+      "player_season_xgchain_90" = 0.07,
+      "player_season_np_xg_90" = 0.05,
+      "player_season_op_f3_passes_90" = 0.05,
+      "player_season_obv_defensive_action_90" = 0.05
+    ),
+    "Creativo" = c(
+      "player_season_op_xa_90" = 0.2,
+      "player_season_op_key_passes_90" = 0.16,
+      "player_season_through_balls_90" = 0.12,
+      "player_season_obv_pass_90" = 0.12,
+      "player_season_op_passes_into_box_90" = 0.1,
+      "player_season_deep_completions_90" = 0.08,
+      "player_season_f3_obv_lbp_90" = 0.07,
+      "player_season_op_f3_passes_90" = 0.06,
+      "player_season_obv_shot_90" = 0.05,
+      "player_season_obv_dribble_carry_90" = 0.04
+    )
+  )
+
+EXT_WEIGHTED_PROFILES <- list(
+    "Profundo" = c(
+      "player_season_deep_progressions_90" = 0.16,
+      "player_season_carries_90" = 0.12,
+      "player_season_obv_dribble_carry_90" = 0.14,
+      "player_season_dribbles_90" = 0.1,
+      "player_season_dribble_ratio" = 0.08,
+      "player_season_op_passes_into_box_90" = 0.08,
+      "player_season_crosses_90" = 0.08,
+      "player_season_op_xa_90" = 0.07,
+      "player_season_touches_inside_box_90" = 0.07,
+      "player_season_counterpressure_regains_90" = 0.1
+    ),
+    "Interior" = c(
+      "player_season_obv_pass_90" = 0.14,
+      "player_season_op_xa_90" = 0.14,
+      "player_season_op_key_passes_90" = 0.12,
+      "player_season_op_passes_into_box_90" = 0.12,
+      "player_season_through_balls_90" = 0.1,
+      "player_season_deep_progressions_90" = 0.1,
+      "player_season_obv_dribble_carry_90" = 0.1,
+      "player_season_touches_inside_box_90" = 0.08,
+      "player_season_xgchain_90" = 0.1
+    ),
+    "Regateador" = c(
+      # "Dribbles" (0.22) + "Successful Dribbles" (0.18) del notebook
+      # colapsan a la misma columna real (no hay un conteo de "dribbles
+      # exitosos" separado de dribbles_90 en este dataset) -- combinadas en
+      # un único peso (0.40) en vez de repetir la misma columna dos veces
+      # con nombres duplicados en el vector.
+      "player_season_dribbles_90" = 0.40,
+      "player_season_dribble_ratio" = 0.16,
+      "player_season_obv_dribble_carry_90" = 0.16,
+      "player_season_carries_90" = 0.1,
+      "player_season_carry_ratio" = 0.08,
+      "player_season_fouls_won_90" = 0.06,
+      "player_season_turnovers_90" = 0.04
+    ),
+    "Llegador" = c(
+      "player_season_npg_90" = 0.22,
+      "player_season_np_xg_90" = 0.18,
+      "player_season_shot_on_target_ratio" = 0.1,
+      "player_season_np_xg_per_shot" = 0.08,
+      "player_season_np_shots_90" = 0.1,
+      "player_season_touches_inside_box_90" = 0.12,
+      "player_season_obv_dribble_carry_90" = 0.06,
+      "player_season_deep_progressions_90" = 0.05,
+      "player_season_xgchain_90" = 0.05,
+      "player_season_op_xa_90" = 0.04
+    )
+  )
+
+DC_WEIGHTED_PROFILES <- list(
+    "Cazador" = c(
+      "player_season_npg_90" = 0.24,
+      "player_season_np_xg_90" = 0.2,
+      "player_season_np_xg_per_shot" = 0.12,
+      "player_season_shot_on_target_ratio" = 0.1,
+      "player_season_np_shots_90" = 0.1,
+      "player_season_touches_inside_box_90" = 0.12,
+      "player_season_np_psxg_90" = 0.07,
+      "player_season_over_under_performance_90" = 0.05
+    ),
+    "Móvil" = c(
+      "player_season_deep_progressions_90" = 0.12,
+      "player_season_obv_dribble_carry_90" = 0.12,
+      "player_season_carries_90" = 0.1,
+      "player_season_op_key_passes_90" = 0.12,
+      "player_season_op_xa_90" = 0.12,
+      "player_season_obv_pass_90" = 0.1,
+      "player_season_xgchain_90" = 0.12,
+      "player_season_touches_inside_box_90" = 0.08,
+      "player_season_fouls_won_90" = 0.05,
+      "player_season_counterpressure_regains_90" = 0.07
+    ),
+    "Retenedor" = c(
+      "player_season_aerial_ratio" = 0.18,
+      "player_season_aerial_wins_90" = 0.12,
+      "player_season_obv_pass_90" = 0.12,
+      "player_season_passing_ratio" = 0.1,
+      "player_season_op_key_passes_90" = 0.1,
+      "player_season_op_xa_90" = 0.1,
+      "player_season_xgchain_90" = 0.1,
+      "player_season_dispossessions_90" = 0.08,
+      "player_season_turnovers_90" = 0.05,
+      "player_season_touches_inside_box_90" = 0.05
+    ),
+    "Aéreo" = c(
+      "player_season_aerial_ratio" = 0.3,
+      "player_season_aerial_wins_90" = 0.18,
+      "player_season_npg_90" = 0.14,
+      "player_season_np_xg_90" = 0.12,
+      "player_season_np_shots_90" = 0.08,
+      "player_season_touches_inside_box_90" = 0.08,
+      "player_season_np_xg_per_shot" = 0.05,
+      "player_season_np_psxg_90" = 0.05
+    ),
+    "Acosador" = c(
+      "player_season_padj_pressures_90" = 0.18,
+      "player_season_fhalf_pressures_90" = 0.16,
+      "player_season_counterpressures_90" = 0.14,
+      "player_season_fhalf_counterpressures_90" = 0.12,
+      "player_season_pressure_regains_90" = 0.14,
+      "player_season_counterpressure_regains_90" = 0.12,
+      "player_season_aggressive_actions_90" = 0.08,
+      "player_season_fhalf_pressures_ratio" = 0.06
+    )
+  )
+
 PROFILE_METRIC_DEFS <- list(
   "Portero" = list(
-    "Atajador" = .psn("save_ratio", "gsaa_90", "gsaa_ratio", "xs_ratio",
+    "Atajador" = .equal_weights(.psn("save_ratio", "gsaa_90", "gsaa_ratio", "xs_ratio",
                        "ot_shots_faced_90", "ot_shots_faced_ratio", "np_psxg_faced_90",
-                       "npot_psxg_faced_90", "shots_faced_90", "np_xg_faced_90"),
-    "Líbero"   = .psn("da_aggressive_distance", "clcaa", "average_x_defensive_action",
-                       "padj_clearances_90", "clearance_90"),
-    "Salidor"  = .psn("clcaa", "aerial_ratio", "aerial_wins_90", "da_aggressive_distance"),
-    "Organizador" = .psn("obv_gk_90", "passing_ratio", "long_ball_ratio", "long_balls_90",
-                          "pressured_passing_ratio", "op_passes_90", "lbp_completed_90", "lbp_ratio")
+                       "npot_psxg_faced_90", "shots_faced_90", "np_xg_faced_90")),
+    "Líbero"   = .equal_weights(.psn("da_aggressive_distance", "clcaa", "average_x_defensive_action",
+                       "padj_clearances_90", "clearance_90")),
+    "Salidor"  = .equal_weights(.psn("clcaa", "aerial_ratio", "aerial_wins_90", "da_aggressive_distance")),
+    "Organizador" = .equal_weights(.psn("obv_gk_90", "passing_ratio", "long_ball_ratio", "long_balls_90",
+                          "pressured_passing_ratio", "op_passes_90", "lbp_completed_90", "lbp_ratio"))
   ),
-  "Defensa Central" = list(
-    "Posicional" = .psn("clearance_90", "padj_clearances_90", "blocks_per_shot", "aerial_ratio",
-                         "aerial_wins_90", "average_x_defensive_action", "average_x_pass",
-                         "padj_tackles_and_interceptions_90", "challenge_ratio"),
-    "Anticipador" = .psn("padj_interceptions_90", "interceptions_90", "padj_pressures_90",
-                          "padj_tackles_and_interceptions_90", "challenge_ratio",
-                          "aggressive_actions_90", "defensive_action_regains_90",
-                          "fhalf_ball_recoveries_90", "average_x_defensive_action", "ball_recoveries_90"),
-    "Físico" = c(.psn("aerial_ratio", "aerial_wins_90", "challenge_ratio", "dribble_faced_ratio",
-                       "dribbled_past_90"), "player_height", "player_weight"),
-    "Progresivo" = .psn("lbp_completed_90", "lbp_ratio", "obv_lbp_90", "deep_progressions_90",
-                         "obv_pass_90", "passing_ratio", "carries_90", "carry_length",
-                         "forward_pass_proportion", "op_f3_passes_90", "pressured_passing_ratio",
-                         "obv_dribble_carry_90")
-  ),
-  "Lateral" = list(
-    "Defensivo" = .psn("padj_tackles_and_interceptions_90", "challenge_ratio", "dribble_faced_ratio",
-                        "dribbled_past_90", "aerial_ratio", "padj_clearances_90",
-                        "defensive_action_regains_90", "average_x_defensive_action",
-                        "average_x_pass", "padj_interceptions_90"),
-    "Ofensivo" = .psn("crosses_90", "crossing_ratio", "op_passes_into_box_90", "deep_completions_90",
-                       "deep_progressions_90", "xa_90", "key_passes_90", "obv_pass_90",
-                       "average_x_pass", "op_f3_passes_90", "assists_90"),
-    "Equilibrado" = .psn("padj_tackles_and_interceptions_90", "ball_recoveries_90", "challenge_ratio",
-                          "crosses_90", "average_x_pass", "obv_90", "defensive_action_regains_90", "xa_90"),
-    "Organizador" = .psn("passing_ratio", "obv_pass_90", "lbp_completed_90", "crosses_90",
-                          "crossing_ratio", "op_passes_into_box_90", "forward_pass_proportion",
-                          "pressured_passing_ratio", "xgbuildup_90", "key_passes_90", "through_balls_90")
-  ),
-  "Volante" = list(
-    "Destructor" = .psn("padj_tackles_and_interceptions_90", "padj_interceptions_90",
-                         "padj_pressures_90", "challenge_ratio", "ball_recoveries_90",
-                         "defensive_action_regains_90", "aggressive_actions_90", "counterpressures_90",
-                         "average_x_defensive_action", "average_x_pass", "fhalf_ball_recoveries_90",
-                         "padj_tackles_90"),
-    "Orquestador" = .psn("op_passes_90", "passing_ratio", "pressured_passing_ratio", "xgbuildup_90",
-                          "op_xgbuildup_90", "obv_pass_90", "xgchain_90", "pass_length",
-                          "average_x_pass", "forward_pass_proportion", "lbp_completed_90"),
-    "Box a Box" = .psn("padj_pressures_90", "counterpressures_90", "ball_recoveries_90",
-                        "padj_tackles_and_interceptions_90", "xgchain_90", "obv_90", "carries_90",
-                        "deep_progressions_90", "key_passes_90", "defensive_action_regains_90"),
-    "Creativo" = .psn("lbp_completed_90", "lbp_ratio", "obv_lbp_90", "f3_lbp_completed_90",
-                       "through_balls_90", "key_passes_90", "xa_90", "obv_pass_90", "dribbles_90",
-                       "dribble_ratio", "obv_dribble_carry_90", "np_xg_90", "np_shots_90",
-                       "average_x_pass", "average_space_received_in", "lbp_received_90")
-  ),
-  "Extremo" = list(
-    "Profundo" = .psn("crosses_90", "crossing_ratio", "op_passes_into_box_90", "deep_completions_90",
-                       "xa_90", "average_x_pass", "assists_90"),
-    "Interior" = .psn("np_xg_90", "npg_90", "np_shots_90", "touches_inside_box_90", "key_passes_90",
-                       "xa_90", "left_foot_ratio", "lbp_received_90", "average_space_received_in",
-                       "obv_shot_90", "np_xg_per_shot", "shot_on_target_ratio", "obv_pass_90"),
-    "Regateador" = .psn("dribbles_90", "dribble_ratio", "total_dribbles_90", "failed_dribbles_90",
-                         "obv_dribble_carry_90", "carries_90", "carry_ratio", "fouls_won_90"),
-    "Llegador" = .psn("np_xg_90", "npg_90", "touches_inside_box_90", "shot_touch_ratio", "np_shots_90",
-                       "np_xg_per_shot", "conversion_ratio", "obv_shot_90")
-  ),
-  "Delantero" = list(
-    "Cazador" = .psn("touches_inside_box_90", "npg_90", "np_xg_90", "np_xg_per_shot",
-                      "shot_on_target_ratio", "conversion_ratio", "shot_touch_ratio", "np_shots_90",
-                      "aerial_wins_90", "average_x_pass", "op_xgbuildup_90"),
-    "Móvil" = .psn("xgbuildup_90", "xgchain_90", "key_passes_90", "xa_90", "carries_90",
-                    "average_x_pass", "lbp_received_90", "positive_outcome_90", "op_passes_90", "assists_90"),
-    "Retenedor" = c(.psn("aerial_wins_90", "aerial_ratio", "fouls_won_90", "dispossessions_90",
-                          "turnovers_90", "touches_inside_box_90", "xgbuildup_90",
-                          "average_space_received_in", "np_shots_90"), "player_height", "player_weight"),
-    "Aéreo" = c(.psn("aerial_wins_90", "aerial_ratio", "npg_90", "np_xg_90", "touches_inside_box_90",
-                      "lbp_received_90", "average_lbp_to_space_received_distance", "fouls_won_90"),
-                "player_height", "player_weight"),
-    "Acosador" = .psn("padj_pressures_90", "fhalf_pressures_90", "fhalf_pressures_ratio",
-                       "average_x_pressure", "counterpressures_90", "fhalf_counterpressures_90",
-                       "pressure_regains_90", "counterpressure_regains_90", "fhalf_ball_recoveries_90",
-                       "ball_recoveries_90", "defensive_action_regains_90")
-  )
+  "Defensa Central" = DFC_WEIGHTED_PROFILES,
+  "Lateral" = LAT_WEIGHTED_PROFILES,
+  "Volante" = VOLANTE_WEIGHTED_PROFILES,
+  "Extremo" = EXT_WEIGHTED_PROFILES,
+  "Delantero" = DC_WEIGHTED_PROFILES
 )
 
-# Assigns each player the sub-profile (within their position's group) whose
-# metrics they score highest on, as an average percentile-rank composite
-# against every other player in that same position group. Metrics missing
-# from a given player/column are simply skipped (na.rm), so partial
-# StatsBomb coverage degrades gracefully instead of erroring.
+# Minimum share of a profile's weight that must come from non-NA metrics for
+# that player before a score is trusted at all (ported from the notebook's
+# MIN_SCORE_COVERAGE = 0.60) -- below this, a player gets NA for that
+# profile's score rather than a composite built mostly out of imputed zeros.
+MIN_PROFILE_COVERAGE <- 0.60
+
+# Weighted percentile-rank composite of `weights` for every row of `sub`,
+# reporting both the score (0-100, NA if under MIN_PROFILE_COVERAGE) and the
+# share of weight actually covered by non-NA data for that row -- port of
+# the notebook's weighted_score_against_reference(), using this app's
+# existing dplyr::percent_rank() (same percentile convention already used
+# elsewhere in this file, e.g. line ~358 previously) rather than switching to
+# pandas' tie-averaged percentile, so results stay consistent with every
+# other percentile already shown in this app.
+.weighted_profile_score <- function(sub, weights) {
+  cols <- names(weights)
+  pct_mat <- matrix(NA_real_, nrow = nrow(sub), ncol = length(cols),
+                     dimnames = list(NULL, cols))
+
+  for (cn in cols) {
+    if (!cn %in% names(sub)) next
+    v <- suppressWarnings(as.numeric(sub[[cn]]))
+    pct <- dplyr::percent_rank(v) * 100
+    if (cn %in% LOWER_IS_BETTER_METRICS) pct <- 100 - pct
+    pct_mat[, cn] <- pct
+  }
+
+  w <- unname(weights[cols])
+  have <- !is.na(pct_mat)
+  covered_weight <- as.numeric(have %*% w)
+  weighted_sum <- as.numeric(ifelse(have, pct_mat, 0) %*% w)
+
+  score <- weighted_sum / covered_weight
+  coverage <- covered_weight / sum(w)
+  score[coverage < MIN_PROFILE_COVERAGE] <- NA_real_
+
+  list(score = score, coverage = coverage)
+}
+
+# Assigns each player a primary AND secondary sub-profile (within their
+# position's group), plus both scores, the gap between them, and the
+# coverage behind the primary score -- port of the notebook's
+# add_profile_scores()/_top_two(). Metrics missing from a given player are
+# handled by the coverage gate above, not by silently averaging over
+# whatever is present (that was the old na.rm behavior; see MIN_PROFILE_COVERAGE).
 assign_player_profiles <- function(dat) {
   dat$.profile_group <- unname(POSITION_GROUP_TO_PROFILE_GROUP[dat$position_group])
   out <- vector("list", length(PROFILE_METRIC_DEFS))
@@ -349,28 +636,227 @@ assign_player_profiles <- function(dat) {
     subprofiles <- PROFILE_METRIC_DEFS[[grp]]
 
     scores <- matrix(NA_real_, nrow = nrow(sub), ncol = length(subprofiles),
-                     dimnames = list(NULL, names(subprofiles)))
+                      dimnames = list(NULL, names(subprofiles)))
+    coverages <- scores
+
     for (sp in names(subprofiles)) {
-      cols <- intersect(subprofiles[[sp]], names(sub))
-      if (!length(cols)) next
-      pct_mat <- vapply(cols, function(cn) {
-        v <- suppressWarnings(as.numeric(sub[[cn]]))
-        pct <- dplyr::percent_rank(v) * 100
-        if (cn %in% LOWER_IS_BETTER_METRICS) pct <- 100 - pct
-        pct
-      }, numeric(nrow(sub)))
-      scores[, sp] <- rowMeans(pct_mat, na.rm = TRUE)
+      res <- .weighted_profile_score(sub, subprofiles[[sp]])
+      scores[, sp] <- res$score
+      coverages[, sp] <- res$coverage
     }
 
-    best <- apply(scores, 1, function(r) {
-      if (all(is.na(r))) return(NA_character_)
-      names(r)[which.max(r)]
-    })
-    out[[grp]] <- data.frame(player_id = sub$player_id, Perfil = best, stringsAsFactors = FALSE)
+    top_two <- t(apply(scores, 1, function(r) {
+      if (all(is.na(r))) return(c(NA_character_, NA_real_, NA_character_, NA_real_))
+      ord <- order(r, decreasing = TRUE, na.last = NA)
+      first <- ord[1]
+      second <- if (length(ord) > 1) ord[2] else NA_integer_
+      c(
+        names(r)[first], unname(r[first]),
+        if (!is.na(second)) names(r)[second] else NA_character_,
+        if (!is.na(second)) unname(r[second]) else NA_real_
+      )
+    }))
+
+    main_coverage <- vapply(seq_len(nrow(sub)), function(i) {
+      p <- top_two[i, 1]
+      if (is.na(p)) return(NA_real_)
+      coverages[i, p]
+    }, numeric(1))
+
+    out[[grp]] <- data.frame(
+      player_id = sub$player_id,
+      Perfil = top_two[, 1],
+      Score_perfil = suppressWarnings(as.numeric(top_two[, 2])),
+      Perfil_secundario = top_two[, 3],
+      Score_perfil_secundario = suppressWarnings(as.numeric(top_two[, 4])),
+      stringsAsFactors = FALSE
+    )
+    out[[grp]]$Gap_perfil <- out[[grp]]$Score_perfil - out[[grp]]$Score_perfil_secundario
+    out[[grp]]$Cobertura_perfil <- main_coverage * 100
   }
 
   dplyr::bind_rows(out)
 }
+
+# One-time sanity check, not called automatically -- run
+# audit_profile_metric_coverage(dat) by hand after loading `dat` and before
+# trusting the weighted profiles above. Mirrors the notebook's own BLOQUE 18
+# coverage audit: for every metric referenced by any profile weight, reports
+# whether the column exists in `dat` and what fraction of rows have a
+# non-NA value, so a bad name-mapping guess (see the long comment above
+# PROFILE_METRIC_DEFS) shows up immediately instead of silently degrading a
+# profile's score.
+audit_profile_metric_coverage <- function(dat) {
+  used_metrics <- unique(unlist(lapply(PROFILE_METRIC_DEFS, function(profiles) {
+    unlist(lapply(profiles, names))
+  })))
+
+  rows <- lapply(sort(used_metrics), function(m) {
+    exists <- m %in% names(dat)
+    if (exists) {
+      v <- suppressWarnings(as.numeric(dat[[m]]))
+      valid <- sum(!is.na(v))
+      coverage <- valid / nrow(dat)
+    } else {
+      valid <- 0L
+      coverage <- 0
+    }
+    data.frame(
+      metric = m,
+      exists = exists,
+      valid_rows = valid,
+      coverage_pct = round(coverage * 100, 2)
+    )
+  })
+
+  dplyr::bind_rows(rows) |> dplyr::arrange(coverage_pct)
+}
+
+# DataScore por posición ("nivel general" de un jugador dentro de su
+# demarcación, distinto de Perfil/Perfil_secundario -- ver PROFILE_METRIC_DEFS
+# más arriba, que mide encaje con un ESTILO, no nivel general). Ported de
+# DataScore_StatsBomb.ipynb (los *_DATASCORE, no los *_PROFILES) -- mismos
+# 64 nombres StatsBomb IQ que los perfiles, reutiliza el mismo mapeo a
+# columnas player_season_* ya validado con audit_profile_metric_coverage().
+# Portero no tiene DataScore acá a propósito -- el notebook tampoco define
+# uno para arqueros.
+#
+# El notebook separa MC (Defensive Mid) / MCO (Centre Mid) / MP (Attacking
+# Mid) en 3 DataScore distintos, pero esta app solo separa dos grupos de
+# volante: "Medio de Contención" (== MC del notebook) e "Interior/Mediapunta"
+# (que junta AMBOS Centre Midfielder Y Attacking Midfielder de StatsBomb --
+# ver safe_add_position_group() en dashboard_scout.R). En vez de perder la
+# distinción MCO/MP del notebook eligiendo uno de los dos arbitrariamente,
+# "Interior/Mediapunta" usa el PROMEDIO peso a peso de MCO_DATASCORE y
+# MP_DATASCORE (cada métrica que aparece en cualquiera de los dos pesa la
+# mitad de lo que pesaría sola) -- sigue sumando 1.00 porque es el promedio
+# de dos modelos que ya suman 1.00 cada uno.
+DATASCORE_MODELS <- list(
+
+  "Central" = c(
+    "player_season_obv_defensive_action_90" = 0.12,
+    "player_season_padj_interceptions_90" = 0.1,
+    "player_season_padj_tackles_and_interceptions_90" = 0.08,
+    "player_season_dribble_faced_ratio" = 0.08,
+    "player_season_aerial_ratio" = 0.08,
+    "player_season_obv_pass_90" = 0.12,
+    "player_season_deep_progressions_90" = 0.1,
+    "player_season_obv_lbp_90" = 0.1,
+    "player_season_passing_ratio" = 0.06,
+    "player_season_pressured_passing_ratio" = 0.06,
+    "player_season_xgbuildup_90" = 0.05,
+    "player_season_errors_90" = 0.05
+  ),
+
+  "Lateral/Carrilero" = c(
+    "player_season_obv_defensive_action_90" = 0.1,
+    "player_season_padj_tackles_90" = 0.08,
+    "player_season_padj_interceptions_90" = 0.06,
+    "player_season_challenge_ratio" = 0.06,
+    "player_season_obv_pass_90" = 0.1,
+    "player_season_deep_progressions_90" = 0.1,
+    "player_season_obv_dribble_carry_90" = 0.1,
+    "player_season_crosses_90" = 0.08,
+    "player_season_box_cross_ratio" = 0.06,
+    "player_season_op_xa_90" = 0.08,
+    "player_season_op_passes_into_box_90" = 0.06,
+    "player_season_pressure_regains_90" = 0.05,
+    "player_season_op_key_passes_90" = 0.07
+  ),
+
+  "Medio de Contención" = c(
+    "player_season_obv_pass_90" = 0.14,
+    "player_season_deep_progressions_90" = 0.1,
+    "player_season_obv_lbp_90" = 0.08,
+    "player_season_passing_ratio" = 0.07,
+    "player_season_pressured_passing_ratio" = 0.07,
+    "player_season_xgbuildup_90" = 0.08,
+    "player_season_obv_defensive_action_90" = 0.12,
+    "player_season_padj_interceptions_90" = 0.1,
+    "player_season_padj_tackles_90" = 0.07,
+    "player_season_pressure_regains_90" = 0.06,
+    "player_season_ball_recoveries_90" = 0.06,
+    "player_season_challenge_ratio" = 0.05
+  ),
+
+  "Interior/Mediapunta" = c(
+    "player_season_padj_interceptions_90" = 0.03,
+    "player_season_op_passes_into_box_90" = 0.05,
+    "player_season_obv_pass_90" = 0.11,
+    "player_season_fhalf_pressures_90" = 0.015,
+    "player_season_xgchain_90" = 0.065,
+    "player_season_pressure_regains_90" = 0.03,
+    "player_season_npg_90" = 0.04,
+    "player_season_obv_dribble_carry_90" = 0.09,
+    "player_season_xgbuildup_90" = 0.04,
+    "player_season_op_key_passes_90" = 0.1,
+    "player_season_through_balls_90" = 0.04,
+    "player_season_op_f3_passes_90" = 0.04,
+    "player_season_deep_progressions_90" = 0.07,
+    "player_season_op_xa_90" = 0.11,
+    "player_season_fhalf_ball_recoveries_90" = 0.02,
+    "player_season_obv_defensive_action_90" = 0.04,
+    "player_season_touches_inside_box_90" = 0.055,
+    "player_season_np_xg_90" = 0.04,
+    "player_season_counterpressure_regains_90" = 0.015
+  ),
+
+  "Volante/Extremo" = c(
+    "player_season_obv_dribble_carry_90" = 0.12,
+    "player_season_dribbles_90" = 0.08,
+    "player_season_dribble_ratio" = 0.06,
+    "player_season_deep_progressions_90" = 0.08,
+    "player_season_op_xa_90" = 0.1,
+    "player_season_op_key_passes_90" = 0.08,
+    "player_season_op_passes_into_box_90" = 0.08,
+    "player_season_crosses_90" = 0.05,
+    "player_season_box_cross_ratio" = 0.04,
+    "player_season_np_xg_90" = 0.09,
+    "player_season_npg_90" = 0.09,
+    "player_season_touches_inside_box_90" = 0.06,
+    "player_season_obv_pass_90" = 0.04,
+    "player_season_counterpressure_regains_90" = 0.03
+  ),
+
+  "Delantero" = c(
+    "player_season_npg_90" = 0.14,
+    "player_season_np_xg_90" = 0.12,
+    "player_season_np_xg_per_shot" = 0.07,
+    "player_season_shot_on_target_ratio" = 0.07,
+    "player_season_np_shots_90" = 0.06,
+    "player_season_touches_inside_box_90" = 0.08,
+    "player_season_aerial_ratio" = 0.08,
+    "player_season_op_xa_90" = 0.07,
+    "player_season_op_key_passes_90" = 0.05,
+    "player_season_obv_pass_90" = 0.06,
+    "player_season_obv_dribble_carry_90" = 0.05,
+    "player_season_fhalf_pressures_90" = 0.06,
+    "player_season_counterpressure_regains_90" = 0.04,
+    "player_season_xgchain_90" = 0.05
+  )
+)
+
+# Igual que .weighted_profile_score() (ver más arriba) pero para UN solo
+# modelo de pesos en vez de varios perfiles compitiendo entre sí -- no hace
+# falta el paso de "elegir el mejor" porque acá solo hay un resultado por
+# jugador, no una competencia entre sub-perfiles.
+add_datascore <- function(dat) {
+  dat$DataScore <- NA_real_
+  dat$Cobertura_DataScore <- NA_real_
+
+  for (pg in names(DATASCORE_MODELS)) {
+    idx <- which(dat$position_group == pg)
+    if (!length(idx)) next
+    sub <- dat[idx, , drop = FALSE]
+    res <- .weighted_profile_score(sub, DATASCORE_MODELS[[pg]])
+    dat$DataScore[idx] <- res$score
+    dat$Cobertura_DataScore[idx] <- res$coverage * 100
+  }
+
+  dat
+}
+
+
 
 # ============================================================
 # CHARTS CONFIG (unchanged from your original)
@@ -1761,6 +2247,11 @@ get_player_row_for_season <- function(pname, target_year) {
 # ============================================================
 build_database_master <- function() {
   dat <- get_all_players_df()
+  # Adds DataScore/Cobertura_DataScore columns directly onto dat (unlike
+  # assign_player_profiles(), which returns a separate table joined back on
+  # player_id below) -- no join needed here since it mutates the same rows
+  # in place.
+  dat <- add_datascore(dat)
 
   id_str <- as.character(dat$country_id)
   player_country <- unname(country_id_names[id_str])
@@ -1866,7 +2357,7 @@ get_sim_filt_meta <- function() {
     }
     .sim_filt_meta_cache <<- get_db_master() |>
       dplyr::distinct(Jugador, Equipo, .keep_all = TRUE) |>
-      dplyr::select(Jugador, Equipo, Perfil, Pie, Nacionalidad, Hispanohablante, contract_year)
+      dplyr::select(Jugador, Equipo, Perfil, Perfil_secundario, Pie, Nacionalidad, Hispanohablante, contract_year)
   }
   .sim_filt_meta_cache
 }
