@@ -2227,13 +2227,28 @@ all_players_df_from_cache <- function(scout_list, league_map) {
 # pair of rows once multiple seasons are loaded -- isn't mistaken for a
 # duplicate. Rows with no player_id are left untouched since they can't
 # be safely grouped.
+#
+# .league_key is ALSO part of the grouping -- without it, a club that
+# appears in two separately-pulled competitions in the same season (e.g.
+# an MLS club also in the CONCACAF Champions Cup, or a Liga
+# Profesional/BetPlay/Primera División club also in Copa Libertadores)
+# looks identical on (player_id, team_name, season_name) alone, so this
+# used to silently collapse the player's real domestic-league season down
+# to whichever of the two rows happened to come first in the bound data --
+# discarding the other real stint (usually the domestic one, with far
+# more minutes and the only one carrying a SkillCorner join) before
+# dedup_transfers() ever got a chance to properly minutes-weight them.
+# Confirmed live: Messi/Evander/Anders Dreyer (Inter Miami/Cincinnati/San
+# Diego FC, all MLS + CCC) were each stuck showing their few-hundred-minute
+# CCC stint with no SkillCorner data instead of their real ~2000+ minute
+# MLS season.
 dedup_same_team <- function(df) {
   if (!"player_id" %in% names(df)) return(df)
   has_id <- !is.na(df$player_id) & nzchar(df$player_id)
   with_id    <- df[has_id, , drop = FALSE]
   without_id <- df[!has_id, , drop = FALSE]
   group_cols <- c("player_id", "team_name",
-                  intersect("season_name", names(with_id)))
+                  intersect(c(".league_key", "season_name"), names(with_id)))
   with_id <- with_id |>
     dplyr::group_by(dplyr::across(dplyr::all_of(group_cols))) |>
     dplyr::slice_head(n = 1) |>
