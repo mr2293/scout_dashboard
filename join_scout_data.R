@@ -698,11 +698,27 @@ team_aliases <- tribble(
   "bayer leverkusen",                               "leverkusen"
 )
 
+# Common club-org prefixes that show up on one side (usually SkillCorner)
+# but not the other (usually StatsBomb) -- e.g. SkillCorner's "CD Universidad
+# Católica" vs StatsBomb's "Universidad Católica", or "Club Deportes
+# Limache" vs "Deportes Limache". Confirmed live as the reason players like
+# Justo Giani and Jean Meneses (exact name match, same real club) failed
+# every crosswalk pass: P1 requires team_canon to match exactly, and
+# without this both sides normalized to different strings. Only applied as
+# a FALLBACK when the raw normalized name isn't already in team_aliases, so
+# none of that table's existing hand-curated entries (several of which
+# start with "club ...") change behavior.
+strip_club_boilerplate <- function(x) {
+  x |>
+    str_replace(regex("^(cd|ca|cf|sc|afc|cdyv|club) +", ignore_case = TRUE), "") |>
+    str_squish()
+}
+
 canonicalize_team <- function(x) {
   norm <- normalize_name(x)
   ifelse(norm %in% team_aliases$raw_name,
          team_aliases$canonical[match(norm, team_aliases$raw_name)],
-         norm)
+         strip_club_boilerplate(norm))
 }
 
 # =============================================================================
