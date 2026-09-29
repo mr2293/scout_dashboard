@@ -89,3 +89,54 @@ message(sprintf(
   "Synced %d docs to %s.%s (collection dropped and reinserted)",
   nrow(synced), MONGO_DB, MONGO_COLLECTION
 ))
+
+# ============================================================
+# DATA SCORE HISTORY SNAPSHOT
+#
+# Appends one row per player to `player_score_history` every time this
+# script runs -- feeds the América data score treemap's trend/color
+# (Vercel app), which needs "the DataScore N weeks/months ago" and has no
+# other way to look back in time (this script's normal sync above always
+# overwrites sb_sc_metrics with only the CURRENT pull).
+#
+# This script runs on a fixed weekly cadence in production (GitHub Actions
+# cron, every Tuesday ~6am CDMX -- see .github/workflows/deploy.yml), so a
+# snapshot taken here naturally becomes "this week's" data point. A manual
+# local run on some other weekday still buckets into the most recent
+# Tuesday (current week, Tuesday-to-Monday) rather than its own day, so
+# re-running mid-week for testing overwrites that same week's snapshot
+# instead of creating a second one -- "dedupe to one per player per
+# calendar week, reset on Tuesdays".
+# ============================================================
+most_recent_tuesday <- function(d = Sys.Date()) {
+  wday <- as.POSIXlt(d)$wday  # 0=Sunday, 1=Monday, 2=Tuesday, ...
+  d - ((wday - 2) %% 7)
+}
+week_start <- format(most_recent_tuesday(), "%Y-%m-%d")
+
+history_snapshot <- synced |>
+  dplyr::filter(!is.na(DataScoreAmerica) | !is.na(DataScore)) |>
+  dplyr::transmute(
+    transfermarkt_id,
+    snapshot_date     = week_start,
+    data_score        = DataScore,
+    data_score_america = DataScoreAmerica,
+    liga              = Liga
+  )
+
+if (nrow(history_snapshot) == 0) {
+  message("No rows with a DataScore/DataScoreAmerica value -- skipping history snapshot.")
+} else {
+  history_conn <- mongolite::mongo(collection = "player_score_history", db = MONGO_DB, url = MONGO_URI)
+  # Drop-and-reinsert scoped to THIS week only (not the whole collection,
+  # unlike sb_sc_metrics above) -- every other week's snapshots must
+  # survive so the trend chart has history to compare against.
+  history_conn$remove(sprintf('{"snapshot_date": "%s"}', week_start))
+  history_conn$insert(history_snapshot, pagesize = 500)
+  history_conn$index(add = '{"transfermarkt_id": 1, "snapshot_date": 1}')
+
+  message(sprintf(
+    "Snapshotted %d docs to %s.player_score_history for week %s",
+    nrow(history_snapshot), MONGO_DB, week_start
+  ))
+}
