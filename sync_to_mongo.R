@@ -83,7 +83,16 @@ synced <- synced |>
 conn <- mongolite::mongo(collection = MONGO_COLLECTION, db = MONGO_DB, url = MONGO_URI)
 conn$drop()
 conn$insert(synced, pagesize = 500)
-conn$index(add = '{"transfermarkt_id": 1}')
+# conn$drop() above only clears documents, not indexes -- the colleague's
+# Vercel side has since added a UNIQUE index named transfermarkt_id_1 on
+# his end, which conflicts with this call's default (non-unique) index
+# of the same auto-generated name and halts the whole deploy (seen
+# 2026-10-06, run 37522131997). The unique constraint already satisfies
+# this call's intent, so a conflict here is never actionable -- ignore it.
+tryCatch(
+  conn$index(add = '{"transfermarkt_id": 1}'),
+  error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
+)
 
 message(sprintf(
   "Synced %d docs to %s.%s (collection dropped and reinserted)",
@@ -133,7 +142,10 @@ if (nrow(history_snapshot) == 0) {
   # survive so the trend chart has history to compare against.
   history_conn$remove(sprintf('{"snapshot_date": "%s"}', week_start))
   history_conn$insert(history_snapshot, pagesize = 500)
-  history_conn$index(add = '{"transfermarkt_id": 1, "snapshot_date": 1}')
+  tryCatch(
+    history_conn$index(add = '{"transfermarkt_id": 1, "snapshot_date": 1}'),
+    error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
+  )
 
   message(sprintf(
     "Snapshotted %d docs to %s.player_score_history for week %s",
