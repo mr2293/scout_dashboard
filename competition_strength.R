@@ -104,21 +104,14 @@ apply_competition_strength <- function(var_name, data_score_base, tiers,
   data.frame(strength = strength, ajuste_liga = round(ajuste_liga, 2), datascore_previo = round(datascore_previo, 1))
 }
 
-# ============================================================
-# Validation harness -- only runs when executed directly.
-# ============================================================
-if (sys.nframe() == 0) {
-
-  tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
-  message(sprintf("Loaded %d leagues from competition_strength_tiers.csv", nrow(tiers)))
-
-  dat <- load_scout_data()
-
-  unmapped <- setdiff(unique(dat$var_name), names(VAR_TO_LEAGUE))
-  if (length(unmapped)) message("WARNING -- var_name with no league mapping: ", paste(unmapped, collapse = ", "))
-  no_strength <- setdiff(unique(unname(VAR_TO_LEAGUE)), tiers$league)
-  if (length(no_strength)) message("WARNING -- league with no tier CSV entry: ", paste(no_strength, collapse = ", "))
-
+# ---- Shared row-builder -------------------------------------------------
+# Normalize -> capacities -> DataScore_Base/AmeScore_Base -> Competition
+# Strength, for every implemented role, row-bound into one table. Factored
+# out 2026-10-08 after this exact loop got duplicated a third time
+# (league_transition_gate.R, confidence_shrinkage.R) -- same reasoning as
+# load_scout_data().  dat and tiers are both required (no defaults) so
+# callers can't forget to load either.
+build_scored_rows <- function(dat, tiers) {
   all_results <- list()
   for (role in names(ROLE_SCORE_DEFS)) {
     def <- ROLE_SCORE_DEFS[[role]]
@@ -140,18 +133,46 @@ if (sys.nframe() == 0) {
     ame <- combine_capacities(capacities, def$ame)
     cs <- apply_competition_strength(capacities$var_name, ds$score, tiers)
 
-    result <- capacities |>
+    all_results[[role]] <- capacities |>
       dplyr::select(var_name, player_id, player_name) |>
       dplyr::mutate(
         role_group_matchbased = role,
+        season_id = dat$season_id[role_idx],
+        league = unname(VAR_TO_LEAGUE[var_name]),
         DataScore_Base = round(ds$score, 1),
+        DataScore_Base_cobertura = round(ds$coverage * 100, 1),
         CompetitionStrength = cs$strength,
         Ajuste_Liga = cs$ajuste_liga,
         DataScore_previo = cs$datascore_previo,
-        AmeScore_Base = round(ame$score, 1)
+        AmeScore_Base = round(ame$score, 1),
+        AmeScore_Base_cobertura = round(ame$coverage * 100, 1),
+        player_season_minutes = suppressWarnings(as.numeric(dat$player_season_minutes[role_idx])),
+        player_season_appearances = suppressWarnings(as.numeric(dat$player_season_appearances[role_idx]))
       )
-    all_results[[role]] <- result
+  }
+  dplyr::bind_rows(all_results)
+}
 
+# ============================================================
+# Validation harness -- only runs when executed directly.
+# ============================================================
+if (sys.nframe() == 0) {
+
+  tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
+  message(sprintf("Loaded %d leagues from competition_strength_tiers.csv", nrow(tiers)))
+
+  dat <- load_scout_data()
+
+  unmapped <- setdiff(unique(dat$var_name), names(VAR_TO_LEAGUE))
+  if (length(unmapped)) message("WARNING -- var_name with no league mapping: ", paste(unmapped, collapse = ", "))
+  no_strength <- setdiff(unique(unname(VAR_TO_LEAGUE)), tiers$league)
+  if (length(no_strength)) message("WARNING -- league with no tier CSV entry: ", paste(no_strength, collapse = ", "))
+
+  rows <- build_scored_rows(dat, tiers)
+  all_results <- split(rows, rows$role_group_matchbased)
+
+  for (role in names(all_results)) {
+    result <- all_results[[role]]
     valid <- !is.na(result$DataScore_previo)
     message(sprintf(
       "%-20s n=%-5d strength_coverage=%.1f%%  DataScore_previo[%.1f,%.1f]",

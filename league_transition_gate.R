@@ -125,7 +125,17 @@ apply_transition_gate <- function(rows) {
         gate_active = gate_active,
         minutes_in_current_league = current$player_season_minutes,
         appearances_in_current_league = current$player_season_appearances,
+        # The row DataScore_shown actually came from -- may be `current`
+        # or the held-over `prior` row when gate_active. Confidence
+        # shrinkage (confidence_shrinkage.R) needs the MINUTES/COVERAGE
+        # behind the number actually being displayed, not necessarily
+        # the current league's, since a gated player's trust in their
+        # shown score still rests on their old-league sample.
         source_var_name = shown$var_name,
+        source_role = shown$role_group_matchbased,
+        source_minutes = shown$player_season_minutes,
+        source_appearances = shown$player_season_appearances,
+        source_coverage = shown$DataScore_Base_cobertura,
         DataScore_shown = shown$DataScore_previo
       )
     }) |>
@@ -140,37 +150,8 @@ if (sys.nframe() == 0) {
   tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
   dat <- load_scout_data()
 
-  all_rows <- list()
-  for (role in names(ROLE_SCORE_DEFS)) {
-    def <- ROLE_SCORE_DEFS[[role]]
-    metrics <- unique(unlist(lapply(def$caps, names)))
-    metrics <- intersect(metrics, names(dat))
-
-    role_idx <- which(dat$role_group_matchbased == role)
-    normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
-    for (m in metrics) {
-      normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
-    }
-
-    capacities <- normalized |> dplyr::select(var_name, player_id, player_name)
-    for (cap in names(def$caps)) capacities[[cap]] <- capacity_subscore(normalized, def$caps[[cap]])$score
-
-    ds <- combine_capacities(capacities, def$ds)
-    cs <- apply_competition_strength(capacities$var_name, ds$score, tiers)
-
-    all_rows[[role]] <- capacities |>
-      dplyr::select(var_name, player_id, player_name) |>
-      dplyr::mutate(
-        role_group_matchbased = role,
-        season_id = dat$season_id[role_idx],
-        league = unname(VAR_TO_LEAGUE[var_name]),
-        DataScore_previo = cs$datascore_previo,
-        player_season_minutes = suppressWarnings(as.numeric(dat$player_season_minutes[role_idx])),
-        player_season_appearances = suppressWarnings(as.numeric(dat$player_season_appearances[role_idx]))
-      )
-  }
-  rows <- dplyr::bind_rows(all_rows)
-  message(sprintf("Built %d scored rows across %d roles for the gate to work with", nrow(rows), length(all_rows)))
+  rows <- build_scored_rows(dat, tiers)
+  message(sprintf("Built %d scored rows across %d roles for the gate to work with", nrow(rows), dplyr::n_distinct(rows$role_group_matchbased)))
 
   gated <- apply_transition_gate(rows)
 
