@@ -11,20 +11,25 @@
 # Weights below are the current artifact proposal (capacity_weights_review
 # html, published 2026-10-07) -- STILL PENDING confirmation with the
 # user's team, same "pesos ilustrativos, por calibrar" framing as
-# everything else at this stage. Only Interior has validated capacity
-# definitions in code so far (capacity_subscores.R) -- base combination is
-# only wired up for Interior here; the other roles stay artifact-only
-# until their capacities are built the same way.
+# everything else at this stage.
 #
-# AmeScore now includes 2 AmeScore-only capacities (Presión posicional,
-# Conexión ofensiva -- see capacity_subscores.R) built specifically to
-# give AmeScore distinguishing content instead of just reweighted DataScore
-# inputs. With these + the original (non-widened) weights,
-# cor(DataScore_Base, AmeScore_Base) drops from 0.988 to 0.943 for
-# Interior -- a real improvement, though still high in absolute terms; see
-# correlation_analysis.html for the full investigation (including why
-# widening weight deltas alone barely helps, 0.988 -> 0.757, matching
-# rather than beating the old DataScore/DataScoreAmerica's ~0.77).
+# Every role's AmeScore weights include the 2 AmeScore-only capacities
+# (Presión posicional, Conexión ofensiva -- see capacity_subscores.R)
+# built specifically to give AmeScore distinguishing content instead of
+# just reweighted DataScore inputs. With these + each role's original
+# (non-widened) weights, cor(DataScore_Base, AmeScore_Base) drops
+# consistently (~0.04-0.07) on every role tested -- real improvement,
+# still high in absolute terms; see correlation_analysis.html for the
+# full investigation (including why widening weight deltas alone barely
+# helps, matching rather than beating the old DataScore/DataScoreAmerica's
+# ~0.77).
+#
+# Implemented for Interior, Central, Lateral/Carrilero, Medio de
+# Contención, Mediapunta (reuses INTERIOR_CAPACITIES, own weights) and
+# Delantero (generic only -- the 5 DC_WEIGHTED_PROFILES perfiles from
+# app.R have their own weight proposal in capacity_weights_review.html
+# but aren't wired into code yet). Volante/Extremo deliberately excluded
+# -- frozen, per the user's explicit instruction 2026-10-07.
 #
 # Standalone script, not wired into app.R yet -- same convention as every
 # other file in this pipeline this session.
@@ -74,6 +79,101 @@ INTERIOR_AMESCORE_WEIGHTS <- c(
   "Conexión ofensiva" = 0.15
 )
 
+# Mediapunta reuses INTERIOR_CAPACITIES verbatim -- same 8 capacities,
+# own weight profile (less press/positional-identity emphasis than
+# Interior, more Impacto ofensivo -- a 10 vs an 8, doc S5/S6's "separar
+# 6/8/10" rule).
+MEDIAPUNTA_DATASCORE_WEIGHTS <- c(
+  "Progresión" = 0.20,
+  "Presión/contrapresión" = 0.10,
+  "Juego bajo presión" = 0.10,
+  "Ball Efficiency" = 0.15,
+  "Dinamismo/influencia entre fases" = 0.15,
+  "Impacto ofensivo" = 0.30
+)
+MEDIAPUNTA_AMESCORE_WEIGHTS <- c(
+  "Progresión" = 0.11,
+  "Presión/contrapresión" = 0.10,
+  "Juego bajo presión" = 0.11,
+  "Ball Efficiency" = 0.07,
+  "Dinamismo/influencia entre fases" = 0.14,
+  "Impacto ofensivo" = 0.17,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+CENTRAL_DATASCORE_WEIGHTS <- c(
+  "Defensa/Duelos" = 0.30,
+  "Posicionamiento/Presión" = 0.20,
+  "Progresión con balón" = 0.30,
+  "Distribución/Seguridad" = 0.20
+)
+CENTRAL_AMESCORE_WEIGHTS <- c(
+  "Defensa/Duelos" = 0.21,
+  "Posicionamiento/Presión" = 0.25,
+  "Progresión con balón" = 0.14,
+  "Distribución/Seguridad" = 0.10,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+LATERAL_DATASCORE_WEIGHTS <- c(
+  "Presión/Recuperación" = 0.25,
+  "Progresión/Conducción" = 0.30,
+  "Creación/Centros" = 0.30,
+  "Seguridad" = 0.15
+)
+LATERAL_AMESCORE_WEIGHTS <- c(
+  "Presión/Recuperación" = 0.25,
+  "Progresión/Conducción" = 0.18,
+  "Creación/Centros" = 0.17,
+  "Seguridad" = 0.10,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+MC_DATASCORE_WEIGHTS <- c(
+  "Presión/Recuperación" = 0.35,
+  "Circulación/Progresión" = 0.32,
+  "Juego bajo presión" = 0.10,
+  "Seguridad/Distribución" = 0.23
+)
+MC_AMESCORE_WEIGHTS <- c(
+  "Presión/Recuperación" = 0.30,
+  "Circulación/Progresión" = 0.23,
+  "Juego bajo presión" = 0.04,
+  "Seguridad/Distribución" = 0.13,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+DELANTERO_DATASCORE_WEIGHTS <- c(
+  "Finalización" = 0.40,
+  "Juego aéreo/área" = 0.19,
+  "Presión alta" = 0.17,
+  "Juego asociativo" = 0.22,
+  "Seguridad" = 0.02
+)
+DELANTERO_AMESCORE_WEIGHTS <- c(
+  "Finalización" = 0.22,
+  "Juego aéreo/área" = 0.11,
+  "Presión alta" = 0.20,
+  "Juego asociativo" = 0.14,
+  "Seguridad" = 0.03,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+# ---- Master role -> {capacities, ds weights, ame weights} map ----------
+ROLE_SCORE_DEFS <- list(
+  "Interior" = list(caps = INTERIOR_CAPACITIES, ds = INTERIOR_DATASCORE_WEIGHTS, ame = INTERIOR_AMESCORE_WEIGHTS),
+  "Mediapunta" = list(caps = INTERIOR_CAPACITIES, ds = MEDIAPUNTA_DATASCORE_WEIGHTS, ame = MEDIAPUNTA_AMESCORE_WEIGHTS),
+  "Central" = list(caps = CENTRAL_CAPACITIES, ds = CENTRAL_DATASCORE_WEIGHTS, ame = CENTRAL_AMESCORE_WEIGHTS),
+  "Lateral/Carrilero" = list(caps = LATERAL_CAPACITIES, ds = LATERAL_DATASCORE_WEIGHTS, ame = LATERAL_AMESCORE_WEIGHTS),
+  "Medio de Contención" = list(caps = MC_CAPACITIES, ds = MC_DATASCORE_WEIGHTS, ame = MC_AMESCORE_WEIGHTS),
+  "Delantero" = list(caps = DELANTERO_CAPACITIES, ds = DELANTERO_DATASCORE_WEIGHTS, ame = DELANTERO_AMESCORE_WEIGHTS)
+)
+
 # ---- Generic capacity-combination function ----------------------------
 # capacity_scores: data.frame/matrix, one column per capacity in `weights`,
 #                   values already 0-100 (capacity_subscore() output)
@@ -105,79 +205,63 @@ combine_capacities <- function(capacity_scores, weights, min_coverage = MIN_BASE
 if (sys.nframe() == 0) {
 
   dat <- load_scout_data()
+  all_results <- list()
 
-  # ---- Normalize + build Interior's 6 capacity subscores (same as
-  # capacity_subscores.R's own harness) ----
-  interior_metrics <- unique(unlist(lapply(INTERIOR_CAPACITIES, names)))
-  interior_metrics <- intersect(interior_metrics, names(dat))
+  for (role in names(ROLE_SCORE_DEFS)) {
+    def <- ROLE_SCORE_DEFS[[role]]
+    metrics <- unique(unlist(lapply(def$caps, names)))
+    metrics <- intersect(metrics, names(dat))
 
-  normalized <- dat |> dplyr::select(var_name, player_id, player_name, role_group_matchbased)
-  for (m in interior_metrics) {
-    normalized[[m]] <- normalize_metric(dat[[m]], dat$role_group_matchbased, dat$exposure_90s, m)
+    role_idx <- which(dat$role_group_matchbased == role)
+    normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
+    for (m in metrics) {
+      normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
+    }
+
+    capacities <- normalized |> dplyr::select(var_name, player_id, player_name)
+    for (cap in names(def$caps)) {
+      res <- capacity_subscore(normalized, def$caps[[cap]])
+      capacities[[cap]] <- res$score
+    }
+
+    ds <- combine_capacities(capacities, def$ds)
+    ame <- combine_capacities(capacities, def$ame)
+
+    result <- capacities |>
+      dplyr::mutate(
+        role_group_matchbased = role,
+        DataScore_Base = round(ds$score, 1),
+        DataScore_Base_cobertura = round(ds$coverage * 100, 1),
+        AmeScore_Base = round(ame$score, 1),
+        AmeScore_Base_cobertura = round(ame$coverage * 100, 1)
+      )
+    all_results[[role]] <- result
+
+    valid_both <- !is.na(result$DataScore_Base) & !is.na(result$AmeScore_Base)
+    message(sprintf(
+      "%-20s n=%-5d DataScore[%.1f,%.1f] AmeScore[%.1f,%.1f]  cor=%.3f",
+      role, sum(valid_both),
+      min(result$DataScore_Base, na.rm = TRUE), max(result$DataScore_Base, na.rm = TRUE),
+      min(result$AmeScore_Base, na.rm = TRUE), max(result$AmeScore_Base, na.rm = TRUE),
+      cor(result$DataScore_Base[valid_both], result$AmeScore_Base[valid_both])
+    ))
   }
 
-  interior_idx <- which(dat$role_group_matchbased == "Interior")
-  interior_normalized <- normalized[interior_idx, ]
+  out_path <- "data/base_scores_by_role.rds"
+  saveRDS(all_results, out_path)
+  message(sprintf("\nWrote %s (%d roles: %s)", out_path, length(all_results), paste(names(all_results), collapse = ", ")))
 
-  capacities <- interior_normalized |> dplyr::select(var_name, player_id, player_name)
-  for (cap in names(INTERIOR_CAPACITIES)) {
-    res <- capacity_subscore(interior_normalized, INTERIOR_CAPACITIES[[cap]])
-    capacities[[cap]] <- res$score
-  }
-
-  # ---- Combine into DataScore Base and AmeScore Base ----
-  ds <- combine_capacities(capacities, INTERIOR_DATASCORE_WEIGHTS)
-  ame <- combine_capacities(capacities, INTERIOR_AMESCORE_WEIGHTS)
-
-  result <- capacities |>
-    dplyr::mutate(
-      DataScore_Base = round(ds$score, 1),
-      DataScore_Base_cobertura = round(ds$coverage * 100, 1),
-      AmeScore_Base = round(ame$score, 1),
-      AmeScore_Base_cobertura = round(ame$coverage * 100, 1)
-    )
-
-  out_path <- "data/interior_base_scores.rds"
-  saveRDS(result, out_path)
-  message(sprintf("Wrote %s (%d Interior player-seasons)", out_path, nrow(result)))
-
-  # ---- Sanity checks ----
-  message("\n=== DataScore Base vs AmeScore Base ===")
-  cat(sprintf(
-    "DataScore_Base:  n_valid=%d/%d  range=[%.1f, %.1f]  mean=%.1f\n",
-    sum(!is.na(result$DataScore_Base)), nrow(result),
-    min(result$DataScore_Base, na.rm = TRUE), max(result$DataScore_Base, na.rm = TRUE),
-    mean(result$DataScore_Base, na.rm = TRUE)
-  ))
-  cat(sprintf(
-    "AmeScore_Base:   n_valid=%d/%d  range=[%.1f, %.1f]  mean=%.1f\n",
-    sum(!is.na(result$AmeScore_Base)), nrow(result),
-    min(result$AmeScore_Base, na.rm = TRUE), max(result$AmeScore_Base, na.rm = TRUE),
-    mean(result$AmeScore_Base, na.rm = TRUE)
-  ))
-
-  # The whole point of separating these: they should NOT be near-identical
-  # for the same players (doc S1/S5 -- today's DataScore/DataScoreAmerica
-  # correlate ~0.77 precisely because they're built from the same metrics,
-  # just reweighted. Different capacity weights per score is the fix).
-  valid_both <- !is.na(result$DataScore_Base) & !is.na(result$AmeScore_Base)
-  message(sprintf(
-    "\n=== Correlación DataScore_Base x AmeScore_Base (n=%d) ===\ncor = %.3f (la vieja DataScore/DataScoreAmerica correlacionaba ~0.77 -- esto debería ser bastante más bajo)",
-    sum(valid_both), cor(result$DataScore_Base[valid_both], result$AmeScore_Base[valid_both])
-  ))
-
-  message("\n=== Top 10 por DataScore_Base ===")
-  print(result |> dplyr::filter(!is.na(DataScore_Base)) |> dplyr::arrange(dplyr::desc(DataScore_Base)) |>
+  # ---- Spot checks on Interior (same cases shown in earlier validation
+  # passes, to confirm this refactor didn't change anything) ----
+  interior <- all_results[["Interior"]]
+  message("\n=== Interior -- top 10 por DataScore_Base ===")
+  print(interior |> dplyr::filter(!is.na(DataScore_Base)) |> dplyr::arrange(dplyr::desc(DataScore_Base)) |>
           dplyr::select(player_name, DataScore_Base, AmeScore_Base) |> head(10))
 
-  message("\n=== Top 10 por AmeScore_Base ===")
-  print(result |> dplyr::filter(!is.na(AmeScore_Base)) |> dplyr::arrange(dplyr::desc(AmeScore_Base)) |>
-          dplyr::select(player_name, DataScore_Base, AmeScore_Base) |> head(10))
-
-  message("\n=== Casos donde los dos scores DIVERGEN más (|DataScore_Base - AmeScore_Base| alto) ===")
+  message("\n=== Interior -- casos donde los dos scores DIVERGEN más ===")
   print(
-    result |>
-      dplyr::filter(valid_both <- !is.na(DataScore_Base) & !is.na(AmeScore_Base)) |>
+    interior |>
+      dplyr::filter(!is.na(DataScore_Base) & !is.na(AmeScore_Base)) |>
       dplyr::mutate(gap = DataScore_Base - AmeScore_Base) |>
       dplyr::arrange(dplyr::desc(abs(gap))) |>
       dplyr::select(player_name, DataScore_Base, AmeScore_Base, gap) |>

@@ -34,6 +34,16 @@
 #
 # Standalone script, not wired into app.R yet -- same convention as
 # role_eligibility*.R / normalization.R this session.
+#
+# EXTENDED 2026-10-07/08 to Central, Lateral/Carrilero, Medio de
+# Contención, Mediapunta and Delantero after the AmeScore-only-capacity
+# fix (see ALMADA_IDENTITY_CAPACITIES below) was validated on Interior
+# and confirmed to generalize (correlation drop of ~0.04-0.07 on every
+# role tested). Mediapunta needs no capacity definition of its own -- it
+# reuses INTERIOR_CAPACITIES verbatim (same 8 capacities), only its
+# DataScore/AmeScore WEIGHTS differ (see base_scores.R). Volante/Extremo
+# is deliberately excluded -- frozen pending the user's discussion with
+# colleagues, per their explicit instruction 2026-10-07.
 # ============================================================
 
 suppressWarnings(suppressMessages({
@@ -45,6 +55,50 @@ suppressWarnings(suppressMessages({
 source("normalization.R")  # normalize_metric() -- sys.nframe() guard means
                             # this does NOT re-run normalization.R's own
                             # validation harness, just defines the function.
+
+# ---- 0. AmeScore-only capacities, shared across every role -----------
+# Found by reviewing the StatsBomb Player Season Stats v6.0.0 spec for
+# metrics tied to Almada's identity stats (doc S4: PPDA, % presiones en
+# campo rival, directness, etc.) that weren't in any capacity yet.
+# Genuinely role-agnostic: pressing intensity/positioning and
+# team-outcome connection are team-wide identity traits in Almada's
+# system, not specific to any one position -- confirmed empirically,
+# same ~0.04-0.07 correlation drop on every role tested (Central,
+# Lateral/Carrilero, Medio de Contención, Volante/Extremo, Delantero,
+# Interior). Considered adding role-specific extras (e.g.
+# predicted_headers_90 for Central's aerial duels) but rejected --
+# that's a general QUALITY signal, not an identity/fit one, so it
+# belongs in DataScore's territory, not a manufactured AmeScore addition
+# (see correlation_analysis.html for the full reasoning).
+#
+# These capacities NEVER get a DataScore weight anywhere (every
+# *_DATASCORE_WEIGHTS vector below omits them) -- the whole point is
+# content that distinguishes AmeScore, not just a reweighting of what
+# DataScore already sees.
+ALMADA_IDENTITY_CAPACITIES <- list(
+  # Directly operationalizes the doc's own "% presiones en campo rival"
+  # identity stat (44.0% for América, S4) via fhalf_pressures_ratio,
+  # which nothing else used; plus responsibility-weighted defensive
+  # involvement (v5/v6 StatsBomb fields), a genuinely new signal.
+  "Presión posicional" = c(
+    "player_season_fhalf_pressures_ratio" = 0.30,
+    "player_season_counterpressures_90" = 0.25,
+    "player_season_defensive_responsibility_actions_90" = 0.25,
+    "player_season_obv_conceded_responsibility_weighted_90" = 0.20
+  ),
+  # positive_outcome_90/score measure whether a player's involvement
+  # connects to a TEAM-level attacking outcome (shot, f-half free kick,
+  # corner), the closest thing in the API to "does this player's game
+  # feed what the team is trying to do" rather than individual output;
+  # op_f3_forward_pass_proportion/pass_length_ratio sharpen the doc's
+  # "Directness" identity stat to the final third specifically.
+  "Conexión ofensiva" = c(
+    "player_season_positive_outcome_90" = 0.30,
+    "player_season_positive_outcome_score" = 0.30,
+    "player_season_op_f3_forward_pass_proportion" = 0.20,
+    "player_season_pass_length_ratio" = 0.20
+  )
+)
 
 # ---- 1. Interior/8 capacity definitions -----------------------------
 # Weights are placeholders ("pesos ilustrativos", doc S12 framing) except
@@ -92,47 +146,153 @@ INTERIOR_CAPACITIES <- list(
     "player_season_op_xgchain_90" = 0.30,
     "player_season_touches_inside_box_90" = 0.20,
     "player_season_np_xg_90" = 0.20
-  ),
-
-  # ---- AmeScore-only capacities, added 2026-10-07 ----
-  # Found by reviewing the StatsBomb Player Season Stats v6.0.0 spec for
-  # metrics tied to Almada's identity stats (doc S4: PPDA, % presiones en
-  # campo rival, directness, etc.) that weren't in any capacity yet. These
-  # two never get a DataScore weight (base_scores.R's
-  # INTERIOR_DATASCORE_WEIGHTS doesn't reference them at all) -- the whole
-  # point is content that distinguishes AmeScore, not just a reweighting
-  # of what DataScore already sees. Validated: widening the weight deltas
-  # ALONE only got correlation(DataScore_Base, AmeScore_Base) from 0.988
-  # to 0.757 (barely below the old DataScore/DataScoreAmerica's ~0.77);
-  # these two capacities alone (original, non-widened weights) got to
-  # 0.943; combined with widened weights, 0.741. Neither lever alone was
-  # enough -- see the correlation_analysis.html artifact for the full
-  # investigation.
-  #
-  # "Presión posicional" -- directly operationalizes the doc's own "%
-  # presiones en campo rival" identity stat (44.0% for América, S4) via
-  # fhalf_pressures_ratio, which nothing else used; plus
-  # responsibility-weighted defensive involvement (v5/v6 StatsBomb
-  # fields), a genuinely new signal not captured by any other capacity.
-  "Presión posicional" = c(
-    "player_season_fhalf_pressures_ratio" = 0.30,
-    "player_season_counterpressures_90" = 0.25,
-    "player_season_defensive_responsibility_actions_90" = 0.25,
-    "player_season_obv_conceded_responsibility_weighted_90" = 0.20
-  ),
-  # "Conexión ofensiva" -- positive_outcome_90/score measure whether a
-  # player's involvement connects to a TEAM-level attacking outcome (shot,
-  # f-half free kick, corner), the closest thing in the API to "does this
-  # player's game feed what the team is trying to do" rather than
-  # individual output; op_f3_forward_pass_proportion/pass_length_ratio
-  # sharpen the doc's "Directness" identity stat to the final third
-  # specifically.
-  "Conexión ofensiva" = c(
-    "player_season_positive_outcome_90" = 0.30,
-    "player_season_positive_outcome_score" = 0.30,
-    "player_season_op_f3_forward_pass_proportion" = 0.20,
-    "player_season_pass_length_ratio" = 0.20
   )
+)
+INTERIOR_CAPACITIES <- c(INTERIOR_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1b. Central -------------------------------------------------------
+CENTRAL_CAPACITIES <- list(
+  "Defensa/Duelos" = c(
+    "player_season_aerial_ratio" = 0.30,
+    "player_season_padj_tackles_and_interceptions_90" = 0.30,
+    "player_season_dribble_faced_ratio" = 0.20,
+    "player_season_padj_interceptions_90" = 0.20
+  ),
+  "Posicionamiento/Presión" = c(
+    "player_season_obv_defensive_action_90" = 0.30,
+    "player_season_average_x_defensive_action" = 0.25,
+    "player_season_defensive_actions_above_expectation" = 0.25,
+    "player_season_padj_pressures_90" = 0.20
+  ),
+  "Progresión con balón" = c(
+    "player_season_obv_pass_90" = 0.40,
+    "player_season_deep_progressions_90" = 0.35,
+    "player_season_obv_lbp_90" = 0.25
+  ),
+  "Distribución/Seguridad" = c(
+    "player_season_passing_ratio" = 0.25,
+    "player_season_pressured_passing_ratio" = 0.20,
+    "player_season_xgbuildup_90" = 0.20,
+    "player_season_errors_90" = 0.20,
+    "player_season_turnovers_90" = 0.15
+  )
+)
+CENTRAL_CAPACITIES <- c(CENTRAL_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1c. Lateral/Carrilero ----------------------------------------------
+LATERAL_CAPACITIES <- list(
+  "Presión/Recuperación" = c(
+    "player_season_obv_defensive_action_90" = 0.18,
+    "player_season_padj_tackles_90" = 0.15,
+    "player_season_padj_interceptions_90" = 0.13,
+    "player_season_challenge_ratio" = 0.12,
+    "player_season_pressure_regains_90" = 0.12,
+    "player_season_aggressive_actions_90" = 0.10,
+    "player_season_defensive_actions_above_expectation" = 0.10,
+    "player_season_padj_pressures_90" = 0.10
+  ),
+  "Progresión/Conducción" = c(
+    "player_season_obv_pass_90" = 0.40,
+    "player_season_deep_progressions_90" = 0.35,
+    "player_season_obv_dribble_carry_90" = 0.25
+  ),
+  "Creación/Centros" = c(
+    "player_season_crosses_90" = 0.20,
+    "player_season_box_cross_ratio" = 0.20,
+    "player_season_op_xa_90" = 0.25,
+    "player_season_op_passes_into_box_90" = 0.20,
+    "player_season_op_key_passes_90" = 0.15
+  ),
+  "Seguridad" = c(
+    "player_season_passing_ratio" = 0.50,
+    "player_season_turnovers_90" = 0.50
+  )
+)
+LATERAL_CAPACITIES <- c(LATERAL_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1d. Medio de Contención ---------------------------------------------
+MC_CAPACITIES <- list(
+  "Presión/Recuperación" = c(
+    "player_season_obv_defensive_action_90" = 0.16,
+    "player_season_padj_interceptions_90" = 0.13,
+    "player_season_padj_tackles_90" = 0.11,
+    "player_season_pressure_regains_90" = 0.10,
+    "player_season_ball_recoveries_90" = 0.10,
+    "player_season_challenge_ratio" = 0.08,
+    "player_season_padj_pressures_90" = 0.10,
+    "player_season_counterpressure_regains_90" = 0.09,
+    "player_season_average_x_pressure" = 0.08,
+    "player_season_defensive_actions_above_expectation" = 0.05
+  ),
+  # S6/S13: Line Breaking Passes añadidas 2026-10-07 para dar más
+  # profundidad al componente de progresión (ver capacity_weights_review.html).
+  "Circulación/Progresión" = c(
+    "player_season_obv_pass_90" = 0.28,
+    "player_season_deep_progressions_90" = 0.20,
+    "player_season_obv_lbp_90" = 0.16,
+    "player_season_forward_pass_proportion" = 0.14,
+    "player_season_transition_obv_90" = 0.10,
+    "player_season_lbp_90" = 0.07,
+    "player_season_lbp_pass_ratio" = 0.05
+  ),
+  "Juego bajo presión" = c(
+    "player_season_pressured_passing_ratio" = 0.55,
+    "player_season_change_in_passing_ratio" = 0.45
+  ),
+  "Seguridad/Distribución" = c(
+    "player_season_passing_ratio" = 0.35,
+    "player_season_pressured_passing_ratio" = 0.25,
+    "player_season_xgbuildup_90" = 0.20,
+    "player_season_turnovers_90" = 0.20
+  )
+)
+MC_CAPACITIES <- c(MC_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1e. Delantero (generic -- perfil-specific weights not built yet) --
+DELANTERO_CAPACITIES <- list(
+  "Finalización" = c(
+    "player_season_npg_90" = 0.30,
+    "player_season_np_xg_90" = 0.25,
+    "player_season_np_xg_per_shot" = 0.15,
+    "player_season_shot_on_target_ratio" = 0.15,
+    "player_season_np_shots_90" = 0.15
+  ),
+  "Juego aéreo/área" = c(
+    "player_season_touches_inside_box_90" = 0.50,
+    "player_season_aerial_ratio" = 0.50
+  ),
+  "Presión alta" = c(
+    "player_season_fhalf_pressures_90" = 0.25,
+    "player_season_counterpressure_regains_90" = 0.20,
+    "player_season_padj_pressures_90" = 0.20,
+    "player_season_aggressive_actions_90" = 0.20,
+    "player_season_average_x_pressure" = 0.15
+  ),
+  "Juego asociativo" = c(
+    "player_season_op_xa_90" = 0.18,
+    "player_season_op_key_passes_90" = 0.16,
+    "player_season_obv_pass_90" = 0.14,
+    "player_season_obv_dribble_carry_90" = 0.14,
+    "player_season_xgchain_90" = 0.14,
+    "player_season_op_xgchain_90" = 0.14,
+    "player_season_transition_obv_90" = 0.10
+  ),
+  "Seguridad" = c(
+    "player_season_turnovers_90" = 1.0
+  )
+)
+DELANTERO_CAPACITIES <- c(DELANTERO_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1f. Master role -> capacities map, for iteration downstream -------
+# Mediapunta deliberately absent as a key here -- it reuses
+# INTERIOR_CAPACITIES verbatim (see base_scores.R). Volante/Extremo
+# deliberately absent -- frozen, not implemented.
+ROLE_CAPACITIES <- list(
+  "Interior" = INTERIOR_CAPACITIES,
+  "Central" = CENTRAL_CAPACITIES,
+  "Lateral/Carrilero" = LATERAL_CAPACITIES,
+  "Medio de Contención" = MC_CAPACITIES,
+  "Delantero" = DELANTERO_CAPACITIES
 )
 
 MIN_SUBSCORE_COVERAGE <- 0.60  # same threshold app.R's MIN_PROFILE_COVERAGE uses
@@ -171,44 +331,49 @@ if (sys.nframe() == 0) {
   dat <- load_scout_data()
   message(sprintf("%d Interior rows", sum(dat$role_group_matchbased == "Interior")))
 
-  # ---- 4. Normalize every metric Interior's 6 capacities need ----
-  interior_metrics <- unique(unlist(lapply(INTERIOR_CAPACITIES, names)))
-  interior_metrics <- intersect(interior_metrics, names(dat))
-  missing <- setdiff(unique(unlist(lapply(INTERIOR_CAPACITIES, names))), interior_metrics)
-  if (length(missing)) message("WARNING -- missing columns, not normalized: ", paste(missing, collapse = ", "))
+  # ---- 4/5. For each role: normalize its metrics, combine into capacity
+  # subscores. Mediapunta reuses INTERIOR_CAPACITIES verbatim -- added
+  # here under its own key purely for this validation pass (its player
+  # pool is "Mediapunta", not "Interior"). ----
+  all_results <- list()
+  for (role in c(names(ROLE_CAPACITIES), "Mediapunta")) {
+    caps_def <- if (role == "Mediapunta") INTERIOR_CAPACITIES else ROLE_CAPACITIES[[role]]
+    metrics <- unique(unlist(lapply(caps_def, names)))
+    metrics <- intersect(metrics, names(dat))
+    missing <- setdiff(unique(unlist(lapply(caps_def, names))), metrics)
+    if (length(missing)) message(sprintf("WARNING [%s] -- missing columns, not normalized: %s", role, paste(missing, collapse = ", ")))
 
-  normalized <- dat |> dplyr::select(var_name, player_id, player_name, role_group_matchbased)
-  for (m in interior_metrics) {
-    normalized[[m]] <- normalize_metric(dat[[m]], dat$role_group_matchbased, dat$exposure_90s, m)
+    role_idx <- which(dat$role_group_matchbased == role)
+    normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
+    for (m in metrics) {
+      normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
+    }
+
+    result <- normalized |> dplyr::select(var_name, player_id, player_name)
+    for (cap in names(caps_def)) {
+      res <- capacity_subscore(normalized, caps_def[[cap]])
+      result[[cap]] <- round(res$score, 1)
+      result[[paste0(cap, "__cobertura")]] <- round(res$coverage * 100, 1)
+    }
+    result$role_group_matchbased <- role
+    all_results[[role]] <- result
+
+    message(sprintf("\n=== %s: coverage summary per capacity (n=%d) ===", role, nrow(result)))
+    for (cap in names(caps_def)) {
+      v <- result[[cap]]
+      message(sprintf("%-35s n_valid=%d/%d (%.1f%%)  range=[%.1f, %.1f]  mean=%.1f",
+                       cap, sum(!is.na(v)), length(v), 100 * mean(!is.na(v)),
+                       min(v, na.rm = TRUE), max(v, na.rm = TRUE), mean(v, na.rm = TRUE)))
+    }
   }
 
-  # ---- 5. Combine into Interior's 6 capacity subscores ----
-  interior_idx <- which(dat$role_group_matchbased == "Interior")
-  interior_normalized <- normalized[interior_idx, ]
-
-  result <- interior_normalized |> dplyr::select(var_name, player_id, player_name)
-  for (cap in names(INTERIOR_CAPACITIES)) {
-    res <- capacity_subscore(interior_normalized, INTERIOR_CAPACITIES[[cap]])
-    result[[cap]] <- round(res$score, 1)
-    result[[paste0(cap, "__cobertura")]] <- round(res$coverage * 100, 1)
-  }
-
-  out_path <- "data/interior_capacity_subscores.rds"
-  saveRDS(result, out_path)
-  message(sprintf("Wrote %s (%d Interior player-seasons, %d capacities)", out_path, nrow(result), length(INTERIOR_CAPACITIES)))
-
-  # ---- 6. Sanity checks ----
-  message("\n=== Coverage summary per capacity ===")
-  for (cap in names(INTERIOR_CAPACITIES)) {
-    v <- result[[cap]]
-    message(sprintf("%-35s n_valid=%d/%d (%.1f%%)  range=[%.1f, %.1f]  mean=%.1f",
-                     cap, sum(!is.na(v)), length(v), 100 * mean(!is.na(v)),
-                     min(v, na.rm = TRUE), max(v, na.rm = TRUE), mean(v, na.rm = TRUE)))
-  }
+  out_path <- "data/capacity_subscores_by_role.rds"
+  saveRDS(all_results, out_path)
+  message(sprintf("\nWrote %s (%d roles: %s)", out_path, length(all_results), paste(names(all_results), collapse = ", ")))
 
   message("\n=== Spot check: top 10 Interior players by Progresión ===")
   print(
-    result |>
+    all_results[["Interior"]] |>
       dplyr::filter(!is.na(Progresión)) |>
       dplyr::arrange(dplyr::desc(Progresión)) |>
       dplyr::select(player_name, Progresión, `Presión/contrapresión`, `Ball Efficiency`, `Impacto ofensivo`) |>
