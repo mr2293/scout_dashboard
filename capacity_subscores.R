@@ -92,6 +92,46 @@ INTERIOR_CAPACITIES <- list(
     "player_season_op_xgchain_90" = 0.30,
     "player_season_touches_inside_box_90" = 0.20,
     "player_season_np_xg_90" = 0.20
+  ),
+
+  # ---- AmeScore-only capacities, added 2026-10-07 ----
+  # Found by reviewing the StatsBomb Player Season Stats v6.0.0 spec for
+  # metrics tied to Almada's identity stats (doc S4: PPDA, % presiones en
+  # campo rival, directness, etc.) that weren't in any capacity yet. These
+  # two never get a DataScore weight (base_scores.R's
+  # INTERIOR_DATASCORE_WEIGHTS doesn't reference them at all) -- the whole
+  # point is content that distinguishes AmeScore, not just a reweighting
+  # of what DataScore already sees. Validated: widening the weight deltas
+  # ALONE only got correlation(DataScore_Base, AmeScore_Base) from 0.988
+  # to 0.757 (barely below the old DataScore/DataScoreAmerica's ~0.77);
+  # these two capacities alone (original, non-widened weights) got to
+  # 0.943; combined with widened weights, 0.741. Neither lever alone was
+  # enough -- see the correlation_analysis.html artifact for the full
+  # investigation.
+  #
+  # "Presión posicional" -- directly operationalizes the doc's own "%
+  # presiones en campo rival" identity stat (44.0% for América, S4) via
+  # fhalf_pressures_ratio, which nothing else used; plus
+  # responsibility-weighted defensive involvement (v5/v6 StatsBomb
+  # fields), a genuinely new signal not captured by any other capacity.
+  "Presión posicional" = c(
+    "player_season_fhalf_pressures_ratio" = 0.30,
+    "player_season_counterpressures_90" = 0.25,
+    "player_season_defensive_responsibility_actions_90" = 0.25,
+    "player_season_obv_conceded_responsibility_weighted_90" = 0.20
+  ),
+  # "Conexión ofensiva" -- positive_outcome_90/score measure whether a
+  # player's involvement connects to a TEAM-level attacking outcome (shot,
+  # f-half free kick, corner), the closest thing in the API to "does this
+  # player's game feed what the team is trying to do" rather than
+  # individual output; op_f3_forward_pass_proportion/pass_length_ratio
+  # sharpen the doc's "Directness" identity stat to the final third
+  # specifically.
+  "Conexión ofensiva" = c(
+    "player_season_positive_outcome_90" = 0.30,
+    "player_season_positive_outcome_score" = 0.30,
+    "player_season_op_f3_forward_pass_proportion" = 0.20,
+    "player_season_pass_length_ratio" = 0.20
   )
 )
 

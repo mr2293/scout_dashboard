@@ -44,7 +44,10 @@ LOWER_IS_BETTER_METRICS <- paste0("player_season_", c(
   "errors_90", "turnovers_90", "dispossessions_90", "failed_dribbles_90",
   "dribbled_past_90", "shots_faced_90", "goals_faced_90", "np_xg_faced_90",
   "np_psxg_faced_90", "ot_shots_faced_90", "npot_psxg_faced_90",
-  "penalties_faced_90", "penalties_conceded_90"
+  "penalties_faced_90", "penalties_conceded_90",
+  # Añadido 2026-10-07 -- OBV concedido (ponderado por responsabilidad
+  # defensiva), conceder valor es malo, no bueno.
+  "obv_conceded_responsibility_weighted_90"
 ))
 
 # Placeholder pseudo-count, "por calibrar" like every other weight/threshold

@@ -16,6 +16,16 @@
 # only wired up for Interior here; the other roles stay artifact-only
 # until their capacities are built the same way.
 #
+# AmeScore now includes 2 AmeScore-only capacities (Presión posicional,
+# Conexión ofensiva -- see capacity_subscores.R) built specifically to
+# give AmeScore distinguishing content instead of just reweighted DataScore
+# inputs. With these + the original (non-widened) weights,
+# cor(DataScore_Base, AmeScore_Base) drops from 0.988 to 0.943 for
+# Interior -- a real improvement, though still high in absolute terms; see
+# correlation_analysis.html for the full investigation (including why
+# widening weight deltas alone barely helps, 0.988 -> 0.757, matching
+# rather than beating the old DataScore/DataScoreAmerica's ~0.77).
+#
 # Standalone script, not wired into app.R yet -- same convention as every
 # other file in this pipeline this session.
 # ============================================================
@@ -46,13 +56,22 @@ INTERIOR_DATASCORE_WEIGHTS <- c(
   "Impacto ofensivo" = 0.20
 )
 
+# The original 6 capacities (ratios preserved, 25/15/10/15/20/15) scaled
+# to 70% to make room for the 2 new AmeScore-only capacities at 15% each
+# -- NOT the widened-delta version (user explicitly chose to keep the
+# original weights, 2026-10-07, after the widened version pushed Impacto
+# ofensivo down to an indefensible 4%). DataScore never sees these two
+# capacities at all -- INTERIOR_DATASCORE_WEIGHTS above has no entry for
+# them, so combine_capacities() simply never includes them for DataScore.
 INTERIOR_AMESCORE_WEIGHTS <- c(
-  "Progresión" = 0.25,
-  "Presión/contrapresión" = 0.15,
-  "Juego bajo presión" = 0.10,
-  "Ball Efficiency" = 0.15,
-  "Dinamismo/influencia entre fases" = 0.20,
-  "Impacto ofensivo" = 0.15
+  "Progresión" = 0.18,
+  "Presión/contrapresión" = 0.10,
+  "Juego bajo presión" = 0.07,
+  "Ball Efficiency" = 0.10,
+  "Dinamismo/influencia entre fases" = 0.14,
+  "Impacto ofensivo" = 0.11,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
 )
 
 # ---- Generic capacity-combination function ----------------------------
