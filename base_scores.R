@@ -164,6 +164,52 @@ DELANTERO_AMESCORE_WEIGHTS <- c(
   "Conexión ofensiva" = 0.15
 )
 
+# Unfrozen 2026-10-09 -- user confirmed the capacity_weights_review.html
+# proposal as final after the colleague discussion.
+VOLANTE_DATASCORE_WEIGHTS <- c(
+  "Conducción/Progresión" = 0.30,
+  "Presión alta" = 0.10,
+  "Creación" = 0.25,
+  "Finalización" = 0.25,
+  "Seguridad" = 0.10
+)
+VOLANTE_AMESCORE_WEIGHTS <- c(
+  "Conducción/Progresión" = 0.21,
+  "Presión alta" = 0.18,
+  "Creación" = 0.14,
+  "Finalización" = 0.14,
+  "Seguridad" = 0.03,
+  "Presión posicional" = 0.15,
+  "Conexión ofensiva" = 0.15
+)
+
+# Delantero perfil capacity weights -- straight from the user's own
+# Perfiles Delanteros.pdf, 2026-10-07. Unlike every other *_WEIGHTS pair
+# above, these are football judgment calls the user supplied directly,
+# not placeholders derived by this pipeline.
+DELANTERO_PERFIL_WEIGHTS <- list(
+  "Cazador" = list(
+    ds = c("Finalización" = 0.30, "Juego aéreo/área" = 0.20, "Presión alta" = 0.25, "Juego asociativo" = 0.15, "Seguridad" = 0.10),
+    ame = c("Finalización" = 0.35, "Juego aéreo/área" = 0.20, "Presión alta" = 0.30, "Juego asociativo" = 0.10, "Seguridad" = 0.05)
+  ),
+  "Móvil" = list(
+    ds = c("Finalización" = 0.25, "Juego aéreo/área" = 0.15, "Presión alta" = 0.20, "Juego asociativo" = 0.30, "Seguridad" = 0.10),
+    ame = c("Finalización" = 0.25, "Juego aéreo/área" = 0.15, "Presión alta" = 0.25, "Juego asociativo" = 0.25, "Seguridad" = 0.10)
+  ),
+  "Retenedor" = list(
+    ds = c("Finalización" = 0.20, "Juego aéreo/área" = 0.20, "Presión alta" = 0.20, "Juego asociativo" = 0.25, "Seguridad" = 0.15),
+    ame = c("Finalización" = 0.20, "Juego aéreo/área" = 0.15, "Presión alta" = 0.25, "Juego asociativo" = 0.25, "Seguridad" = 0.15)
+  ),
+  "Aéreo" = list(
+    ds = c("Finalización" = 0.25, "Juego aéreo/área" = 0.30, "Presión alta" = 0.15, "Juego asociativo" = 0.15, "Seguridad" = 0.15),
+    ame = c("Finalización" = 0.25, "Juego aéreo/área" = 0.35, "Presión alta" = 0.20, "Juego asociativo" = 0.10, "Seguridad" = 0.10)
+  ),
+  "Acosador" = list(
+    ds = c("Finalización" = 0.30, "Juego aéreo/área" = 0.15, "Presión alta" = 0.30, "Juego asociativo" = 0.15, "Seguridad" = 0.10),
+    ame = c("Finalización" = 0.30, "Juego aéreo/área" = 0.15, "Presión alta" = 0.35, "Juego asociativo" = 0.15, "Seguridad" = 0.05)
+  )
+)
+
 # ---- Master role -> {capacities, ds weights, ame weights} map ----------
 ROLE_SCORE_DEFS <- list(
   "Interior" = list(caps = INTERIOR_CAPACITIES, ds = INTERIOR_DATASCORE_WEIGHTS, ame = INTERIOR_AMESCORE_WEIGHTS),
@@ -171,7 +217,19 @@ ROLE_SCORE_DEFS <- list(
   "Central" = list(caps = CENTRAL_CAPACITIES, ds = CENTRAL_DATASCORE_WEIGHTS, ame = CENTRAL_AMESCORE_WEIGHTS),
   "Lateral/Carrilero" = list(caps = LATERAL_CAPACITIES, ds = LATERAL_DATASCORE_WEIGHTS, ame = LATERAL_AMESCORE_WEIGHTS),
   "Medio de Contención" = list(caps = MC_CAPACITIES, ds = MC_DATASCORE_WEIGHTS, ame = MC_AMESCORE_WEIGHTS),
-  "Delantero" = list(caps = DELANTERO_CAPACITIES, ds = DELANTERO_DATASCORE_WEIGHTS, ame = DELANTERO_AMESCORE_WEIGHTS)
+  "Delantero" = list(caps = DELANTERO_CAPACITIES, ds = DELANTERO_DATASCORE_WEIGHTS, ame = DELANTERO_AMESCORE_WEIGHTS),
+  "Volante/Extremo" = list(caps = VOLANTE_CAPACITIES, ds = VOLANTE_DATASCORE_WEIGHTS, ame = VOLANTE_AMESCORE_WEIGHTS)
+)
+
+# ---- Delantero perfiles: role -> {perfil -> {capacities, ds, ame}} -----
+# Separate from ROLE_SCORE_DEFS because perfil scoring is TWO-stage
+# (classify which perfil first, then score with THAT perfil's weights --
+# see delantero_perfiles.R) rather than a straight lookup by role.
+DELANTERO_PERFIL_DEFS <- setNames(
+  lapply(names(DELANTERO_PERFIL_WEIGHTS), function(p) {
+    list(caps = DELANTERO_PERFIL_CAPACITIES[[p]], ds = DELANTERO_PERFIL_WEIGHTS[[p]]$ds, ame = DELANTERO_PERFIL_WEIGHTS[[p]]$ame)
+  }),
+  names(DELANTERO_PERFIL_WEIGHTS)
 )
 
 # ---- Generic capacity-combination function ----------------------------

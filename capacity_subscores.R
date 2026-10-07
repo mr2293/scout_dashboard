@@ -283,16 +283,174 @@ DELANTERO_CAPACITIES <- list(
 )
 DELANTERO_CAPACITIES <- c(DELANTERO_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
 
-# ---- 1f. Master role -> capacities map, for iteration downstream -------
+# ---- 1f. Volante/Extremo -- unfrozen 2026-10-09 ------------------------
+# Weights/metrics as finalized in capacity_weights_review.html after the
+# user's colleague discussion -- obv_pass_90 lives in Creación (not
+# Seguridad), and Finalización uses shot-quality signals (obv_shot_90,
+# np_psxg_90) instead of touches_inside_box_90 (box presence, not shot
+# quality -- user's own correction, 2026-10-09).
+VOLANTE_CAPACITIES <- list(
+  "Conducción/Progresión" = c(
+    "player_season_obv_dribble_carry_90" = 0.25,
+    "player_season_dribbles_90" = 0.15,
+    "player_season_dribble_ratio" = 0.10,
+    "player_season_deep_progressions_90" = 0.20,
+    "player_season_carries_90" = 0.15,
+    "player_season_transition_obv_90" = 0.15
+  ),
+  "Presión alta" = c(
+    "player_season_counterpressure_regains_90" = 0.30,
+    "player_season_padj_pressures_90" = 0.25,
+    "player_season_fhalf_pressures_90" = 0.25,
+    "player_season_average_x_pressure" = 0.20
+  ),
+  "Creación" = c(
+    "player_season_op_xa_90" = 0.25,
+    "player_season_op_key_passes_90" = 0.20,
+    "player_season_op_passes_into_box_90" = 0.20,
+    "player_season_crosses_90" = 0.12,
+    "player_season_box_cross_ratio" = 0.08,
+    "player_season_obv_pass_90" = 0.15
+  ),
+  "Finalización" = c(
+    "player_season_np_xg_90" = 0.35,
+    "player_season_npg_90" = 0.30,
+    "player_season_obv_shot_90" = 0.20,
+    "player_season_np_psxg_90" = 0.15
+  ),
+  "Seguridad" = c(
+    "player_season_turnovers_90" = 1.0
+  )
+)
+VOLANTE_CAPACITIES <- c(VOLANTE_CAPACITIES, ALMADA_IDENTITY_CAPACITIES)
+
+# ---- 1g. Delantero perfiles -- unfrozen 2026-10-09 ----------------------
+# Reuses app.R's existing DC_WEIGHTED_PROFILES (5 archetypes already
+# curated for the "Perfil"/"Perfil_secundario" system) for PERFIL
+# CLASSIFICATION only (unchanged, ported verbatim below as
+# DC_WEIGHTED_PROFILES) -- deciding which of the 5 archetypes a given
+# Delantero row fits best. The 5 capacity-based scoring definitions below
+# are a SEPARATE thing: within-capacity metric weights are EQUAL (same
+# precedent as PROFILE_METRIC_DEFS' own Portero block in app.R,
+# .equal_weights()) rather than invented per-metric judgment calls, since
+# DC_WEIGHTED_PROFILES' own weights don't cover every one of the 5
+# capacity buckets for every perfil (e.g. Cazador has zero press/
+# associative metrics in its original definition -- it's a pure
+# finishing classifier, not a 5-capacity scoring model). Capacity-level
+# weights (which of the 5 capacities matters how much per perfil) come
+# from the user's own Perfiles Delanteros.pdf, 2026-10-07 -- NOT
+# equal-weighted, those are real football judgment calls already made.
+.equal_weights <- function(metrics) {
+  w <- rep(1 / length(metrics), length(metrics))
+  names(w) <- metrics
+  w
+}
+
+DC_WEIGHTED_PROFILES <- list(
+  "Cazador" = c(
+    "player_season_npg_90" = 0.24, "player_season_np_xg_90" = 0.2,
+    "player_season_np_xg_per_shot" = 0.12, "player_season_shot_on_target_ratio" = 0.1,
+    "player_season_np_shots_90" = 0.1, "player_season_touches_inside_box_90" = 0.12,
+    "player_season_np_psxg_90" = 0.07, "player_season_over_under_performance_90" = 0.05
+  ),
+  "Móvil" = c(
+    "player_season_deep_progressions_90" = 0.12, "player_season_obv_dribble_carry_90" = 0.12,
+    "player_season_carries_90" = 0.1, "player_season_op_key_passes_90" = 0.12,
+    "player_season_op_xa_90" = 0.12, "player_season_obv_pass_90" = 0.1,
+    "player_season_xgchain_90" = 0.12, "player_season_touches_inside_box_90" = 0.08,
+    "player_season_fouls_won_90" = 0.05, "player_season_counterpressure_regains_90" = 0.07
+  ),
+  "Retenedor" = c(
+    "player_season_aerial_ratio" = 0.18, "player_season_aerial_wins_90" = 0.12,
+    "player_season_obv_pass_90" = 0.12, "player_season_passing_ratio" = 0.1,
+    "player_season_op_key_passes_90" = 0.1, "player_season_op_xa_90" = 0.1,
+    "player_season_xgchain_90" = 0.1, "player_season_dispossessions_90" = 0.08,
+    "player_season_turnovers_90" = 0.05, "player_season_touches_inside_box_90" = 0.05
+  ),
+  "Aéreo" = c(
+    "player_season_aerial_ratio" = 0.3, "player_season_aerial_wins_90" = 0.18,
+    "player_season_npg_90" = 0.14, "player_season_np_xg_90" = 0.12,
+    "player_season_np_shots_90" = 0.08, "player_season_touches_inside_box_90" = 0.08,
+    "player_season_np_xg_per_shot" = 0.05, "player_season_np_psxg_90" = 0.05
+  ),
+  "Acosador" = c(
+    "player_season_padj_pressures_90" = 0.18, "player_season_fhalf_pressures_90" = 0.16,
+    "player_season_counterpressures_90" = 0.14, "player_season_fhalf_counterpressures_90" = 0.12,
+    "player_season_pressure_regains_90" = 0.14, "player_season_counterpressure_regains_90" = 0.12,
+    "player_season_aggressive_actions_90" = 0.08, "player_season_fhalf_pressures_ratio" = 0.06
+  )
+)
+
+DELANTERO_PERFIL_CAPACITIES <- list(
+  "Cazador" = list(
+    "Finalización" = .equal_weights(c("player_season_npg_90", "player_season_np_xg_90",
+      "player_season_np_xg_per_shot", "player_season_shot_on_target_ratio",
+      "player_season_np_shots_90", "player_season_np_psxg_90", "player_season_over_under_performance_90")),
+    "Juego aéreo/área" = .equal_weights(c("player_season_touches_inside_box_90", "player_season_aerial_ratio")),
+    "Presión alta" = .equal_weights(c("player_season_fhalf_pressures_90", "player_season_counterpressure_regains_90",
+      "player_season_padj_pressures_90", "player_season_aggressive_actions_90", "player_season_average_x_pressure")),
+    "Juego asociativo" = .equal_weights(c("player_season_op_xa_90", "player_season_op_key_passes_90",
+      "player_season_obv_pass_90", "player_season_obv_dribble_carry_90", "player_season_xgchain_90",
+      "player_season_op_xgchain_90", "player_season_transition_obv_90")),
+    "Seguridad" = c("player_season_turnovers_90" = 1.0)
+  ),
+  "Móvil" = list(
+    "Finalización" = .equal_weights(c("player_season_npg_90", "player_season_np_xg_90",
+      "player_season_np_xg_per_shot", "player_season_shot_on_target_ratio", "player_season_np_shots_90")),
+    "Juego aéreo/área" = .equal_weights(c("player_season_touches_inside_box_90", "player_season_aerial_ratio")),
+    "Presión alta" = .equal_weights(c("player_season_counterpressure_regains_90", "player_season_fhalf_pressures_90",
+      "player_season_padj_pressures_90", "player_season_aggressive_actions_90", "player_season_average_x_pressure")),
+    "Juego asociativo" = .equal_weights(c("player_season_deep_progressions_90", "player_season_obv_dribble_carry_90",
+      "player_season_carries_90", "player_season_op_key_passes_90", "player_season_op_xa_90",
+      "player_season_obv_pass_90", "player_season_xgchain_90")),
+    "Seguridad" = c("player_season_turnovers_90" = 1.0)
+  ),
+  "Retenedor" = list(
+    "Finalización" = .equal_weights(c("player_season_npg_90", "player_season_np_xg_90",
+      "player_season_np_xg_per_shot", "player_season_shot_on_target_ratio", "player_season_np_shots_90")),
+    "Juego aéreo/área" = .equal_weights(c("player_season_aerial_ratio", "player_season_aerial_wins_90", "player_season_touches_inside_box_90")),
+    "Presión alta" = .equal_weights(c("player_season_fhalf_pressures_90", "player_season_counterpressure_regains_90",
+      "player_season_padj_pressures_90", "player_season_aggressive_actions_90", "player_season_average_x_pressure")),
+    "Juego asociativo" = .equal_weights(c("player_season_obv_pass_90", "player_season_op_key_passes_90",
+      "player_season_op_xa_90", "player_season_xgchain_90")),
+    "Seguridad" = .equal_weights(c("player_season_passing_ratio", "player_season_dispossessions_90", "player_season_turnovers_90"))
+  ),
+  "Aéreo" = list(
+    "Finalización" = .equal_weights(c("player_season_npg_90", "player_season_np_xg_90",
+      "player_season_np_shots_90", "player_season_np_xg_per_shot", "player_season_np_psxg_90")),
+    "Juego aéreo/área" = .equal_weights(c("player_season_aerial_ratio", "player_season_aerial_wins_90", "player_season_touches_inside_box_90")),
+    "Presión alta" = .equal_weights(c("player_season_fhalf_pressures_90", "player_season_counterpressure_regains_90",
+      "player_season_padj_pressures_90", "player_season_aggressive_actions_90", "player_season_average_x_pressure")),
+    "Juego asociativo" = .equal_weights(c("player_season_op_xa_90", "player_season_op_key_passes_90",
+      "player_season_obv_pass_90", "player_season_obv_dribble_carry_90", "player_season_xgchain_90",
+      "player_season_op_xgchain_90", "player_season_transition_obv_90")),
+    "Seguridad" = c("player_season_turnovers_90" = 1.0)
+  ),
+  "Acosador" = list(
+    "Finalización" = .equal_weights(c("player_season_npg_90", "player_season_np_xg_90",
+      "player_season_np_xg_per_shot", "player_season_shot_on_target_ratio", "player_season_np_shots_90")),
+    "Juego aéreo/área" = .equal_weights(c("player_season_touches_inside_box_90", "player_season_aerial_ratio")),
+    "Presión alta" = .equal_weights(c("player_season_padj_pressures_90", "player_season_fhalf_pressures_90",
+      "player_season_counterpressures_90", "player_season_fhalf_counterpressures_90", "player_season_pressure_regains_90",
+      "player_season_counterpressure_regains_90", "player_season_aggressive_actions_90", "player_season_fhalf_pressures_ratio")),
+    "Juego asociativo" = .equal_weights(c("player_season_op_xa_90", "player_season_op_key_passes_90",
+      "player_season_obv_pass_90", "player_season_obv_dribble_carry_90", "player_season_xgchain_90",
+      "player_season_op_xgchain_90", "player_season_transition_obv_90")),
+    "Seguridad" = c("player_season_turnovers_90" = 1.0)
+  )
+)
+DELANTERO_PERFIL_CAPACITIES <- lapply(DELANTERO_PERFIL_CAPACITIES, function(caps) c(caps, ALMADA_IDENTITY_CAPACITIES))
+
+# ---- 1h. Master role -> capacities map, for iteration downstream -------
 # Mediapunta deliberately absent as a key here -- it reuses
-# INTERIOR_CAPACITIES verbatim (see base_scores.R). Volante/Extremo
-# deliberately absent -- frozen, not implemented.
+# INTERIOR_CAPACITIES verbatim (see base_scores.R).
 ROLE_CAPACITIES <- list(
   "Interior" = INTERIOR_CAPACITIES,
   "Central" = CENTRAL_CAPACITIES,
   "Lateral/Carrilero" = LATERAL_CAPACITIES,
   "Medio de Contención" = MC_CAPACITIES,
-  "Delantero" = DELANTERO_CAPACITIES
+  "Delantero" = DELANTERO_CAPACITIES,
+  "Volante/Extremo" = VOLANTE_CAPACITIES
 )
 
 MIN_SUBSCORE_COVERAGE <- 0.60  # same threshold app.R's MIN_PROFILE_COVERAGE uses
