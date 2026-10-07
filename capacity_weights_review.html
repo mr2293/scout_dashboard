@@ -1,0 +1,466 @@
+<title>Pesos de Capacidades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#f7f5ef; --surface:#ffffff; --surface-2:#efece2;
+    --ink:#1b2130; --ink-dim:#5a6072; --line:#e2ddd0;
+    --navy:#132144; --navy-ink:#eef0f6;
+    --gold:#b8912f; --gold-soft:#f1e6c8;
+    --data:#2f6f63; --data-soft:#e4efec;
+    --ame:#9a4b23; --ame-soft:#f5e7dc;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161f; --surface:#1b1e2a; --surface-2:#222536;
+      --ink:#eceef5; --ink-dim:#a3a8bd; --line:#30334a;
+      --navy:#aebbe8; --navy-ink:#10131d;
+      --gold:#d9b25c; --gold-soft:#332a14;
+      --data:#6fbfae; --data-soft:#16302a;
+      --ame:#e08a56; --ame-soft:#38220f;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161f; --surface:#1b1e2a; --surface-2:#222536;
+    --ink:#eceef5; --ink-dim:#a3a8bd; --line:#30334a;
+    --navy:#aebbe8; --navy-ink:#10131d;
+    --gold:#d9b25c; --gold-soft:#332a14;
+    --data:#6fbfae; --data-soft:#16302a;
+    --ame:#e08a56; --ame-soft:#38220f;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--ink); margin:0; padding-inline:20px;
+    padding-block: max(28px, env(safe-area-inset-top,0px)) 60px;
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:15px; line-height:1.5;
+  }
+  h1,h2,h3{font-family:"Barlow Condensed", "IBM Plex Sans", sans-serif; font-weight:700; text-wrap:balance; margin:0}
+  .wrap{max-width:980px; margin:0 auto}
+
+  header.page{
+    padding:28px 26px; border-radius:14px; margin-bottom:28px;
+    background:linear-gradient(135deg, var(--navy), #223165 70%);
+    color:var(--navy-ink);
+  }
+  header.page .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    opacity:.75; margin-bottom:8px;
+  }
+  header.page h1{font-size:clamp(28px,5vw,40px); letter-spacing:.01em}
+  header.page p{max-width:62ch; opacity:.88; margin-top:10px; font-size:14.5px}
+  header.page .legend{display:flex; gap:18px; margin-top:18px; flex-wrap:wrap}
+  header.page .legend span{
+    font-family:var(--mono); font-size:12px; display:flex; align-items:center; gap:6px;
+  }
+  .dot{width:9px; height:9px; border-radius:50%; display:inline-block}
+  .dot.data{background:var(--data)} .dot.ame{background:var(--ame)}
+
+  nav.jump{
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:30px;
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+    background:var(--bg); padding-block:8px;
+  }
+  nav.jump a{
+    font-family:var(--mono); font-size:12px; text-decoration:none; color:var(--ink-dim);
+    border:1px solid var(--line); padding:6px 11px; border-radius:999px; background:var(--surface);
+  }
+  nav.jump a:hover{color:var(--ink); border-color:var(--ink-dim)}
+
+  section.role{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:22px 22px 8px; margin-bottom:22px; scroll-margin-top:60px;
+  }
+  section.role .role-head{
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;
+    border-bottom:2px solid var(--line); padding-bottom:12px; margin-bottom:6px;
+  }
+  section.role h2{font-size:26px; color:var(--ink)}
+  section.role .status{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    padding:3px 9px; border-radius:999px; white-space:nowrap;
+  }
+  .status.built{background:var(--data-soft); color:var(--data)}
+  .status.proposed{background:var(--gold-soft); color:var(--gold)}
+
+  section.role .note{font-size:13.5px; color:var(--ink-dim); margin:10px 0 16px; max-width:70ch}
+  section.role .note b{color:var(--ink)}
+
+  .tbl-scroll{overflow-x:auto}
+  table{width:100%; border-collapse:collapse; min-width:560px}
+  thead th{
+    text-align:left; font-family:var(--mono); font-size:11px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--ink-dim); padding:8px 10px; border-bottom:1px solid var(--line);
+  }
+  thead th.num{text-align:right}
+  tbody td{padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  td.cap{font-weight:600; width:19%}
+  td.metrics{color:var(--ink-dim); font-size:13px; width:46%}
+  td.metrics code{
+    font-family:var(--mono); font-size:11.5px; background:var(--surface-2); padding:1px 5px;
+    border-radius:5px; color:var(--ink); display:inline-block; margin:1px 3px 1px 0;
+  }
+  td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; width:13%}
+  td.num .bar{display:inline-block; height:6px; border-radius:3px; margin-right:7px; vertical-align:middle}
+  td.num.data-col .bar{background:var(--data)}
+  td.num.ame-col .bar{background:var(--ame)}
+  tfoot td{font-family:var(--mono); font-size:12px; color:var(--ink-dim); padding:9px 10px}
+  tfoot td.num{font-weight:700; color:var(--ink)}
+
+  @media (max-width:640px){
+    td.cap, td.metrics, td.num{width:auto}
+  }
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <div class="eyebrow">DataScore v2 · AmeScore — borrador para revisión, 2026-10-07</div>
+    <h1>Pesos de Capacidades por Rol</h1>
+    <p>Mismas 1–6 capacidades compartidas por rol, combinadas con pesos DISTINTOS para DataScore (nivel general) y AmeScore (encaje con Almada) — ver <code>capacity_subscores.R</code>. Todos los pesos son ilustrativos / por calibrar, igual que el resto del modelo en esta etapa. Interior ya está implementado en código; el resto es propuesta para tu revisión.</p>
+    <div class="legend">
+      <span><i class="dot data"></i>Peso DataScore</span>
+      <span><i class="dot ame"></i>Peso AmeScore</span>
+    </div>
+  </header>
+
+  <nav class="jump">
+    <a href="#central">Central</a>
+    <a href="#lateral">Lateral/Carrilero</a>
+    <a href="#mc">Medio de Contención</a>
+    <a href="#interior">Interior (8)</a>
+    <a href="#mediapunta">Mediapunta (10)</a>
+    <a href="#volante">Volante/Extremo</a>
+    <a href="#delantero">Delantero</a>
+  </nav>
+
+  <!-- ================= CENTRAL ================= -->
+  <section class="role" id="central">
+    <div class="role-head"><h2>Central</h2><span class="status proposed">Propuesta — editado 2026-10-07</span></div>
+    <p class="note">Defensa de área combina interceptaciones/entradas ajustadas por posesión con el 1v1 aéreo y de conducción rival. Posicionamiento/Presión incorpora Defensive Actions Above Expectation y Average X Defensive Action (v7) para medir <b>calidad</b> de la posición, no solo volumen.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Defensa / Duelos</td>
+          <td class="metrics"><code>aerial_ratio</code><code>padj_tackles_and_interceptions_90</code><code>dribble_faced_ratio</code><code>padj_interceptions_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:30px"></span>30%</td></tr>
+        <tr><td class="cap">Posicionamiento / Presión</td>
+          <td class="metrics"><code>obv_defensive_action_90</code><code>average_x_defensive_action</code><code>defensive_actions_above_expectation</code><code>padj_pressures_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td>
+          <td class="num ame-col"><span class="bar" style="width:35px"></span>35%</td></tr>
+        <tr><td class="cap">Progresión con balón</td>
+          <td class="metrics"><code>obv_pass_90</code><code>deep_progressions_90</code><code>obv_lbp_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Distribución / Seguridad</td>
+          <td class="metrics"><code>passing_ratio</code><code>pressured_passing_ratio</code><code>xgbuildup_90</code><code>errors_90</code><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= LATERAL ================= -->
+  <section class="role" id="lateral">
+    <div class="role-head"><h2>Lateral / Carrilero</h2><span class="status proposed">Propuesta</span></div>
+    <p class="note">AmeScore sube Presión/Recuperación (35%) por la identidad de línea alta + presión agresiva del cuerpo técnico; DataScore reparte más parejo entre progresión y creación, que son universalmente valiosas para un lateral sin importar el sistema.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Presión / Recuperación</td>
+          <td class="metrics"><code>obv_defensive_action_90</code><code>padj_tackles_90</code><code>padj_interceptions_90</code><code>challenge_ratio</code><code>pressure_regains_90</code><code>aggressive_actions_90</code><code>defensive_actions_above_expectation</code><code>padj_pressures_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td>
+          <td class="num ame-col"><span class="bar" style="width:35px"></span>35%</td></tr>
+        <tr><td class="cap">Progresión / Conducción</td>
+          <td class="metrics"><code>obv_pass_90</code><code>deep_progressions_90</code><code>obv_dribble_carry_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Creación / Centros</td>
+          <td class="metrics"><code>crosses_90</code><code>box_cross_ratio</code><code>op_xa_90</code><code>op_passes_into_box_90</code><code>op_key_passes_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>passing_ratio</code><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= MEDIO DE CONTENCIÓN ================= -->
+  <section class="role" id="mc">
+    <div class="role-head"><h2>Medio de Contención</h2><span class="status proposed">Propuesta — editado 2026-10-07</span></div>
+    <p class="note">El pivote que arranca la transición tras una recuperación alta — Transition OBV (90) vive en Circulación/Progresión, ahora con dos métricas LBP más para darle profundidad al componente de progresión. Se agregó <b>Juego bajo presión</b> (mismas métricas que Interior) como capacidad propia — antes el 6 no tenía ninguna representación directa de esto en DataScore.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Presión / Recuperación</td>
+          <td class="metrics"><code>obv_defensive_action_90</code><code>padj_interceptions_90</code><code>padj_tackles_90</code><code>pressure_regains_90</code><code>ball_recoveries_90</code><code>challenge_ratio</code><code>padj_pressures_90</code><code>counterpressure_regains_90</code><code>average_x_pressure</code><code>defensive_actions_above_expectation</code></td>
+          <td class="num data-col"><span class="bar" style="width:35px"></span>35%</td>
+          <td class="num ame-col"><span class="bar" style="width:43px"></span>43%</td></tr>
+        <tr><td class="cap">Circulación / Progresión</td>
+          <td class="metrics"><code>obv_pass_90</code><code>deep_progressions_90</code><code>obv_lbp_90</code><code>forward_pass_proportion</code><code>transition_obv_90</code><code>lbp_90</code><code>lbp_pass_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:32px"></span>32%</td>
+          <td class="num ame-col"><span class="bar" style="width:33px"></span>33%</td></tr>
+        <tr><td class="cap">Juego bajo presión</td>
+          <td class="metrics"><code>pressured_passing_ratio</code><code>change_in_passing_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:5px"></span>5%</td></tr>
+        <tr><td class="cap">Seguridad / Distribución</td>
+          <td class="metrics"><code>passing_ratio</code><code>pressured_passing_ratio</code><code>xgbuildup_90</code><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:23px"></span>23%</td>
+          <td class="num ame-col"><span class="bar" style="width:19px"></span>19%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= INTERIOR ================= -->
+  <section class="role" id="interior">
+    <div class="role-head"><h2>Interior (8)</h2><span class="status built">Ya implementado</span></div>
+    <p class="note">Único rol ya construido en código (<code>capacity_subscores.R</code>/<code>base_scores.R</code>). Progresión..Impacto ofensivo son compartidas con DataScore (pesos abajo son los ORIGINALES, sin ensanchar — ver <code>correlation_analysis.html</code> para por qué se descartó ensanchar deltas). <b>Presión posicional</b> y <b>Conexión ofensiva</b> son capacidades NUEVAS, exclusivas de AmeScore (DataScore no las usa en absoluto) — agregadas 2026-10-07 tras revisar la documentación de StatsBomb en busca de métricas ligadas a los indicadores de identidad de Almada (§4 del doc) que no se estaban usando en ningún lado. Con esto, cor(DataScore_Base, AmeScore_Base) bajó de 0.988 a <b>0.943</b> para Interior — mejora real pero todavía alta en términos absolutos.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Progresión</td>
+          <td class="metrics"><code>deep_progressions_90</code><code>obv_pass_90</code><code>obv_dribble_carry_90</code><code>obv_lbp_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td>
+          <td class="num ame-col"><span class="bar" style="width:18px"></span>18%</td></tr>
+        <tr><td class="cap">Presión / contrapresión</td>
+          <td class="metrics"><code>pressure_regains_90</code><code>counterpressure_regains_90</code><code>average_x_pressure</code><code>padj_pressures_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+        <tr><td class="cap">Juego bajo presión</td>
+          <td class="metrics"><code>pressured_passing_ratio</code><code>change_in_passing_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:7px"></span>7%</td></tr>
+        <tr><td class="cap">Ball Efficiency</td>
+          <td class="metrics"><code>xgbuildup_90</code><code>turnovers_90</code><code>passing_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td>
+          <td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+        <tr><td class="cap">Dinamismo / influencia entre fases</td>
+          <td class="metrics"><code>obv_dribble_carry_90</code><code>transition_obv_90</code><code>carry_length</code><code>fhalf_pressures_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td>
+          <td class="num ame-col"><span class="bar" style="width:14px"></span>14%</td></tr>
+        <tr><td class="cap">Impacto ofensivo</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_xgchain_90</code><code>touches_inside_box_90</code><code>np_xg_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td>
+          <td class="num ame-col"><span class="bar" style="width:11px"></span>11%</td></tr>
+        <tr style="background:var(--ame-soft)"><td class="cap">Presión posicional <span class="pill" style="background:var(--ame); color:var(--navy-ink); font-size:10px; padding:1px 6px; margin-left:4px">AmeScore only</span></td>
+          <td class="metrics"><code>fhalf_pressures_ratio</code><code>counterpressures_90</code><code>defensive_responsibility_actions_90</code><code>obv_conceded_responsibility_weighted_90</code></td>
+          <td class="num data-col">—</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr style="background:var(--ame-soft)"><td class="cap">Conexión ofensiva <span class="pill" style="background:var(--ame); color:var(--navy-ink); font-size:10px; padding:1px 6px; margin-left:4px">AmeScore only</span></td>
+          <td class="metrics"><code>positive_outcome_90</code><code>positive_outcome_score</code><code>op_f3_forward_pass_proportion</code><code>pass_length_ratio</code></td>
+          <td class="num data-col">—</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= MEDIAPUNTA ================= -->
+  <section class="role" id="mediapunta">
+    <div class="role-head"><h2>Mediapunta (10)</h2><span class="status proposed">Propuesta</span></div>
+    <p class="note">Reutiliza las MISMAS 6 capacidades de Interior (mismas métricas, mismo <code>capacity_subscore()</code>) — lo que cambia es el peso: un 10 pesa menos Presión/contrapresión y más Impacto ofensivo que un 8, reflejando la distinción que el documento pide entre 6/8/10 (§5–6).</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Progresión</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Presión / contrapresión</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Juego bajo presión</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Ball Efficiency</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td>
+          <td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+        <tr><td class="cap">Dinamismo / influencia entre fases</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td>
+          <td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Impacto ofensivo</td><td class="metrics">(igual que Interior)</td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= VOLANTE/EXTREMO ================= -->
+  <section class="role" id="volante">
+    <div class="role-head"><h2>Volante / Extremo</h2><span class="status proposed">Congelado salvo edición puntual — 2026-10-09</span></div>
+    <p class="note">Perfil de banda rápido explotando transición — AmeScore sube Presión alta (25%) porque es exactamente el jugador que castiga tras una recuperación alta del equipo, per el documento. Sigue <b>congelado en general</b> (pendiente de discusión con tus colegas) pero se aplicaron 3 ediciones puntuales que pediste: <code>obv_pass_90</code> movido de Seguridad a Creación, Creación/Finalización reequilibradas en AmeScore, y <code>touches_inside_box_90</code> reemplazado en Finalización por dos métricas de calidad de tiro (<code>obv_shot_90</code>, <code>np_psxg_90</code>) en vez de presencia en el área.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Conducción / Progresión</td>
+          <td class="metrics"><code>obv_dribble_carry_90</code><code>dribbles_90</code><code>dribble_ratio</code><code>deep_progressions_90</code><code>carries_90</code><code>transition_obv_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td>
+          <td class="num ame-col"><span class="bar" style="width:30px"></span>30%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>counterpressure_regains_90</code><code>padj_pressures_90</code><code>fhalf_pressures_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Creación</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_key_passes_90</code><code>op_passes_into_box_90</code><code>crosses_90</code><code>box_cross_ratio</code><code>obv_pass_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td>
+          <td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Finalización</td>
+          <td class="metrics"><code>np_xg_90</code><code>npg_90</code><code>obv_shot_90</code><code>np_psxg_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td>
+          <td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td>
+          <td class="num ame-col"><span class="bar" style="width:5px"></span>5%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+  </section>
+
+  <!-- ================= DELANTERO ================= -->
+  <section class="role" id="delantero">
+    <div class="role-head"><h2>Delantero</h2><span class="status proposed">Propuesta — editado 2026-10-07</span></div>
+    <p class="note">Finalización sigue dominando DataScore como medida de nivel puro; AmeScore sube aún más Presión alta (28%) por la exigencia estructural de activar presión desde el 9 en el modelo de Almada. Esta tabla es el <b>caso genérico</b> — ver la sección de Perfiles más abajo para los 5 arquetipos de 9 que ya existen en <code>app.R</code> (<code>DC_WEIGHTED_PROFILES</code>), donde vos asignás los pesos específicos por perfil.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_xg_per_shot</code><code>shot_on_target_ratio</code><code>np_shots_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:40px"></span>40%</td>
+          <td class="num ame-col"><span class="bar" style="width:32px"></span>32%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>touches_inside_box_90</code><code>aerial_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:19px"></span>19%</td>
+          <td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>fhalf_pressures_90</code><code>counterpressure_regains_90</code><code>padj_pressures_90</code><code>aggressive_actions_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:17px"></span>17%</td>
+          <td class="num ame-col"><span class="bar" style="width:28px"></span>28%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_key_passes_90</code><code>obv_pass_90</code><code>obv_dribble_carry_90</code><code>xgchain_90</code><code>op_xgchain_90</code><code>transition_obv_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:22px"></span>22%</td>
+          <td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:2px"></span>2%</td>
+          <td class="num ame-col"><span class="bar" style="width:5px"></span>5%</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2">Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+
+    <h3 style="font-size:19px; margin:26px 0 4px">Perfiles de Delantero</h3>
+    <p class="note">Reutiliza los 5 arquetipos ya curados en <code>app.R</code> (<code>DC_WEIGHTED_PROFILES</code>, sistema de Perfil/Perfil_secundario actual). Todos los perfiles comparten las MISMAS 5 capacidades de la tabla genérica de arriba — lo que los distingue es el peso que cada uno le pone a cada una, no qué capacidades usan. Donde un perfil ya tenía profundidad propia en <code>app.R</code> para una capacidad (p.ej. Acosador en Presión alta, Retenedor en Juego aéreo/área), se mantienen esas métricas específicas; donde no tenía ninguna, se usa la lista genérica de Delantero como base. <b>Pesos sin completar a propósito</b> — los asignás vos; cada fila de perfil debería sumar 100% entre sus 5 capacidades. <code>fouls_won_90</code> (visto en Móvil dentro de <code>app.R</code>) no encaja claramente en ninguna de las 5 capacidades — no se incluyó, a tu criterio si amerita agregarlo en algún lado.</p>
+
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Perfil</th><th>Capacidad</th><th>Métricas</th><th class="num">DataScore</th><th class="num">AmeScore</th></tr></thead>
+      <tbody>
+        <tr><td class="cap" rowspan="5">Cazador</td><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_xg_per_shot</code><code>shot_on_target_ratio</code><code>np_shots_90</code><code>np_psxg_90</code><code>over_under_performance_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td><td class="num ame-col"><span class="bar" style="width:35px"></span>35%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>touches_inside_box_90</code><code>aerial_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td><td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>fhalf_pressures_90</code><code>counterpressure_regains_90</code><code>padj_pressures_90</code><code>aggressive_actions_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td><td class="num ame-col"><span class="bar" style="width:30px"></span>30%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_key_passes_90</code><code>obv_pass_90</code><code>obv_dribble_carry_90</code><code>xgchain_90</code><code>op_xgchain_90</code><code>transition_obv_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td><td class="num ame-col"><span class="bar" style="width:5px"></span>5%</td></tr>
+
+        <tr><td class="cap" rowspan="5">Móvil</td><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_xg_per_shot</code><code>shot_on_target_ratio</code><code>np_shots_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>touches_inside_box_90</code><code>aerial_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>counterpressure_regains_90</code><code>fhalf_pressures_90</code><code>padj_pressures_90</code><code>aggressive_actions_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>deep_progressions_90</code><code>obv_dribble_carry_90</code><code>carries_90</code><code>op_key_passes_90</code><code>op_xa_90</code><code>obv_pass_90</code><code>xgchain_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td><td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+
+        <tr><td class="cap" rowspan="5">Retenedor</td><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_xg_per_shot</code><code>shot_on_target_ratio</code><code>np_shots_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td><td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>aerial_ratio</code><code>aerial_wins_90</code><code>touches_inside_box_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td><td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>fhalf_pressures_90</code><code>counterpressure_regains_90</code><code>padj_pressures_90</code><code>aggressive_actions_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:20px"></span>20%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>obv_pass_90</code><code>op_key_passes_90</code><code>op_xa_90</code><code>xgchain_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>passing_ratio</code><code>dispossessions_90</code><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+
+        <tr><td class="cap" rowspan="5">Aéreo</td><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_shots_90</code><code>np_xg_per_shot</code><code>np_psxg_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:25px"></span>25%</td><td class="num ame-col"><span class="bar" style="width:25px"></span>25%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>aerial_ratio</code><code>aerial_wins_90</code><code>touches_inside_box_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td><td class="num ame-col"><span class="bar" style="width:35px"></span>35%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>fhalf_pressures_90</code><code>counterpressure_regains_90</code><code>padj_pressures_90</code><code>aggressive_actions_90</code><code>average_x_pressure</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:20px"></span>20%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_key_passes_90</code><code>obv_pass_90</code><code>obv_dribble_carry_90</code><code>xgchain_90</code><code>op_xgchain_90</code><code>transition_obv_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:10px"></span>10%</td></tr>
+
+        <tr><td class="cap" rowspan="5">Acosador</td><td class="cap">Finalización</td>
+          <td class="metrics"><code>npg_90</code><code>np_xg_90</code><code>np_xg_per_shot</code><code>shot_on_target_ratio</code><code>np_shots_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td><td class="num ame-col"><span class="bar" style="width:30px"></span>30%</td></tr>
+        <tr><td class="cap">Juego aéreo / área</td>
+          <td class="metrics"><code>touches_inside_box_90</code><code>aerial_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Presión alta</td>
+          <td class="metrics"><code>padj_pressures_90</code><code>fhalf_pressures_90</code><code>counterpressures_90</code><code>fhalf_counterpressures_90</code><code>pressure_regains_90</code><code>counterpressure_regains_90</code><code>aggressive_actions_90</code><code>fhalf_pressures_ratio</code></td>
+          <td class="num data-col"><span class="bar" style="width:30px"></span>30%</td><td class="num ame-col"><span class="bar" style="width:35px"></span>35%</td></tr>
+        <tr><td class="cap">Juego asociativo</td>
+          <td class="metrics"><code>op_xa_90</code><code>op_key_passes_90</code><code>obv_pass_90</code><code>obv_dribble_carry_90</code><code>xgchain_90</code><code>op_xgchain_90</code><code>transition_obv_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:15px"></span>15%</td><td class="num ame-col"><span class="bar" style="width:15px"></span>15%</td></tr>
+        <tr><td class="cap">Seguridad</td>
+          <td class="metrics"><code>turnovers_90</code></td>
+          <td class="num data-col"><span class="bar" style="width:10px"></span>10%</td><td class="num ame-col"><span class="bar" style="width:5px"></span>5%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note" style="margin-top:14px">Pesos iniciales tomados de <code>Perfiles Delanteros.pdf</code> (2026-10-07) — <b>todavía por discutir con tu equipo</b>, no finales.</p>
+  </section>
+
+</div>

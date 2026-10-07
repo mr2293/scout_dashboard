@@ -1,0 +1,182 @@
+<title>Correlación Interior — Hallazgo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#f7f5ef; --surface:#ffffff; --surface-2:#efece2;
+    --ink:#1b2130; --ink-dim:#5a6072; --line:#e2ddd0;
+    --navy:#132144; --navy-ink:#eef0f6;
+    --gold:#b8912f; --gold-soft:#f1e6c8;
+    --red:#9a3b2a; --red-soft:#f6e4de;
+    --data:#2f6f63; --data-soft:#e4efec;
+    --ame:#9a4b23; --ame-soft:#f5e7dc;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161f; --surface:#1b1e2a; --surface-2:#222536;
+      --ink:#eceef5; --ink-dim:#a3a8bd; --line:#30334a;
+      --navy:#aebbe8; --navy-ink:#10131d;
+      --gold:#d9b25c; --gold-soft:#332a14;
+      --red:#e38a74; --red-soft:#3a1e16;
+      --data:#6fbfae; --data-soft:#16302a;
+      --ame:#e08a56; --ame-soft:#38220f;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161f; --surface:#1b1e2a; --surface-2:#222536;
+    --ink:#eceef5; --ink-dim:#a3a8bd; --line:#30334a;
+    --navy:#aebbe8; --navy-ink:#10131d;
+    --gold:#d9b25c; --gold-soft:#332a14;
+    --red:#e38a74; --red-soft:#3a1e16;
+    --data:#6fbfae; --data-soft:#16302a;
+    --ame:#e08a56; --ame-soft:#38220f;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--ink); margin:0; padding-inline:20px;
+    padding-block: max(28px, env(safe-area-inset-top,0px)) 60px;
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:15px; line-height:1.55;
+  }
+  h1,h2,h3{font-family:"Barlow Condensed", "IBM Plex Sans", sans-serif; font-weight:700; text-wrap:balance; margin:0}
+  .wrap{max-width:880px; margin:0 auto}
+  header.page{
+    padding:28px 26px; border-radius:14px; margin-bottom:26px;
+    background:linear-gradient(135deg, var(--navy), #223165 70%); color:var(--navy-ink);
+  }
+  header.page .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; opacity:.75; margin-bottom:8px}
+  header.page h1{font-size:clamp(26px,5vw,36px)}
+  header.page p{max-width:62ch; opacity:.88; margin-top:10px; font-size:14.5px}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:20px}
+  .card h2{font-size:21px; margin-bottom:6px}
+  .card h3{font-size:16px; margin:16px 0 8px}
+  .card p{color:var(--ink-dim); font-size:14px; max-width:68ch}
+  .card p b{color:var(--ink)}
+  .card code{font-family:var(--mono); font-size:12.5px; background:var(--surface-2); padding:1px 5px; border-radius:5px; color:var(--ink)}
+
+  .verdict{
+    display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:10px;
+    background:var(--red-soft); margin-bottom:4px;
+  }
+  .verdict .num{font-family:var(--mono); font-size:30px; font-weight:700; color:var(--red); line-height:1}
+  .verdict .label{font-size:13px; color:var(--ink-dim)}
+
+  table{width:100%; border-collapse:collapse; margin-top:8px; font-variant-numeric:tabular-nums}
+  thead th{text-align:left; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-dim); padding:7px 9px; border-bottom:1px solid var(--line)}
+  thead th.num, td.num{text-align:right}
+  tbody td{padding:9px; border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  tr.highlight td{background:var(--gold-soft); font-weight:600}
+  .tbl-scroll{overflow-x:auto}
+
+  .delta-row td.pos{color:var(--data)} .delta-row td.neg{color:var(--red)}
+
+  ul.findings{margin:10px 0 0; padding-left:20px}
+  ul.findings li{margin-bottom:8px; color:var(--ink-dim); font-size:14px}
+  ul.findings li b{color:var(--ink)}
+
+  .pill{display:inline-block; font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:999px; margin-right:6px}
+  .pill.bad{background:var(--red-soft); color:var(--red)}
+  .pill.ok{background:var(--data-soft); color:var(--data)}
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <div class="eyebrow">DataScore v2 · AmeScore — hallazgo de calibración, 2026-10-07</div>
+    <h1>¿Por qué DataScore y AmeScore siguen pareciéndose?</h1>
+    <p>Interior (<code>base_scores.R</code>), 1,909 player-seasons. Esto documenta el hallazgo completo antes de llevarlo a tu equipo: cuánto ayudan pesos más separados, cuál es el techo real, y por qué no alcanza solo.</p>
+  </header>
+
+  <div class="card">
+    <h2>El problema</h2>
+    <div class="verdict">
+      <div class="num">0.988</div>
+      <div class="label">correlación DataScore_Base × AmeScore_Base con los pesos actuales (2026-10-07) — <b style="color:var(--red)">peor</b> que el 0.77 del modelo viejo que este proyecto existe para arreglar.</div>
+    </div>
+    <p>Los 6 capacidades de Interior NO están muy correlacionadas entre sí (0.0–0.5 por pares, ver abajo) — el problema no es ahí. Es que ningún peso difería más de 5 puntos entre DataScore y AmeScore: una recombinación tan parecida de insumos ya de por sí distintos no reordena casi a nadie.</p>
+  </div>
+
+  <div class="card">
+    <h2>Intercorrelación entre capacidades</h2>
+    <p>Sana en general — nada cerca de 1.0, lo que confirma que el problema está en los PESOS, no en que las capacidades midan lo mismo.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th></th><th class="num">Progr.</th><th class="num">Presión</th><th class="num">J.Presión</th><th class="num">Ball Eff.</th><th class="num">Dinam.</th><th class="num">Impacto</th></tr></thead>
+      <tbody>
+        <tr><td>Progresión</td><td class="num">1.00</td><td class="num">0.05</td><td class="num">0.22</td><td class="num">0.31</td><td class="num"><b>0.50</b></td><td class="num">0.40</td></tr>
+        <tr><td>Presión/contrapresión</td><td class="num">0.05</td><td class="num">1.00</td><td class="num">0.00</td><td class="num">0.02</td><td class="num">0.26</td><td class="num">0.16</td></tr>
+        <tr><td>Juego bajo presión</td><td class="num">0.22</td><td class="num">0.00</td><td class="num">1.00</td><td class="num">0.26</td><td class="num">0.12</td><td class="num">0.10</td></tr>
+        <tr><td>Ball Efficiency</td><td class="num">0.31</td><td class="num">0.02</td><td class="num">0.26</td><td class="num">1.00</td><td class="num">0.11</td><td class="num">0.39</td></tr>
+        <tr><td>Dinamismo</td><td class="num"><b>0.50</b></td><td class="num">0.26</td><td class="num">0.12</td><td class="num">0.11</td><td class="num">1.00</td><td class="num">0.31</td></tr>
+        <tr><td>Impacto ofensivo</td><td class="num">0.40</td><td class="num">0.16</td><td class="num">0.10</td><td class="num">0.39</td><td class="num">0.31</td><td class="num">1.00</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:10px">El par más alto (Progresión × Dinamismo, 0.50) tiene una causa concreta: <code>obv_dribble_carry_90</code> está en las dos capacidades a la vez. Es esperable que compartan algo de señal — es la misma raíz del límite que ves abajo.</p>
+  </div>
+
+  <div class="card">
+    <h2>¿Cuánto ayudan pesos más separados?</h2>
+    <p>Probé tres escenarios reales contra los datos (no en teoría) — mismos jugadores, mismas capacidades, solo cambiando cuánto pesa cada una en DataScore vs AmeScore.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Escenario</th><th>Delta promedio por capacidad</th><th class="num">Correlación</th></tr></thead>
+      <tbody>
+        <tr><td>Actual (2026-10-07)</td><td>~3.3 pts</td><td class="num">0.988</td></tr>
+        <tr class="highlight"><td>Propuesta revisada (abajo)</td><td>~16.7 pts</td><td class="num">0.757</td></tr>
+        <tr><td>Casi-ortogonal (no futbolísticamente defendible — ej. AmeScore con Ball Efficiency al 5%)</td><td>~26 pts</td><td class="num">0.583</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:10px"><b>Incluso llevando los pesos a una asignación casi-ortogonal</b> (football-wise poco defendible), la correlación no baja de ~0.58. Ese es el techo real para este set de 6 capacidades — no es que falte calibrar más fuerte, es un límite estructural dado que algunas capacidades comparten señal/métricas a propósito.</p>
+  </div>
+
+  <div class="card">
+    <h2>¿Y Competition Strength?</h2>
+    <p>Ayuda, pero solo si λ es grande — y λ se supone que sale de calibración real (transferencias entre ligas), no de forzar una correlación objetivo.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>λ</th><th></th><th class="num">Correlación</th></tr></thead>
+      <tbody>
+        <tr><td>0.00</td><td class="pill bad">actual</td><td class="num">0.988</td></tr>
+        <tr><td>0.10</td><td></td><td class="num">0.971</td></tr>
+        <tr><td>0.25</td><td class="pill bad">ejemplo ilustrativo del doc</td><td class="num">0.894</td></tr>
+        <tr><td>0.50</td><td></td><td class="num">0.722</td></tr>
+        <tr><td>1.00</td><td class="pill ok">separación real</td><td class="num">0.467</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:10px">Al λ=0.25 que el documento usa solo como ejemplo ilustrativo, seguís en 0.894. Hace falta algo como λ≈0.5 nada más para volver al 0.77 del modelo viejo — un coeficiente grande para justificar solo con intuición.</p>
+  </div>
+
+  <div class="card">
+    <h2>Veredicto</h2>
+    <ul class="findings">
+      <li><b>Ningún lever solo alcanza.</b> Pesos más separados (incluso agresivos) llegan a ~0.58–0.76. Competition Strength con un λ razonable llega a ~0.7–0.9. El gate estructural de AmeScore (todavía sin calibrar) ayuda un poco más, pero es un clamp localizado sobre una minoría de jugadores — no va a mover una correlación agregada de forma dramática.</li>
+      <li><b>Juntos, probablemente sí.</b> Pesos revisados (0.757) + un λ moderado (0.25–0.5 baja eso otro 10–25 pts más) + el gate apuntan a terminar bastante por debajo de 0.77, aunque ningún componente aislado lo logra.</li>
+      <li><b>Vale la pena revisar el solapamiento de métricas</b> entre Progresión y Dinamismo (<code>obv_dribble_carry_90</code> en ambas) — no es necesariamente un error, pero es parte de por qué el techo de pesos existe. Separar esa métrica en una sola capacidad podría bajar el techo de 0.58 más todavía.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Propuesta de pesos revisados — Interior</h2>
+    <p>La que usé para el 0.757 de arriba. Deltas mucho más amplios que la versión del 2026-10-07 pero todavía futbolísticamente defendibles (a diferencia del escenario casi-ortogonal). <b>Para tu revisión, no final</b> — reemplazaría la sección Interior del artifact de pesos si la aprobás.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Capacidad</th><th class="num">DataScore (antes → ahora)</th><th class="num">AmeScore (antes → ahora)</th></tr></thead>
+      <tbody>
+        <tr><td>Progresión</td><td class="num">25 → 25</td><td class="num">25 → 15</td></tr>
+        <tr><td>Presión/contrapresión</td><td class="num">10 → 5</td><td class="num">15 → 30</td></tr>
+        <tr><td>Juego bajo presión</td><td class="num">10 → 5</td><td class="num">10 → 20</td></tr>
+        <tr><td>Ball Efficiency</td><td class="num">20 → 25</td><td class="num">15 → 10</td></tr>
+        <tr><td>Dinamismo</td><td class="num">15 → 10</td><td class="num">20 → 20</td></tr>
+        <tr><td>Impacto ofensivo</td><td class="num">20 → 30</td><td class="num">15 → 5</td></tr>
+      </tbody>
+      <tfoot><tr><td>Total</td><td class="num">100%</td><td class="num">100%</td></tr></tfoot>
+    </table>
+    </div>
+    <p style="margin-top:10px">Lógica: DataScore se concentra más en capacidades de "nivel general" (Ball Efficiency, Impacto ofensivo) y se aleja de las capacidades más ligadas a la identidad específica de Almada (Presión/contrapresión, Juego bajo presión). AmeScore hace lo inverso.</p>
+  </div>
+</div>
