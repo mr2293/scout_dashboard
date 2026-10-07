@@ -42,6 +42,10 @@ if (file.exists("secrets.R")) source("secrets.R")
 
 source("radars.R")
 source("chatbot.R", local = TRUE)
+# DataScore v2 / AmeScore pipeline -- EXPLORATORY INTEGRATION, 2026-10-09,
+# not committed yet. See datascore_v2.R's header and the
+# datascore-v2-overhaul project memory for status.
+source("datascore_v2.R")
 
 options(scipen = 999)
 
@@ -859,7 +863,21 @@ DATASCORE_MODELS <- list(
   x
 }
 
+# v2 EXPLORATORY INTEGRATION, 2026-10-09 (not committed yet) -- delegates
+# to the new pipeline (datascore_v2.R / get_datascore_v2_scores()) instead
+# of DATASCORE_MODELS/.weighted_profile_score() below, which are left in
+# place, unused, for rollback/comparison rather than deleted. Joins by
+# player_id (character on both sides) rather than a per-row position_group
+# transform -- see datascore_v2.R's header for why (app.R's dat is already
+# deduplicated across leagues/seasons; the new pipeline resolves "which
+# league-season is current" itself, via the league-transition gate).
 add_datascore <- function(dat) {
+  v2 <- get_datascore_v2_scores()
+  dat |> dplyr::left_join(v2 |> dplyr::select(player_id, DataScore, Cobertura_DataScore), by = "player_id")
+}
+
+# ---- v1 (legacy), kept for rollback/comparison -- NOT called anymore ----
+add_datascore_v1 <- function(dat) {
   dat$DataScore <- NA_real_
   dat$Cobertura_DataScore <- NA_real_
 
@@ -1032,7 +1050,15 @@ AMERICA_FIT_MODELS <- list(
 
 # Mismo mecanismo que add_datascore() (ver más arriba) -- un solo número
 # por jugador, sin competencia entre sub-perfiles.
+# v2 EXPLORATORY INTEGRATION, 2026-10-09 -- see add_datascore()'s comment
+# above, same reasoning applies here.
 add_america_fit <- function(dat) {
+  v2 <- get_datascore_v2_scores()
+  dat |> dplyr::left_join(v2 |> dplyr::select(player_id, DataScoreAmerica, Cobertura_DataScoreAmerica), by = "player_id")
+}
+
+# ---- v1 (legacy), kept for rollback/comparison -- NOT called anymore ----
+add_america_fit_v1 <- function(dat) {
   dat$DataScoreAmerica <- NA_real_
   dat$Cobertura_DataScoreAmerica <- NA_real_
 
