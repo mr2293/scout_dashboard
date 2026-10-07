@@ -34,73 +34,13 @@ suppressWarnings(suppressMessages({
   library(dplyr)
 }))
 
+# classify_delantero_perfil() and score_delantero_by_perfil() now live in
+# base_scores.R (moved there 2026-10-09) so build_scored_rows()
+# (competition_strength.R) can call them when it hits role=="Delantero" --
+# that's what actually wires perfiles into the full downstream pipeline
+# (Competition Strength, the transition gate, confidence shrinkage, the
+# AmeScore gate). This file is now just the standalone validation harness.
 source("ame_score_plus.R")  # everything upstream (via its own source() chain)
-
-# ---- Stage 1: classification ---------------------------------------------
-# dat, role_idx: the "Delantero" subset of load_scout_data()'s output and
-#                its row indices (same pattern every other script uses).
-# Returns a character vector, same length as role_idx, naming each row's
-# best-fit perfil.
-classify_delantero_perfil <- function(dat, role_idx) {
-  metrics <- unique(unlist(lapply(DC_WEIGHTED_PROFILES, names)))
-  metrics <- intersect(metrics, names(dat))
-
-  normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
-  for (m in metrics) {
-    normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
-  }
-
-  perfil_scores <- sapply(names(DC_WEIGHTED_PROFILES), function(p) {
-    capacity_subscore(normalized, DC_WEIGHTED_PROFILES[[p]], min_coverage = 0)$score
-  })
-  colnames(perfil_scores) <- names(DC_WEIGHTED_PROFILES)
-
-  apply(perfil_scores, 1, function(row) {
-    if (all(is.na(row))) return(NA_character_)
-    names(row)[which.max(row)]
-  })
-}
-
-# ---- Stage 2: score with the classified perfil's own weights -------------
-# Returns a data.frame of capacities + DataScore_Base/AmeScore_Base for
-# the Delantero role, one row per player, SOURCED FROM each player's own
-# classified perfil (not a single shared model).
-score_delantero_by_perfil <- function(dat, role_idx, perfil) {
-  all_metrics <- unique(unlist(lapply(DELANTERO_PERFIL_DEFS, function(d) unlist(lapply(d$caps, names)))))
-  all_metrics <- intersect(all_metrics, names(dat))
-
-  normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
-  for (m in all_metrics) {
-    normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
-  }
-  normalized$perfil <- perfil
-
-  result <- vector("list", length(DELANTERO_PERFIL_DEFS))
-  names(result) <- names(DELANTERO_PERFIL_DEFS)
-
-  for (p in names(DELANTERO_PERFIL_DEFS)) {
-    idx <- which(normalized$perfil == p)
-    if (!length(idx)) next
-    sub <- normalized[idx, ]
-    def <- DELANTERO_PERFIL_DEFS[[p]]
-
-    caps <- sub |> dplyr::select(var_name, player_id, player_name)
-    for (cap in names(def$caps)) caps[[cap]] <- capacity_subscore(sub, def$caps[[cap]])$score
-
-    ds <- combine_capacities(caps, def$ds)
-    ame <- combine_capacities(caps, def$ame)
-
-    result[[p]] <- caps |>
-      dplyr::mutate(
-        perfil = p,
-        DataScore_Base = round(ds$score, 1),
-        DataScore_Base_cobertura = round(ds$coverage * 100, 1),
-        AmeScore_Base = round(ame$score, 1),
-        AmeScore_Base_cobertura = round(ame$coverage * 100, 1)
-      )
-  }
-  dplyr::bind_rows(result)
-}
 
 # ============================================================
 # Validation harness -- only runs when executed directly.

@@ -223,14 +223,93 @@ ROLE_SCORE_DEFS <- list(
 
 # ---- Delantero perfiles: role -> {perfil -> {capacities, ds, ame}} -----
 # Separate from ROLE_SCORE_DEFS because perfil scoring is TWO-stage
-# (classify which perfil first, then score with THAT perfil's weights --
-# see delantero_perfiles.R) rather than a straight lookup by role.
+# (classify which perfil first, then score with THAT perfil's weights)
+# rather than a straight lookup by role -- see the two functions below.
 DELANTERO_PERFIL_DEFS <- setNames(
   lapply(names(DELANTERO_PERFIL_WEIGHTS), function(p) {
     list(caps = DELANTERO_PERFIL_CAPACITIES[[p]], ds = DELANTERO_PERFIL_WEIGHTS[[p]]$ds, ame = DELANTERO_PERFIL_WEIGHTS[[p]]$ame)
   }),
   names(DELANTERO_PERFIL_WEIGHTS)
 )
+
+# ---- Delantero perfil classification + scoring --------------------------
+# Moved here (from delantero_perfiles.R) 2026-10-09 so build_scored_rows()
+# (competition_strength.R, downstream of this file) can call them directly
+# when it hits role == "Delantero" -- the whole point of wiring perfiles
+# into the FULL pipeline (Competition Strength, the transition gate,
+# confidence shrinkage, the AmeScore gate) rather than leaving them as a
+# standalone DataScore_Base/AmeScore_Base-only validation.
+#
+# classify_delantero_perfil(): which of the 5 archetypes does this player
+# fit best? Ports app.R's own assign_player_profiles() logic: normalize
+# DC_WEIGHTED_PROFILES' metrics within the Delantero pool, combine per
+# perfil (capacity_subscore() treating the whole weight vector as one
+# composite, min_coverage=0 so a thin-data player still gets a best-fit
+# guess rather than no classification at all), argmax.
+classify_delantero_perfil <- function(dat, role_idx) {
+  metrics <- unique(unlist(lapply(DC_WEIGHTED_PROFILES, names)))
+  metrics <- intersect(metrics, names(dat))
+
+  normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
+  for (m in metrics) {
+    normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
+  }
+
+  perfil_scores <- sapply(names(DC_WEIGHTED_PROFILES), function(p) {
+    capacity_subscore(normalized, DC_WEIGHTED_PROFILES[[p]], min_coverage = 0)$score
+  })
+  colnames(perfil_scores) <- names(DC_WEIGHTED_PROFILES)
+
+  apply(perfil_scores, 1, function(row) {
+    if (all(is.na(row))) return(NA_character_)
+    names(row)[which.max(row)]
+  })
+}
+
+# score_delantero_by_perfil(): DataScore_Base/AmeScore_Base using each
+# player's OWN classified perfil's capacities/weights. Output is
+# explicitly REORDERED back to match role_idx's original row order before
+# returning -- processing happens perfil-group-by-perfil-group internally
+# (bind_rows() of 5 subsets), which would otherwise scramble row order
+# and silently break any positional alignment a caller does against
+# dat[role_idx, ] (e.g. build_scored_rows() attaching season_id/league).
+score_delantero_by_perfil <- function(dat, role_idx, perfil) {
+  all_metrics <- unique(unlist(lapply(DELANTERO_PERFIL_DEFS, function(d) unlist(lapply(d$caps, names)))))
+  all_metrics <- intersect(all_metrics, names(dat))
+
+  normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
+  for (m in all_metrics) {
+    normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
+  }
+  normalized$perfil <- perfil
+  normalized$.orig_pos <- seq_len(nrow(normalized))
+
+  result <- vector("list", length(DELANTERO_PERFIL_DEFS))
+  names(result) <- names(DELANTERO_PERFIL_DEFS)
+
+  for (p in names(DELANTERO_PERFIL_DEFS)) {
+    idx <- which(normalized$perfil == p)
+    if (!length(idx)) next
+    sub <- normalized[idx, ]
+    def <- DELANTERO_PERFIL_DEFS[[p]]
+
+    caps <- sub |> dplyr::select(var_name, player_id, player_name, .orig_pos)
+    for (cap in names(def$caps)) caps[[cap]] <- capacity_subscore(sub, def$caps[[cap]])$score
+
+    ds <- combine_capacities(caps, def$ds)
+    ame <- combine_capacities(caps, def$ame)
+
+    result[[p]] <- caps |>
+      dplyr::mutate(
+        perfil = p,
+        DataScore_Base = round(ds$score, 1),
+        DataScore_Base_cobertura = round(ds$coverage * 100, 1),
+        AmeScore_Base = round(ame$score, 1),
+        AmeScore_Base_cobertura = round(ame$coverage * 100, 1)
+      )
+  }
+  dplyr::bind_rows(result) |> dplyr::arrange(.orig_pos) |> dplyr::select(-.orig_pos)
+}
 
 # ---- Generic capacity-combination function ----------------------------
 # capacity_scores: data.frame/matrix, one column per capacity in `weights`,

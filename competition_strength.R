@@ -114,23 +114,35 @@ apply_competition_strength <- function(var_name, data_score_base, tiers,
 build_scored_rows <- function(dat, tiers) {
   all_results <- list()
   for (role in names(ROLE_SCORE_DEFS)) {
-    def <- ROLE_SCORE_DEFS[[role]]
-    metrics <- unique(unlist(lapply(def$caps, names)))
-    metrics <- intersect(metrics, names(dat))
-
     role_idx <- which(dat$role_group_matchbased == role)
-    normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
-    for (m in metrics) {
-      normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
-    }
 
-    capacities <- normalized |> dplyr::select(var_name, player_id, player_name)
-    for (cap in names(def$caps)) {
-      capacities[[cap]] <- capacity_subscore(normalized, def$caps[[cap]])$score
-    }
+    if (role == "Delantero") {
+      # Perfil-based, not a straight capacity lookup -- see
+      # classify_delantero_perfil()/score_delantero_by_perfil()
+      # (base_scores.R). scored is already reordered to match role_idx.
+      perfil <- classify_delantero_perfil(dat, role_idx)
+      scored <- score_delantero_by_perfil(dat, role_idx, perfil)
+      capacities <- scored |> dplyr::select(-DataScore_Base, -DataScore_Base_cobertura, -AmeScore_Base, -AmeScore_Base_cobertura)
+      ds <- list(score = scored$DataScore_Base, coverage = scored$DataScore_Base_cobertura / 100)
+      ame <- list(score = scored$AmeScore_Base, coverage = scored$AmeScore_Base_cobertura / 100)
+    } else {
+      def <- ROLE_SCORE_DEFS[[role]]
+      metrics <- unique(unlist(lapply(def$caps, names)))
+      metrics <- intersect(metrics, names(dat))
 
-    ds <- combine_capacities(capacities, def$ds)
-    ame <- combine_capacities(capacities, def$ame)
+      normalized <- dat[role_idx, c("var_name", "player_id", "player_name", "role_group_matchbased")]
+      for (m in metrics) {
+        normalized[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], dat$exposure_90s[role_idx], m)
+      }
+
+      capacities <- normalized |> dplyr::select(var_name, player_id, player_name)
+      for (cap in names(def$caps)) {
+        capacities[[cap]] <- capacity_subscore(normalized, def$caps[[cap]])$score
+      }
+
+      ds <- combine_capacities(capacities, def$ds)
+      ame <- combine_capacities(capacities, def$ame)
+    }
     cs <- apply_competition_strength(capacities$var_name, ds$score, tiers)
 
     # Keep the individual capacity columns too (not just the combined
