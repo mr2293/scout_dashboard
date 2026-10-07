@@ -133,8 +133,15 @@ build_scored_rows <- function(dat, tiers) {
     ame <- combine_capacities(capacities, def$ame)
     cs <- apply_competition_strength(capacities$var_name, ds$score, tiers)
 
+    # Keep the individual capacity columns too (not just the combined
+    # DataScore_Base/AmeScore_Base) -- AmeScore's structural gate
+    # (ame_score_gate.R) needs to check a specific capacity's value per
+    # row, not just the weighted composite. Capacity names differ by
+    # role (e.g. "Defensa/Duelos" only exists for Central) except the
+    # shared ALMADA_IDENTITY_CAPACITIES ones, which bind_rows() aligns
+    # across roles automatically; a role without a given capacity just
+    # gets NA there, same as any other bind_rows() column mismatch.
     all_results[[role]] <- capacities |>
-      dplyr::select(var_name, player_id, player_name) |>
       dplyr::mutate(
         role_group_matchbased = role,
         season_id = dat$season_id[role_idx],
