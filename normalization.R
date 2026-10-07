@@ -100,60 +100,10 @@ normalize_metric <- function(values, role_group, exposure_90s, metric_name) {
 # ============================================================
 if (sys.nframe() == 0) {
 
-  # ---- 3. Parse league -> (season_id, competition_id, var_name) out of
-  # dashboard_scout.R -- identical regex to role_eligibility_match_based.R,
-  # duplicated rather than sourced for the same reason as that script's own
-  # copy (never executes dashboard_scout.R's live pull, just reads it as text).
-  src <- readLines("dashboard_scout.R", warn = FALSE)
-  src_text <- paste(src, collapse = "\n")
-  matches <- gregexpr(
-    "(\\w+)\\s*<-\\s*safe_matchesvector\\(username,\\s*password,\\s*season_id\\s*=\\s*(\\d+),\\s*competition_id\\s*=\\s*(\\d+)\\)",
-    src_text, perl = TRUE
-  )
-  raw_matches <- regmatches(src_text, matches)[[1]]
-  league_pairs <- purrr::map_dfr(raw_matches, function(m) {
-    var <- sub("\\s*<-.*", "", m)
-    sid <- as.integer(sub(".*season_id\\s*=\\s*(\\d+).*", "\\1", m))
-    cid <- as.integer(sub(".*competition_id\\s*=\\s*(\\d+)\\).*", "\\1", m))
-    tibble(var_name = trimws(var), season_id = sid, competition_id = cid)
-  })
-  message(sprintf("Parsed %d league/season pairs from dashboard_scout.R", nrow(league_pairs)))
-
-  # ---- 4. Load raw metrics (scout_joined.rds) and tag each row with the
-  # same .var_name key role_eligibility_matchbased.rds uses, by matching on
-  # (competition_id, season_id) -- both sides carry these columns already. ----
-  message("Loading data/scout_joined.rds ...")
-  joined <- readRDS("data/scout_joined.rds")
-  all_leagues <- c(joined$joined_leagues, joined$sb_only_leagues)
-
-  # player_id viene como integer en algunas ligas y character en otras --
-  # normalizado ANTES de bind_rows() (no después), mismo problema que
-  # role_eligibility.R ya resolvió.
-  all_leagues <- purrr::map(all_leagues, function(df) {
-    if ("player_id" %in% names(df)) df$player_id <- as.character(df$player_id)
-    df
-  })
-
-  raw <- dplyr::bind_rows(all_leagues) |>
-    dplyr::inner_join(league_pairs, by = c("competition_id", "season_id"))
-
-  message(sprintf("Raw metrics: %d rows across %d league/season pairs", nrow(raw), dplyr::n_distinct(raw$var_name)))
-
-  # ---- 5. Load role classification and join ----
-  message("Loading data/role_eligibility_matchbased.rds ...")
-  roles <- readRDS("data/role_eligibility_matchbased.rds") |>
-    dplyr::mutate(player_id = as.character(player_id)) |>
-    dplyr::rename(var_name = .var_name) |>
-    dplyr::select(var_name, player_id, role_group_matchbased)
-
-  dat <- raw |>
-    dplyr::inner_join(roles, by = c("var_name", "player_id")) |>
-    dplyr::mutate(exposure_90s = suppressWarnings(as.numeric(player_season_minutes)) / 90)
-
-  message(sprintf(
-    "Joined: %d / %d raw rows matched a role_group_matchbased (%.1f%%)",
-    nrow(dat), nrow(raw), 100 * nrow(dat) / nrow(raw)
-  ))
+  # ---- 3. Load + join raw metrics and role classification (shared loader,
+  # see load_scout_data.R -- this exact block used to be duplicated here). ----
+  source("load_scout_data.R")
+  dat <- load_scout_data()
 
   # ---- 6. Normalize every metric used in DATASCORE_MODELS (app.R) as the
   # validation set -- spans all 6 outfield position groups and most of the

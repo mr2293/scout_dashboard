@@ -124,45 +124,12 @@ capacity_subscore <- function(normalized_pct, weights, min_coverage = MIN_SUBSCO
 # ============================================================
 if (sys.nframe() == 0) {
 
-  # ---- 3. Rebuild the joined (metrics + role) dataset -- same join as
-  # normalization.R's own harness, duplicated rather than sourced so this
-  # script stays independently runnable (same reasoning as
-  # role_eligibility_match_based.R's duplicated position mapping). ----
-  src <- readLines("dashboard_scout.R", warn = FALSE)
-  src_text <- paste(src, collapse = "\n")
-  matches <- gregexpr(
-    "(\\w+)\\s*<-\\s*safe_matchesvector\\(username,\\s*password,\\s*season_id\\s*=\\s*(\\d+),\\s*competition_id\\s*=\\s*(\\d+)\\)",
-    src_text, perl = TRUE
-  )
-  raw_matches <- regmatches(src_text, matches)[[1]]
-  league_pairs <- purrr::map_dfr(raw_matches, function(m) {
-    var <- sub("\\s*<-.*", "", m)
-    sid <- as.integer(sub(".*season_id\\s*=\\s*(\\d+).*", "\\1", m))
-    cid <- as.integer(sub(".*competition_id\\s*=\\s*(\\d+)\\).*", "\\1", m))
-    tibble(var_name = trimws(var), season_id = sid, competition_id = cid)
-  })
-
-  message("Loading data/scout_joined.rds ...")
-  joined <- readRDS("data/scout_joined.rds")
-  all_leagues <- c(joined$joined_leagues, joined$sb_only_leagues)
-  all_leagues <- purrr::map(all_leagues, function(df) {
-    if ("player_id" %in% names(df)) df$player_id <- as.character(df$player_id)
-    df
-  })
-  raw <- dplyr::bind_rows(all_leagues) |>
-    dplyr::inner_join(league_pairs, by = c("competition_id", "season_id"))
-
-  message("Loading data/role_eligibility_matchbased.rds ...")
-  roles <- readRDS("data/role_eligibility_matchbased.rds") |>
-    dplyr::mutate(player_id = as.character(player_id)) |>
-    dplyr::rename(var_name = .var_name) |>
-    dplyr::select(var_name, player_id, role_group_matchbased)
-
-  dat <- raw |>
-    dplyr::inner_join(roles, by = c("var_name", "player_id")) |>
-    dplyr::mutate(exposure_90s = suppressWarnings(as.numeric(player_season_minutes)) / 90)
-
-  message(sprintf("Joined: %d rows total, %d Interior rows", nrow(dat), sum(dat$role_group_matchbased == "Interior")))
+  # ---- 3. Load + join raw metrics and role classification (shared loader,
+  # see load_scout_data.R -- this exact block used to be duplicated here
+  # and in normalization.R). ----
+  source("load_scout_data.R")
+  dat <- load_scout_data()
+  message(sprintf("%d Interior rows", sum(dat$role_group_matchbased == "Interior")))
 
   # ---- 4. Normalize every metric Interior's 6 capacities need ----
   interior_metrics <- unique(unlist(lapply(INTERIOR_CAPACITIES, names)))
