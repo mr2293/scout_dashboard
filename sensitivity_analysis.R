@@ -168,3 +168,78 @@ for (thresh in c(0.40, 0.50, 0.60, 0.70, 0.80)) {
     stab$spearman, stab$top20_overlap * 100
   ))
 }
+
+# ---- Test 4: confidence-shrinkage pseudo-count K ----------------------
+# Unlike weights (a smooth average across many metrics, inherently
+# robust -- see Test 1), K is a single multiplicative cutoff controlling
+# how hard a low-minutes player gets pulled toward the role mean.
+# Expected to behave differently: overall rank correlation should stay
+# high (most players have plenty of minutes, so K barely touches them),
+# but the LOW-MINUTES subset -- exactly who this parameter exists to
+# affect -- should show real movement. Reports both so a flat "looks
+# stable" overall number doesn't hide a real effect in the tail.
+message("\n================ TEST 4: CONFIDENCE SHRINKAGE K ================")
+ds_combo <- combine_capacities(capacities_baseline, INTERIOR_DATASCORE_WEIGHTS)
+cs <- apply_competition_strength(capacities_baseline$var_name, ds_combo$score, tiers)
+ds_previo <- cs$datascore_previo
+minutes <- suppressWarnings(as.numeric(dat$player_season_minutes[role_idx]))
+media_rol_ds <- mean(ds_previo, na.rm = TRUE)
+exposure_90s <- minutes / 90
+
+shrink <- function(k) {
+  c_minutes <- exposure_90s / (exposure_90s + k)
+  c <- c_minutes * ds_combo$coverage
+  media_rol_ds + c * (ds_previo - media_rol_ds)
+}
+
+ds_final_baseline <- shrink(CONFIDENCE_SHRINKAGE_K_90S)  # current K=10
+low_min_idx <- which(minutes <= stats::quantile(minutes, 0.25, na.rm = TRUE))
+
+message(sprintf("Baseline K=%d (current). Low-minutes quartile: n=%d, minutes<=%.0f",
+                 CONFIDENCE_SHRINKAGE_K_90S, length(low_min_idx), stats::quantile(minutes, 0.25, na.rm = TRUE)))
+
+for (k in c(2, 5, 10, 20, 40)) {
+  ds_final_k <- shrink(k)
+  stab_all <- rank_stability(ds_final_baseline, ds_final_k)
+  valid_low <- intersect(low_min_idx, which(!is.na(ds_final_baseline) & !is.na(ds_final_k)))
+  mean_abs_delta_low <- mean(abs(ds_final_k[valid_low] - ds_final_baseline[valid_low]))
+  mean_abs_delta_all <- mean(abs(ds_final_k - ds_final_baseline), na.rm = TRUE)
+  message(sprintf(
+    "K=%-3d  spearman_vs_K10=%.3f  top20_overlap=%.0f%%  mean|delta| low-minutes quartile=%.1f pts  mean|delta| overall=%.1f pts",
+    k, stab_all$spearman, stab_all$top20_overlap * 100, mean_abs_delta_low, mean_abs_delta_all
+  ))
+}
+
+# ---- Test 5: AmeScore structural gate threshold ------------------------
+# Same "cutoff, not average" reasoning as Test 4 -- only players below
+# the percentile threshold on Presión posicional are affected at all, so
+# this reports gated-population size and the actual score reduction
+# among THOSE players, not just an overall correlation that would stay
+# near 1.0 almost by construction (only ~3.6% of rows are gated at the
+# current threshold).
+message("\n================ TEST 5: AMESCORE GATE THRESHOLD ================")
+ame_combo <- combine_capacities(capacities_baseline, INTERIOR_AMESCORE_WEIGHTS)
+techo_rol <- mean(ame_combo$score, na.rm = TRUE)
+gate_capacity_v <- capacities_baseline[[GATE_CAPACITY]]
+
+ame_final_baseline <- apply_ame_score_gate(
+  ame_combo$score, gate_capacity_v, rep("Interior", nrow(capacities_baseline)),
+  c(Interior = techo_rol), threshold = GATE_THRESHOLD
+)$AmeScore_final
+
+message(sprintf("Baseline threshold=%d (current, percentile on %s)", GATE_THRESHOLD, GATE_CAPACITY))
+
+for (thresh in c(10, 15, 20, 25, 30)) {
+  gate <- apply_ame_score_gate(
+    ame_combo$score, gate_capacity_v, rep("Interior", nrow(capacities_baseline)),
+    c(Interior = techo_rol), threshold = thresh
+  )
+  stab <- rank_stability(ame_final_baseline, gate$AmeScore_final)
+  n_gated <- sum(gate$gate_active)
+  gated_idx <- which(gate$gate_active)
+  mean_reduction <- if (length(gated_idx)) mean(ame_combo$score[gated_idx] - gate$AmeScore_final[gated_idx], na.rm = TRUE) else NA_real_
+  message(sprintf(
+    "threshold=%2d pctile  n_gated=%4d (%.1f%%)  mean_reduction_when_gated=%.1f pts  spearman_vs_th20=%.3f  top20_overlap=%.0f%%",
+    thresh, n_gated, 100 * n_gated / nrow(capacities_baseline), mean_reduction, stab$spearman, stab$top20_overlap * 100
+  ))
+}
