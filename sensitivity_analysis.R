@@ -243,3 +243,67 @@ for (thresh in c(10, 15, 20, 25, 30)) {
     thresh, n_gated, 100 * n_gated / nrow(capacities_baseline), mean_reduction, stab$spearman, stab$top20_overlap * 100
   ))
 }
+
+# ---- Test 6: AmeScore+ physical blend rho ------------------------------
+# Same "single cutoff/blend, not an average" reasoning as K and the gate
+# threshold (Tests 4-5) -- rho controls how much AmeScore+ for ONE
+# capacity leans on physical data vs events, and only matters for
+# players who actually HAVE physical data (~22% of Interior). Interior
+# has two rho-enriched capacities (Dinamismo rho=0.40, Presión/
+# contrapresión rho=0.25 -- both the doc's own S12.5 worked example),
+# swept independently (holding the other at its baseline) so a finding
+# on one doesn't get muddied by the other moving at the same time.
+message("\n================ TEST 6: AMESCORE+ PHYSICAL BLEND RHO ================")
+enrich <- PHYSICAL_ENRICHMENT[["Interior"]]
+
+# Subscore_físico per enriched capacity, computed ONCE -- the rho sweep
+# below only varies the blend, not the underlying physical normalization.
+subscore_fisico_by_cap <- list()
+for (cap in names(enrich)) {
+  metric_weights <- enrich[[cap]]$metrics
+  phys_metrics <- intersect(names(metric_weights), names(dat))
+  normalized_phys <- capacities_baseline |> dplyr::select(var_name, player_id, player_name)
+  for (m in phys_metrics) normalized_phys[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], exposure_90s, m)
+  subscore_fisico_by_cap[[cap]] <- capacity_subscore(normalized_phys, metric_weights[phys_metrics])$score
+}
+
+techo_rol_ame <- mean(combine_capacities(capacities_baseline, INTERIOR_AMESCORE_WEIGHTS)$score, na.rm = TRUE)
+
+# rho_overrides: named list, capacity -> rho to use INSTEAD of its
+# PHYSICAL_ENRICHMENT default, for just the capacities named in it.
+build_ame_plus <- function(rho_overrides = list()) {
+  caps_plus <- capacities_baseline
+  physical_available <- rep(FALSE, nrow(caps_plus))
+  for (cap in names(enrich)) {
+    rho <- if (!is.null(rho_overrides[[cap]])) rho_overrides[[cap]] else enrich[[cap]]$rho
+    fisico <- subscore_fisico_by_cap[[cap]]
+    has_phys <- !is.na(fisico)
+    physical_available <- physical_available | has_phys
+    eventos <- capacities_baseline[[cap]]
+    caps_plus[[cap]] <- ifelse(has_phys, (1 - rho) * eventos + rho * fisico, eventos)
+  }
+  ame_plus <- combine_capacities(caps_plus, INTERIOR_AMESCORE_WEIGHTS)
+  gate <- apply_ame_score_gate(ame_plus$score, caps_plus[[GATE_CAPACITY]], rep("Interior", nrow(caps_plus)), c(Interior = techo_rol_ame))
+  list(final = ifelse(physical_available, gate$AmeScore_final, NA_real_), physical_available = physical_available)
+}
+
+baseline_plus <- build_ame_plus()
+message(sprintf("Physical-available subset: n=%d (%.1f%% of Interior)",
+                 sum(baseline_plus$physical_available), 100 * mean(baseline_plus$physical_available)))
+
+for (cap in names(enrich)) {
+  base_rho <- enrich[[cap]]$rho
+  message(sprintf("\n-- %s (baseline rho=%.2f) --", cap, base_rho))
+  sweep <- sort(unique(pmax(0, pmin(1, round(c(base_rho - 0.20, base_rho - 0.10, base_rho, base_rho + 0.10, base_rho + 0.20), 2)))))
+  for (rho in sweep) {
+    res <- build_ame_plus(setNames(list(rho), cap))
+    valid_subset <- which(baseline_plus$physical_available & res$physical_available &
+                             !is.na(baseline_plus$final) & !is.na(res$final))
+    stab <- rank_stability(baseline_plus$final[valid_subset], res$final[valid_subset])
+    mean_abs_delta <- mean(abs(res$final[valid_subset] - baseline_plus$final[valid_subset]))
+    message(sprintf(
+      "rho=%.2f  spearman_vs_baseline=%.3f  top20_overlap=%.0f%%  mean|delta|=%.1f pts  n=%d",
+      rho, stab$spearman, stab$top20_overlap * 100, mean_abs_delta, length(valid_subset)
+    ))
+  }
+}
