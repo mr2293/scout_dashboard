@@ -873,7 +873,7 @@ DATASCORE_MODELS <- list(
 # league-season is current" itself, via the league-transition gate).
 add_datascore <- function(dat) {
   v2 <- get_datascore_v2_scores()
-  dat |> dplyr::left_join(v2 |> dplyr::select(player_id, DataScore, Cobertura_DataScore), by = "player_id")
+  dat |> dplyr::left_join(v2 |> dplyr::select(player_id, DataScore, Cobertura_DataScore, SourceLeague, SourceSeason), by = "player_id")
 }
 
 # ---- v1 (legacy), kept for rollback/comparison -- NOT called anymore ----

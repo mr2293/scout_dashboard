@@ -97,7 +97,14 @@ get_datascore_v2_scores <- function(force_refresh = FALSE) {
       Cobertura_DataScore = round(C * 100, 1),
       DataScoreAmerica = round(scale_amescore(ame_gate$AmeScore_final), 1),
       Cobertura_DataScoreAmerica = ame_joined$AmeScore_Base_cobertura,
-      role_group_matchbased_v2 = source_role
+      role_group_matchbased_v2 = source_role,
+      # Same source row backs BOTH DataScore and DataScoreAmerica (see
+      # file header) -- one label covers both. For season-context
+      # labeling in the UI: which league/season a displayed score is
+      # actually from, since the transition gate can hold over an
+      # old-league row (gate_active) rather than always showing "current".
+      SourceLeague = source_league,
+      SourceSeason = source_season_name
     ) -> result
 
   .datascore_v2_cache <<- result

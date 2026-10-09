@@ -133,6 +133,13 @@ apply_transition_gate <- function(rows) {
         # shown score still rests on their old-league sample.
         source_var_name = shown$var_name,
         source_role = shown$role_group_matchbased,
+        # The league/season DataScore_shown actually reflects -- NOT
+        # necessarily current_league: when gate_active, shown == prior,
+        # so this is prior's league/season, not current's. Added
+        # 2026-10-09 for season-context labeling in the UI (doc item
+        # "make it clear which season/league a displayed score is from").
+        source_league = shown$league,
+        source_season_name = shown$season_name,
         source_minutes = shown$player_season_minutes,
         source_appearances = shown$player_season_appearances,
         source_coverage = shown$DataScore_Base_cobertura,

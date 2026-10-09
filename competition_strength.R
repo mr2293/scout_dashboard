@@ -157,6 +157,7 @@ build_scored_rows <- function(dat, tiers) {
       dplyr::mutate(
         role_group_matchbased = role,
         season_id = dat$season_id[role_idx],
+        season_name = dat$season_name[role_idx],
         league = unname(VAR_TO_LEAGUE[var_name]),
         DataScore_Base = round(ds$score, 1),
         DataScore_Base_cobertura = round(ds$coverage * 100, 1),
