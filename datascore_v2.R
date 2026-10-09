@@ -36,6 +36,8 @@ source("ame_score_plus.R")  # everything upstream: normalize_metric(),
                              # apply_transition_gate(), apply_confidence_shrinkage(),
                              # apply_ame_score_gate(), classify_delantero_perfil(),
                              # GATE_CAPACITY, etc. (via its own source() chain)
+source("scale_mapping.R")   # scale_datascore(), scale_amescore() -- final
+                             # 0-100 mapping, applied as the LAST step below.
 
 .datascore_v2_cache <- NULL
 
@@ -84,13 +86,16 @@ get_datascore_v2_scores <- function(force_refresh = FALSE) {
   ds_result |>
     dplyr::transmute(
       player_id,
-      DataScore = DataScore_final,
+      # scale_datascore()/scale_amescore() (scale_mapping.R) apply the
+      # final 0-100 mapping HERE -- the stored/synced value is already
+      # display-ready, not a raw pipeline intermediate.
+      DataScore = round(scale_datascore(DataScore_final), 1),
       # Redefinition vs. the old column: C is minutes x coverage
       # confidence (doc S12.3 step 4), not just capacity-weight coverage
       # -- a richer "how much do we trust this score" than before, same
       # intended purpose, different (better-grounded) computation.
       Cobertura_DataScore = round(C * 100, 1),
-      DataScoreAmerica = ame_gate$AmeScore_final,
+      DataScoreAmerica = round(scale_amescore(ame_gate$AmeScore_final), 1),
       Cobertura_DataScoreAmerica = ame_joined$AmeScore_Base_cobertura,
       role_group_matchbased_v2 = source_role
     ) -> result
