@@ -2470,6 +2470,24 @@ get_player_row_for_season <- function(pname, target_year) {
   matched |> dplyr::slice_head(n = 1)
 }
 
+# Applies a season_sel value from the player-profile panel's own
+# "panel_season" control (an exact season_name label, or "Acumulado") to
+# an arbitrary raw df that carries season_name/player_id -- same two-step
+# pattern league_df() already applies for the global "Temporada" filter,
+# factored out here so the SkillCorner lookup (sc_table_data) can apply
+# it to all_sc_df/liga_mx_df too, independently of league_df(). A specific
+# season still runs dedup_same_team()+dedup_transfers() afterward (not
+# just a plain filter) so a genuine same-season team transfer still
+# collapses to one minutes-weighted row, exactly as league_df() does.
+filter_season_or_acumulado <- function(df, season_sel) {
+  if (!is.null(season_sel) && nzchar(season_sel) &&
+      season_sel != "Acumulado" && "season_name" %in% names(df)) {
+    df <- df |> dplyr::filter(season_name == season_sel)
+  }
+  if ("player_id" %in% names(df)) df <- df |> dedup_same_team() |> dedup_transfers()
+  df
+}
+
 
 # ============================================================
 # BASE DE DATOS TAB — full cross-league player table
@@ -3598,13 +3616,22 @@ server <- function(input, output, session) {
       tagList(
         h4("Radar del jugador seleccionado"),
         fluidRow(
-          column(7, tags$strong(selected_player())),
-          column(5, selectizeInput(
+          column(4, tags$strong(selected_player())),
+          column(4, selectInput(
+            "panel_season", "Temporada (perfil del jugador)",
+            choices=c("Acumulado"), selected="Acumulado"
+          )),
+          column(4, selectizeInput(
             "compare_player","Comparar con (cualquier liga):",
             choices=setdiff(all_players, selected_player()), multiple=FALSE,
             options=list(placeholder="Opcional", openOnFocus=TRUE, maxOptions=5000),
             selected=character(0)
           ))
+        ),
+        tags$p(
+          style="color:#6b7280;font-size:0.82em;margin:-4px 0 6px;",
+          "Controla el radar, la tabla de estadísticas y las tablas de SkillCorner de este jugador. ",
+          "Independiente del filtro \"Temporada\" general de arriba."
         ),
         plotlyOutput("radar_plot", height="520px")
       )
@@ -3614,6 +3641,25 @@ server <- function(input, output, session) {
   observeEvent(selected_player(), {
     updateSelectizeInput(session,"compare_player",selected=character(0))
   }, ignoreInit=TRUE)
+
+  # ---- Sync panel_season choices with the selected player's own seasons ----
+  # Pulled from get_all_players_raw_df() (every league, one row per
+  # player per pulled season) rather than league_df_raw(), since the
+  # selected player isn't necessarily in the currently-selected `league`
+  # (e.g. selected via "Comparar con" or "Jugadores Similares").
+  observeEvent(selected_player(), {
+    pname <- selected_player()
+    if (is.null(pname)) return()
+    raw <- get_all_players_raw_df()
+    seasons <- if ("season_name" %in% names(raw)) {
+      sort(unique(as.character(
+        raw$season_name[raw$player_name == pname & !is.na(raw$season_name)]
+      )))
+    } else character(0)
+    updateSelectInput(session, "panel_season",
+                      choices = c(seasons, "Acumulado"),
+                      selected = "Acumulado")
+  }, ignoreNULL = TRUE)
   
   # ---- Scatter plots ----
   observe({
@@ -4119,18 +4165,43 @@ server <- function(input, output, session) {
     )
   }
   
+  # Season-scoped radar pool: a specific panel_season restricts the
+  # cross-league player pool (and thus the percentile distribution) to
+  # that season; "Acumulado" uses the regular combined-seasons pool.
+  # Mirrors get_player_row_for_season()'s own season-matching logic, but
+  # returns the whole pool (needed for the radar's percentile ecdf)
+  # instead of a single player's row.
+  radar_pool <- reactive({
+    target_year <- season_equivalent_year(input$panel_season)
+    if (is.null(target_year)) return(get_all_players_df())
+    raw <- get_all_players_raw_df() |>
+      dplyr::filter(startsWith(as.character(season_name), target_year))
+    if (nrow(raw) == 0) return(get_all_players_df())
+    raw |> dedup_transfers()
+  })
+
   output$radar_plot <- renderPlotly({
     req(selected_player())
     compare_to <- if (!is.null(input$compare_player) && nzchar(input$compare_player))
       input$compare_player else NULL
+    pool <- radar_pool()
+    # Fall back to the combined-seasons pool if either player isn't
+    # present in this specific season (e.g. not yet pulled for them) --
+    # same "don't just show nothing" principle as get_player_row_for_season().
+    if (!(selected_player() %in% pool$player_name) ||
+        (!is.null(compare_to) && !(compare_to %in% pool$player_name))) {
+      pool <- get_all_players_df()
+    }
     draw_radar_for_player_plotly(player=selected_player(), compare_to=compare_to,
-                                 dat_all=get_all_players_df())
+                                 dat_all=pool)
   })
   
   # ---- Player stats table (StatsBomb percentiles within league) ----
   player_stats_tbl <- reactive({
     req(selected_player())
-    dat <- league_df()
+    # panel_season (independent of the global "Temporada" filter) drives
+    # both the player's own row and the percentile reference pool here.
+    dat <- filter_season_or_acumulado(league_df_raw(), input$panel_season)
     row <- dat |> dplyr::filter(player_name==selected_player()) |> dplyr::slice_head(n=1)
     req(nrow(row)==1)
     
@@ -4169,11 +4240,12 @@ server <- function(input, output, session) {
     req(input$compare_player, nzchar(input$compare_player))
     dat_all <- get_all_players_df()
     # Pull the compared player's row for whichever season is equivalent to
-    # the primary player's currently-selected Temporada -- e.g. viewing
-    # Liga MX's "2025/2026" compares against that player's "2025" if
-    # they're in a calendar-year league. "Acumulado" compares
-    # combined-seasons profiles for both, same as before.
-    row <- get_player_row_for_season(input$compare_player, season_equivalent_year(input$season_filter))
+    # the primary player's panel_season selection -- e.g. viewing
+    # "2025/2026" there compares against that player's "2025" if they're
+    # in a calendar-year league. "Acumulado" compares combined-seasons
+    # profiles for both. Uses panel_season (not the global "Temporada"
+    # filter) so the comparison follows the player-profile panel.
+    row <- get_player_row_for_season(input$compare_player, season_equivalent_year(input$panel_season))
     req(nrow(row) == 1)
 
     age_val  <- compute_age_years(row$birth_date)
@@ -4340,26 +4412,35 @@ server <- function(input, output, session) {
   sc_table_data <- reactive({
     req(selected_player())
     
-    message(sprintf("[SC_REACTIVE] triggered for player='%s' league='%s'",
-                    selected_player(), input$league))
+    message(sprintf("[SC_REACTIVE] triggered for player='%s' league='%s' panel_season='%s'",
+                    selected_player(), input$league, input$panel_season))
     message(sprintf("[SC_REACTIVE] liga_mx_sc_df rows=%d  all_sc_df rows=%d",
                     nrow(get_liga_mx_sc_df()), nrow(get_all_sc_df())))
-    
+
     player_row <- league_df() |>
       dplyr::filter(player_name == selected_player()) |>
       dplyr::slice_head(n = 1)
-    
+
     message(sprintf("[SC_REACTIVE] player_row found: %d rows", nrow(player_row)))
-    
+
     if (nrow(player_row) == 0) {
       message("[SC_REACTIVE] player_row is empty — returning NULL")
       return(NULL)
     }
-    
+
+    # Pre-filter to the panel's own season selection (independent of the
+    # global "Temporada" filter) -- build_skillcorner_table's own
+    # season_hint/team_hint disambiguation still runs below as a safety
+    # net, but with these already narrowed to one season (or merged via
+    # dedup_transfers for "Acumulado") there's normally at most one row
+    # left per player to pick from.
+    sc_all_sel <- filter_season_or_acumulado(get_all_sc_df(), input$panel_season)
+    sc_mx_sel  <- filter_season_or_acumulado(get_liga_mx_sc_df(), input$panel_season)
+
     result <- tryCatch(
       build_skillcorner_table(
-        all_sc_df    = get_all_sc_df(),
-        liga_mx_df   = get_liga_mx_sc_df(),
+        all_sc_df    = sc_all_sel,
+        liga_mx_df   = sc_mx_sel,
         player_row   = player_row,
         league_label = input$league
       ),
