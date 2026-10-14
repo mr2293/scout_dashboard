@@ -10,6 +10,13 @@
 # AMERICA_FIT_MODELS/.weighted_profile_score() (left in place below,
 # unused, for easy rollback/comparison -- not deleted).
 #
+# AmeScore+ (SkillCorner physical enrichment, ame_score_plus.R) wired in
+# 2026-10-14 as DataScoreAmericaPlus/DataScoreAmericaPlus_published --
+# the "_published" flag exists because the doc explicitly forbids
+# zero-imputing AmeScore+ when a player has no real physical coverage
+# (only ~13-30% of players do, depending on role); NA, never a silent
+# fallback to DataScoreAmerica.
+#
 # NOT a per-row transform of app.R's `dat` -- app.R's dat comes from
 # get_all_players_df(), which is ALREADY deduplicated across leagues/
 # seasons (dedup_transfers() blends a multi-league player's stints into
@@ -83,6 +90,22 @@ get_datascore_v2_scores <- function(force_refresh = FALSE) {
     ame_joined$role_group_matchbased, role_means_ame
   )
 
+  # AmeScore+ (SkillCorner physical enrichment, ame_score_plus.R): joined
+  # onto the SAME source row ame_joined already resolved above (not
+  # independently re-resolved) -- same "one consistent league/season
+  # context per player" rule as AmeScore itself (see file header).
+  # AmeScorePlus_published is FALSE whenever that role/perfil has no
+  # physical-enrichment mapping or the player lacks real SkillCorner
+  # coverage there -- per doc S10.2's "never zero-impute" rule, those
+  # players get NA, not a value that silently equals AmeScore.
+  amescore_plus <- compute_amescore_plus_all_roles(dat_v2) |>
+    dplyr::distinct(var_name, player_id, .keep_all = TRUE) |>
+    dplyr::select(var_name, player_id, AmeScorePlus_final, AmeScorePlus_published)
+
+  ame_plus_joined <- ame_joined |>
+    dplyr::select(player_id, var_name) |>
+    dplyr::left_join(amescore_plus, by = c("var_name", "player_id"))
+
   ds_result |>
     dplyr::transmute(
       player_id,
@@ -98,6 +121,16 @@ get_datascore_v2_scores <- function(force_refresh = FALSE) {
       DataScoreAmerica = round(scale_amescore(ame_gate$AmeScore_final), 1),
       Cobertura_DataScoreAmerica = ame_joined$AmeScore_Base_cobertura,
       role_group_matchbased_v2 = source_role,
+      # Reuses AmeScore's own scale bounds (same gate/techo mechanism,
+      # just with some capacities physical-blended) -- NA, not a
+      # fallback to DataScoreAmerica, when AmeScorePlus_published is
+      # FALSE (see note above).
+      DataScoreAmericaPlus = ifelse(
+        ame_plus_joined$AmeScorePlus_published,
+        round(scale_amescore(ame_plus_joined$AmeScorePlus_final), 1),
+        NA_real_
+      ),
+      DataScoreAmericaPlus_published = ame_plus_joined$AmeScorePlus_published,
       # Same source row backs BOTH DataScore and DataScoreAmerica (see
       # file header) -- one label covers both. For season-context
       # labeling in the UI: which league/season a displayed score is

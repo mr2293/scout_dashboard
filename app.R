@@ -1054,7 +1054,11 @@ AMERICA_FIT_MODELS <- list(
 # above, same reasoning applies here.
 add_america_fit <- function(dat) {
   v2 <- get_datascore_v2_scores()
-  dat |> dplyr::left_join(v2 |> dplyr::select(player_id, DataScoreAmerica, Cobertura_DataScoreAmerica), by = "player_id")
+  dat |> dplyr::left_join(
+    v2 |> dplyr::select(player_id, DataScoreAmerica, Cobertura_DataScoreAmerica,
+                         DataScoreAmericaPlus, DataScoreAmericaPlus_published),
+    by = "player_id"
+  )
 }
 
 # ---- v1 (legacy), kept for rollback/comparison -- NOT called anymore ----

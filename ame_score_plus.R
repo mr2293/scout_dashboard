@@ -218,18 +218,20 @@ apply_physical_enrichment <- function(role, dat, role_idx, exposure_90s, capacit
   capacities_events
 }
 
-# ============================================================
-# Validation harness -- only runs when executed directly.
-# ============================================================
-if (sys.nframe() == 0) {
-
-  tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
-  dat <- load_scout_data()
-
-  enriched_roles <- names(PHYSICAL_ENRICHMENT)
+# ---- compute_amescore_plus_all_roles() -----------------------------------
+# One row per (var_name, player_id) across ALL 7 roles (6 role-level +
+# Delantero's 5 perfiles) -- the full AmeScore+ companion to
+# build_scored_rows()/apply_ame_score_gate()'s AmeScore. Factored out of
+# the validation harness below (2026-10-14) so datascore_v2.R can call
+# the exact same logic instead of a third copy of this loop -- same
+# reasoning as build_scored_rows() itself (competition_strength.R).
+# Roles with no PHYSICAL_ENRICHMENT entry still get a row, just with
+# physical_available=FALSE throughout (apply_physical_enrichment()
+# already handles an absent role gracefully).
+compute_amescore_plus_all_roles <- function(dat) {
   all_results <- list()
 
-  for (role in enriched_roles) {
+  for (role in setdiff(names(ROLE_SCORE_DEFS), "Delantero")) {
     def <- ROLE_SCORE_DEFS[[role]]
     metrics <- unique(unlist(lapply(def$caps, names)))
     metrics <- intersect(metrics, names(dat))
@@ -253,6 +255,7 @@ if (sys.nframe() == 0) {
       dplyr::select(var_name, player_id, player_name, physical_available) |>
       dplyr::mutate(
         role_group_matchbased = role,
+        perfil = NA_character_,
         AmeScorePlus_Base = round(ame_plus$score, 1),
         AmeScorePlus_final = ifelse(physical_available, gate$AmeScore_final, NA_real_),
         AmeScorePlus_published = physical_available & !is.na(gate$AmeScore_final)
@@ -320,10 +323,22 @@ if (sys.nframe() == 0) {
     ))
   }
 
-  all_results <- dplyr::bind_rows(all_results)
+  dplyr::bind_rows(all_results)
+}
+
+# ============================================================
+# Validation harness -- only runs when executed directly.
+# ============================================================
+if (sys.nframe() == 0) {
+
+  tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
+  dat <- load_scout_data()
+
+  all_results <- compute_amescore_plus_all_roles(dat)
+
   out_path <- "data/amescore_plus_by_role.rds"
   saveRDS(all_results, out_path)
-  message(sprintf("\nWrote %s (%d rows, %d roles + 5 Delantero perfiles)", out_path, nrow(all_results), length(enriched_roles)))
+  message(sprintf("\nWrote %s (%d rows, 6 roles + 5 Delantero perfiles)", out_path, nrow(all_results)))
 
   message("\n=== Interior: AmeScore vs AmeScore+ for published players (physical actually changed something) ===")
   interior_ame <- build_scored_rows(dat, tiers) |> dplyr::filter(role_group_matchbased == "Interior") |>
