@@ -68,6 +68,23 @@ jobs:
       - name: Join StatsBomb + SkillCorner datasets
         run: Rscript join_scout_data.R
 
+      # Builds data/role_eligibility_matchbased.rds -- load_scout_data.R
+      # (used by precompute_app_cache.R's get_db_master(), below) hard-
+      # requires this file but nothing was generating it in CI: it was
+      # only ever produced by a local run, and being gitignored like the
+      # rest of data/*.rds meant every fresh CI checkout failed at
+      # "Precompute app cache" with "cannot open the connection" (see
+      # 2026-10-14 run 38595082288). Does its own live StatsBomb lineups
+      # pull via SB_USERNAME/SB_PASSWORD (same secrets as the fetch step
+      # above), independent of dashboard_scout.R/sc_data.R/
+      # join_scout_data.R, so it only needs to run before this file is
+      # read -- no particular ordering vs. the SkillCorner steps.
+      - name: Build match-based role eligibility
+        run: Rscript role_eligibility_match_based.R
+        env:
+          SB_USERNAME: ${{ secrets.SB_USERNAME }}
+          SB_PASSWORD: ${{ secrets.SB_PASSWORD }}
+
       # Builds data/app_cache/*.rds: the expensive cross-league derived
       # tables (get_all_players_df(), get_db_master(),
       # get_all_players_sc_df(), etc.) that app.R would otherwise compute
