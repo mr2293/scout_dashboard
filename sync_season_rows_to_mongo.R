@@ -33,9 +33,9 @@
 # dedup_transfers() already makes "Acumulado" one row per player across
 # ALL seasons.
 #
-# Standalone script, run manually alongside sync_to_mongo.R (same
-# MONGO_URI/MONGO_DB env vars) -- not yet wired into the GitHub Actions
-# weekly cadence.
+# Run as its own GitHub Actions step, right after "Sync to MongoDB
+# (Club América dashboard)" (sync_to_mongo.R) in .github/workflows/
+# deploy.yml -- same MONGO_URI/MONGO_DB secrets, same weekly cadence.
 #
 # UNLIKE sync_to_mongo.R (which mirrors the full ~539-column row), this
 # syncs ONLY the columns ca_scouting_dashboard's season-filter feature

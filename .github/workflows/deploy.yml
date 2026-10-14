@@ -107,6 +107,19 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB: ${{ secrets.MONGO_DB }}
 
+      # Per-season rows (sb_sc_metrics_by_season) for the player-profile
+      # season filter (25/26 vs. 26/27 vs. Acumulado) -- sync_to_mongo.R
+      # above only ever writes the already-blended "Acumulado" row, so
+      # this runs as its own step rather than folding into that script.
+      # Trimmed to ~40 columns (not the full row sync_to_mongo.R mirrors)
+      # to stay well inside the Atlas free tier's 512MB storage quota --
+      # see sync_season_rows_to_mongo.R's header for the column list.
+      - name: Sync per-season rows (Club América dashboard season filter)
+        run: Rscript sync_season_rows_to_mongo.R
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+
       - name: Write secrets.R for the scouting chatbot
         run: |
           echo "Sys.setenv(ANTHROPIC_API_KEY = \"$ANTHROPIC_API_KEY\")" > secrets.R
