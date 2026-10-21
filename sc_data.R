@@ -61,19 +61,43 @@ tur_fisico <- read_csv("data/physical/tur_physical_standardized.csv")
 uel_fisico <- read_csv("data/physical/uel_physical_standardized.csv")
 champions_fisico <- read_csv("data/physical/ucl_physical_standardized.csv")
 # Paraguay/Uruguay/Peru/Bundesliga/Bélgica/Portugal: added once physical.ipynb
-# started pulling them (see its cells) -- Championship/2.Bundesliga/Ligue 1/
-# Eredivisie/Escocia/Rusia are NOT read here because physical.ipynb's cells
-# for those currently return 0 rows for this SkillCorner account (a
-# licensing/data-access gap, not a code bug) and so never write a CSV --
-# read_csv() on a missing file would abort this whole script. Add them here
-# once that account access is confirmed and the notebook actually writes
-# their files.
+# started pulling them (see its cells) -- 2.Bundesliga/Ligue 1/Eredivisie/
+# Escocia are NOT read here because physical.ipynb's cells for those
+# currently return 0 rows for this SkillCorner account (a licensing/
+# data-access gap, not a code bug) and so never write a CSV -- read_csv()
+# on a missing file would abort this whole script. Add them here once that
+# account access is confirmed and the notebook actually writes their files.
 paraguay_fisico <- read_csv("data/physical/paraguay_physical_standardized.csv")
 uruguay_fisico <- read_csv("data/physical/uruguay_physical_standardized.csv")
 peru_fisico <- read_csv("data/physical/peru_physical_standardized.csv")
 bundesliga_fisico <- read_csv("data/physical/bundesliga_physical_standardized.csv")
 belgica_fisico <- read_csv("data/physical/belgica_physical_standardized.csv")
 portugal_fisico <- read_csv("data/physical/portugal_physical_standardized.csv")
+
+# Ecuador/Championship (EFL)/Rusia: added 2026-10-21, confirmed returning
+# real rows as of the most recent run. Loaded DEFENSIVELY (unlike every
+# league above) because these three have a real recent history of
+# returning 0 rows for some or all of their pulled seasons -- when that
+# happens, physical.ipynb's cells for them explicitly skip writing a CSV
+# at all (see those cells' own "if not season_dfs: skip file write"
+# guard), and a plain read_csv() on a missing file would abort this
+# entire script, taking every OTHER league down with it too. Falls back
+# to a 0-row frame with the same columns as a known-good pull
+# (ligamx_fisico) so downstream code (build_crosswalk_v4(),
+# join_sb_sc_fixed() in join_scout_data.R) sees the same shape it always
+# expects, just with nothing to match that run -- the same observable
+# outcome as before these three were wired in, instead of a crash.
+read_physical_csv_safe <- function(path, fallback_template = ligamx_fisico) {
+  if (!file.exists(path)) {
+    message("No file at ", path, " -- league returned 0 rows this run, using an empty frame.")
+    return(fallback_template[0, ])
+  }
+  read_csv(path)
+}
+
+ecuador_fisico <- read_physical_csv_safe("data/physical/ecuador_physical_standardized.csv")
+championship_fisico <- read_physical_csv_safe("data/physical/championship_physical_standardized.csv")
+rusia_fisico <- read_physical_csv_safe("data/physical/rusia_physical_standardized.csv")
 
 # 4 Data Frames Combinados ----
 # season_label (not season_id) is the join key here -- season_id survived
@@ -245,7 +269,10 @@ fis_data <- list(
   peru_fisico      = peru_fisico,
   bundesliga_fisico = bundesliga_fisico,
   belgica_fisico   = belgica_fisico,
-  portugal_fisico  = portugal_fisico
+  portugal_fisico  = portugal_fisico,
+  ecuador_fisico   = ecuador_fisico,
+  championship_fisico = championship_fisico,
+  rusia_fisico     = rusia_fisico
 )
 
 # Optional: basic sanity check (helps avoid silent NULLs)

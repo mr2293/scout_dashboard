@@ -23,6 +23,10 @@ fis_data   <- sc_cache$fis_data
 # side against every season pulled on the other. Extend this whenever a
 # new season is added to the SkillCorner pulls.
 SC_SEASON_ID_TO_SB_SEASON_NAME <- c(
+  "125" = "2023/2024",  # cross-year, extrapolated -- see physical.ipynb's
+                         # Championship/Rusia cells for why (2026-10-20)
+  "126" = "2024",        # calendar-year, extrapolated -- see physical.ipynb's Ecuador cell
+  "127" = "2024/2025",  # cross-year, extrapolated
   "128" = "2025",       # calendar-year leagues (Argentina, Brasil, Colombia, Chile, MLS, ...)
   "129" = "2025/2026",  # cross-year leagues (Liga MX, LaLiga, Premier League, ...)
   "130" = "2026",
@@ -1129,7 +1133,16 @@ shared_leagues <- list(
   "Perú"                     = list(sb = scout_data$jugs_peru,       sc = fis_data$peru_fisico),
   "Bundesliga"               = list(sb = scout_data$jugs_bundesliga, sc = fis_data$bundesliga_fisico),
   "Bélgica"                  = list(sb = scout_data$jugs_belgica,    sc = fis_data$belgica_fisico),
-  "Portugal – Primeira Liga" = list(sb = scout_data$jugs_portugal,   sc = fis_data$portugal_fisico)
+  "Portugal – Primeira Liga" = list(sb = scout_data$jugs_portugal,   sc = fis_data$portugal_fisico),
+  # Added 2026-10-21 -- confirmed returning real SkillCorner rows as of the
+  # most recent run (previously SB-only, see sb_only_leagues' own comment
+  # below). fis_data$*_fisico for these three are loaded DEFENSIVELY in
+  # sc_data.R (read_physical_csv_safe()) since all three have a real recent
+  # history of 0-row pulls -- a future empty run just means these three
+  # fall back to matching nothing this time, not a crash.
+  "Ecuador"                  = list(sb = scout_data$jugs_ecuador,      sc = fis_data$ecuador_fisico),
+  "Championship (EFL)"       = list(sb = scout_data$jugs_championship, sc = fis_data$championship_fisico),
+  "Rusia"                    = list(sb = scout_data$jugs_rusia,        sc = fis_data$rusia_fisico)
 )
 
 message("=== Building v4 crosswalks ===\n")
@@ -1298,14 +1311,14 @@ joined_leagues <- imap(shared_leagues, function(pair, league_name) {
 
 sb_only_leagues <- list(
   "Concacaf Champions Cup"   = scout_data$jugs_ccl,
-  "Ecuador"                  = scout_data$jugs_ecuador,
-  # Championship (EFL)/2. Bundesliga/Ligue 1/Eredivisie/Escocia/Rusia stay
-  # SB-only -- physical.ipynb has cells for all six, but this SkillCorner
-  # account currently gets 0 rows back for every one of them (confirmed with
-  # no thresholds applied either), a licensing/data-access gap rather than a
-  # code issue. Move them up into shared_leagues once that's resolved and
-  # physical.ipynb actually writes their CSVs.
-  "Championship (EFL)"       = scout_data$jugs_championship,
+  # 2. Bundesliga/Ligue 1/Eredivisie/Escocia stay SB-only -- physical.ipynb
+  # has cells for all four, but this SkillCorner account currently gets 0
+  # rows back for every one of them (confirmed with no thresholds applied
+  # either), a licensing/data-access gap rather than a code issue. Move them
+  # up into shared_leagues once that's resolved and physical.ipynb actually
+  # writes their CSVs. (Ecuador/Championship (EFL)/Rusia moved up to
+  # shared_leagues 2026-10-21 once their pulls started returning real rows
+  # -- see that list's own comment.)
   "Serie B"                  = scout_data$jugs_serie_b,
   "2. Bundesliga"            = scout_data$jugs_bundesliga_2,
   "Ligue 1"                  = scout_data$jugs_ligue_1,
@@ -1318,7 +1331,6 @@ sb_only_leagues <- list(
   "EFL League Two"            = scout_data$jugs_efl_2,
   "Ligue 2"                   = scout_data$jugs_ligue_2,
   "Polonia"                   = scout_data$jugs_polonia,
-  "Rusia"                     = scout_data$jugs_rusia,
   "Suecia – Allsvenskan"      = scout_data$jugs_suecia_allsvenskan,
   "Suecia – Superettan"       = scout_data$jugs_suecia_superettan,
   "Suiza – Super League"      = scout_data$jugs_suiza_super_league,
