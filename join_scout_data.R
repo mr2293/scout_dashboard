@@ -720,9 +720,18 @@ strip_club_boilerplate <- function(x) {
 
 canonicalize_team <- function(x) {
   norm <- normalize_name(x)
-  ifelse(norm %in% team_aliases$raw_name,
+  # as.character() wrapper is load-bearing, not cosmetic -- base ifelse()
+  # on a ZERO-LENGTH input returns logical(0) regardless of what either
+  # branch would have produced, not character(0). Surfaced 2026-10-21 by
+  # Ecuador's crosswalk build: read_physical_csv_safe()'s 0-row fallback
+  # (sc_data.R, for a league whose SkillCorner pull returned nothing that
+  # run) fed an empty team_name_sc into this function, which silently
+  # typed team_canon_sc as <logical> instead of <character> -- crashing
+  # the downstream inner_join() with "incompatible types" the next time
+  # ANY defensively-loaded league's physical pull comes back empty.
+  as.character(ifelse(norm %in% team_aliases$raw_name,
          team_aliases$canonical[match(norm, team_aliases$raw_name)],
-         strip_club_boilerplate(norm))
+         strip_club_boilerplate(norm)))
 }
 
 # =============================================================================
