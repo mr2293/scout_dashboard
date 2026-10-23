@@ -699,7 +699,21 @@ team_aliases <- tribble(
   "club brugge kv",                                 "club brugge",
   "club brugge",                                    "club brugge",
   "bayer 04 leverkusen",                            "leverkusen",
-  "bayer leverkusen",                               "leverkusen"
+  "bayer leverkusen",                               "leverkusen",
+  # Rusia -- added 2026-10-23 after Luis Chávez (Dinamo Moscow) showed up
+  # with no SkillCorner data despite having real coverage there (confirmed
+  # against the SkillCorner Physical Output tool directly). Root cause:
+  # StatsBomb calls the club "Dinamo Moscow", SkillCorner calls it "Dynamo
+  # Moscow" -- a one-letter transliteration difference that failed every
+  # same-team match pass, since Rusia was only added to shared_leagues
+  # this week and never had its team names audited/aliased before. Only
+  # this ONE club is confirmed here (no live SkillCorner access to check
+  # the other Rusia clubs' exact spelling) -- other Russian clubs may have
+  # similar unconfirmed transliteration mismatches (Zenit/CSKA/Spartak/
+  # Rubin Kazan/etc. weren't checked), flagging as a real risk, not ruling
+  # it out just because this is the only one fixed so far.
+  "dinamo moscow",                                  "dinamo moscow",
+  "dynamo moscow",                                  "dinamo moscow"
 )
 
 # Common club-org prefixes that show up on one side (usually SkillCorner)
