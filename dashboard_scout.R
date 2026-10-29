@@ -52,6 +52,40 @@ safe_player_season <- function(..., version = "v7") {
   })
 }
 
+# Retry variant for Liga MX's 2026/2027 pull specifically -- confirmed
+# 2026-10-29 (Brian Rodríguez investigation) that this call silently
+# returns a TRUNCATED result some runs: season_id=351/competition_id=73
+# returned all ~470 real players on an isolated manual pull, but only
+# ~164 of them inside the actual scheduled/dispatched pipeline run, with
+# no error raised at all (safe_player_season()'s tryCatch never fires --
+# the call "succeeds", just with fewer rows than it should have). This is
+# a different failure shape than the Ecuador/Championship/Rusia fix above
+# physical.ipynb already has (that one retries on an EMPTY result) --
+# here the result is non-empty, so an emptiness check wouldn't catch it.
+# Retries up to `retries` times and keeps whichever attempt returned the
+# MOST rows, rather than stopping at the first non-empty/non-error
+# response. Scoped to just this one league/season for now (same
+# "confirmed flaky, not blanket-applied" precedent as the physical.ipynb
+# fix) -- no evidence yet that other leagues hit this same truncation,
+# and tripling every one of the ~160 player_season() calls in this script
+# "just in case" would meaningfully slow down a run that's already ~5.5h.
+safe_player_season_max_rows <- function(..., version = "v7", retries = 3, delay_seconds = 15) {
+  best <- tibble()
+  for (attempt in seq_len(retries)) {
+    result <- safe_player_season(..., version = version)
+    if (nrow(result) > nrow(best)) {
+      if (attempt > 1 && nrow(best) > 0) {
+        message(sprintf("  [RETRY] attempt %d/%d returned more rows (%d > previous best %d) -- keeping it",
+                        attempt, retries, nrow(result), nrow(best)))
+      }
+      best <- result
+    }
+    if (attempt < retries) Sys.sleep(delay_seconds)
+  }
+  message(sprintf("  [RETRY] player_season best-of-%d: %d rows", retries, nrow(best)))
+  best
+}
+
 # ============================================================
 # SEASON IDs
 #   318 = 2025/2026 (Europe + Liga MX calendar)  | 351 = 2026/2027
@@ -316,7 +350,10 @@ usl_championship <- c(usl_championship_2025, usl_championship_2026)
 
 jugs_ligamx <- bind_rows(
   safe_player_season(username, password, season_id = 318, competition_id = 73),
-  safe_player_season(username, password, season_id = 351, competition_id = 73)
+  # 351 (2026/2027) only -- 318 (2025/2026) has shown no truncation
+  # evidence across repeated runs, see safe_player_season_max_rows()'s
+  # comment above for why only this one call gets the retry.
+  safe_player_season_max_rows(username, password, season_id = 351, competition_id = 73)
 )
 jugs_ccl <- bind_rows(
   safe_player_season(username, password, season_id = 316, competition_id = 101),
