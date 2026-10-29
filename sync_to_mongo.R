@@ -93,6 +93,19 @@ tryCatch(
   conn$index(add = '{"transfermarkt_id": 1}'),
   error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
 )
+# Added 2026-10-28 -- every percentile-pool query the Next.js dashboard
+# runs against this collection (lib/positionMetrics.js's realColumnsForPosition
+# callers, page.jsx, both season-profile and radar API routes) filters by
+# position_group first, but the only index here was on transfermarkt_id.
+# Confirmed via .explain("executionStats") that this was a full COLLSCAN
+# (20995 docs examined to return 3705) -- cheap to fix even though it
+# turned out NOT to be the cause of the ~25s season-switch delays seen
+# the same day (that was long-running dev-server process bloat, unrelated
+# to Mongo; see conversation 2026-10-28).
+tryCatch(
+  conn$index(add = '{"position_group": 1}'),
+  error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
+)
 
 message(sprintf(
   "Synced %d docs to %s.%s (collection dropped and reinserted)",

@@ -80,6 +80,11 @@ SEASON_SYNC_SC_COLS <- c(
   "hsr_distance_per_60_bip", "sprint_distance_per_60_bip", "sprint_count_per_60_bip",
   "hsr_count_per_60_bip", "highaccel_count_per_60_bip", "highdecel_count_per_60_bip",
   "meters_per_minute_tip", "meters_per_minute_otip",
+  # Added 2026-10-28 for the SkillCorner radar (SKILLCORNER_RADAR_VARS,
+  # lib/positionMetrics.js) -- the only 2 of its 10 metrics PHYSICAL_VARS
+  # above didn't already cover. hi_distance_per_60_bip swapped for
+  # hi_meters_per_minute_bip the same day the radar itself switched to it.
+  "hi_meters_per_minute_bip", "hi_count_per_60_bip",
   "count_pressures_received_per_30_min_tip_p30tip", "count_forced_losses_under_pressure_per_30_min_tip_p30tip",
   "ball_retention_ratio_under_pressure_p30tip", "pass_completion_ratio_under_pressure_p30tip",
   "dangerous_pass_completion_ratio_under_pressure_p30tip", "count_completed_passes_under_pressure_per_30_min_tip_p30tip",
@@ -95,7 +100,25 @@ SEASON_SYNC_SC_COLS <- c(
 )
 SEASON_SYNC_SC_COLS <- c(SEASON_SYNC_SC_COLS, paste0("sc_", SEASON_SYNC_SC_COLS))
 
-SEASON_SYNC_KEY_COLS <- c("player_name", "transfermarkt_id", "season_name", "position_group", "Liga")
+# Added 2026-10-28: player_season_minutes wasn't synced here at all before
+# (confirmed live -- no field on sb_sc_metrics_by_season docs contains
+# "minut"), despite several Next.js features needing it per-season (see
+# PlayerProfileView.jsx's minutes-row, and the Gráficos min-minutes filter
+# investigated the same day). DataScore/DataScoreAmerica/DataScoreAmericaPlus/
+# Perfil are deliberately NOT added here even though Gráficos also wants them
+# per-season -- they don't exist at this granularity anywhere in the
+# pipeline. build_database_master() (app.R) computes them by calling
+# add_datascore()/add_america_fit()/assign_player_profiles() on
+# get_all_players_df(), the career-BLENDED Acumulado table (one row per
+# player, dedup_transfers() weighted-averaged across every season they've
+# ever played) -- there's no per-season equivalent of that scoring step to
+# sync from. Making DataScore/AmeScore truly season-specific would mean
+# teaching datascore_v2.R to compute them against a single season's stats
+# and percentile pool instead of a career blend -- a real change to the
+# scoring methodology itself, not a sync-script column addition. Flagged to
+# the user 2026-10-28 rather than attempted here.
+SEASON_SYNC_KEY_COLS <- c("player_name", "transfermarkt_id", "season_name", "position_group", "Liga",
+                          "player_season_minutes")
 
 suppressWarnings(suppressMessages({
   library(mongolite)
@@ -117,6 +140,27 @@ suppressWarnings(suppressMessages({
 
 raw <- get_all_players_raw_df()
 
+# TEMP DIAGNOSTIC 2026-10-29 -- tracing why Brian Rodríguez (StatsBomb
+# player_id 30736, Liga MX, tm_player_id 465818) and ~75% of
+# SC-covered+TM-matched Liga MX 2026/2027 players never make it into
+# sb_sc_metrics_by_season despite every transformation step checking out
+# correctly in isolation (see 2026-10-28/29 investigation). Prints at
+# each major stage so the ACTUAL CI run's own log settles this instead of
+# a local reproduction that can't see this run's real intermediate data.
+# Remove once the root cause is found and fixed.
+isTRUE_vec <- function(x) !is.na(x) & x
+.diag_id <- "30736"
+message(sprintf("[DIAG] raw: %d total rows, %d with player_id==%s",
+                nrow(raw), sum(as.character(raw$player_id) == .diag_id, na.rm = TRUE), .diag_id))
+if (any(as.character(raw$player_id) == .diag_id, na.rm = TRUE)) {
+  hit <- raw[as.character(raw$player_id) == .diag_id, ]
+  print(hit[, intersect(c("player_id", "player_name", "team_name", "season_name", ".league_label", ".league_key", "player_season_minutes"), names(hit))])
+} else {
+  message("[DIAG] raw: player_id 30736 NOT FOUND AT ALL -- lost before get_all_players_raw_df() returns (dashboard_scout.R / join_scout_data.R / dedup_same_team()).")
+}
+.diag_2627_ligamx_raw <- raw[isTRUE_vec(raw$season_name == "2026/2027") & isTRUE_vec(grepl("Liga MX", raw$.league_label, fixed = TRUE)), ]
+message(sprintf("[DIAG] raw: %d rows with season_name=='2026/2027' and Liga MX in .league_label", nrow(.diag_2627_ligamx_raw)))
+
 seasons <- raw$season_name |> unique() |> stats::na.omit()
 season_rows <- lapply(seasons, function(s) {
   raw |> dplyr::filter(season_name == s) |> dedup_transfers()
@@ -124,6 +168,15 @@ season_rows <- lapply(seasons, function(s) {
 
 message(sprintf("Per-season rows after dedup_transfers() within each season: %d (seasons: %s)",
                 nrow(season_rows), paste(seasons, collapse = ", ")))
+
+# TEMP DIAGNOSTIC 2026-10-29 (cont.)
+message(sprintf("[DIAG] season_rows: %d with player_id==%s", sum(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE), .diag_id))
+if (any(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE)) {
+  hit <- season_rows[as.character(season_rows$player_id) == .diag_id, ]
+  print(hit[, intersect(c("player_id", "player_name", "team_name", "season_name", ".league_label", "player_season_minutes"), names(hit))])
+}
+.diag_2627_ligamx_sr <- season_rows[isTRUE_vec(season_rows$season_name == "2026/2027") & isTRUE_vec(grepl("Liga MX", season_rows$.league_label, fixed = TRUE)), ]
+message(sprintf("[DIAG] season_rows: %d rows with season_name=='2026/2027' and Liga MX in .league_label", nrow(.diag_2627_ligamx_sr)))
 
 # Same TM-crosswalk construction as build_database_master() (app.R) --
 # duplicated rather than refactoring that function, since it also does a
@@ -139,6 +192,16 @@ season_rows <- season_rows |>
   dplyr::mutate(Liga = .league_label) |>
   join_tm_crosswalk(tm_lookup)
 
+# TEMP DIAGNOSTIC 2026-10-29 (cont.) -- after the TM crosswalk join
+message(sprintf("[DIAG] after join_tm_crosswalk: %d with player_id==%s", sum(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE), .diag_id))
+if (any(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE)) {
+  hit <- season_rows[as.character(season_rows$player_id) == .diag_id, ]
+  print(hit[, intersect(c("player_id", "player_name", "team_name", "season_name", "Liga", "tm_player_id"), names(hit))])
+}
+.diag_2627_ligamx_tm <- season_rows[isTRUE_vec(season_rows$season_name == "2026/2027") & isTRUE_vec(grepl("Liga MX", season_rows$Liga, fixed = TRUE)), ]
+message(sprintf("[DIAG] after join_tm_crosswalk: %d rows season_name=='2026/2027' Liga MX, %d of those with a non-NA tm_player_id",
+                nrow(.diag_2627_ligamx_tm), sum(!is.na(.diag_2627_ligamx_tm$tm_player_id) & nzchar(.diag_2627_ligamx_tm$tm_player_id))))
+
 synced <- season_rows |>
   dplyr::filter(!is.na(tm_player_id), nzchar(tm_player_id)) |>
   dplyr::mutate(transfermarkt_id = suppressWarnings(as.integer(tm_player_id))) |>
@@ -152,6 +215,11 @@ message(sprintf(
   nrow(season_rows), nrow(synced)
 ))
 
+# TEMP DIAGNOSTIC 2026-10-29 (cont.) -- final synced set
+message(sprintf("[DIAG] synced: %d with transfermarkt_id==465818", sum(synced$transfermarkt_id == 465818, na.rm = TRUE)))
+.diag_2627_ligamx_final <- synced[isTRUE_vec(synced$season_name == "2026/2027") & isTRUE_vec(grepl("Liga MX", synced$Liga, fixed = TRUE)), ]
+message(sprintf("[DIAG] synced: %d final rows season_name=='2026/2027' Liga MX", nrow(.diag_2627_ligamx_final)))
+
 if (nrow(synced) == 0) {
   message("Nothing to sync -- exiting without touching MongoDB.")
   quit(save = "no", status = 0)
@@ -162,6 +230,16 @@ conn$drop()
 conn$insert(synced, pagesize = 500)
 tryCatch(
   conn$index(add = '{"transfermarkt_id": 1, "season_name": 1}'),
+  error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
+)
+# Added 2026-10-28 -- the season-profile API route (ca_scouting_dashboard)
+# filters statPool/physicalPool/giPool by {position_group, season_name}
+# together for every season switch; the existing indexes here only cover
+# transfermarkt_id (alone or with season_name), so that filter had no
+# compound index to use. Same reasoning as the position_group index added
+# the same day to sb_sc_metrics (sync_to_mongo.R) -- see that comment.
+tryCatch(
+  conn$index(add = '{"position_group": 1, "season_name": 1}'),
   error = function(e) message("Note: index() skipped (likely already exists): ", conditionMessage(e))
 )
 
