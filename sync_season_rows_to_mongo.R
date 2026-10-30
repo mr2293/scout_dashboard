@@ -138,6 +138,31 @@ suppressWarnings(suppressMessages({
   source("app.R")
 }))
 
+# TEMP DIAGNOSTIC 2026-10-30 -- get_all_players_raw_df() is just
+# all_players_df_from_cache(scout, league_map) |> dedup_same_team()
+# (app.R). dashboard_scout.R's own [RETRY] log now confirms Liga MX
+# 2026/2027 correctly pulls 476 players, but get_all_players_raw_df()'s
+# FINAL output (below) still only has 164 -- calling the pre-
+# dedup_same_team() half separately here bisects whether that drop
+# happens in join_scout_data.R (scout_joined.rds itself, i.e. already
+# wrong before this function ever runs) or specifically inside
+# dedup_same_team(). Remove once the root cause is found and fixed.
+.diag_pre_dedup <- all_players_df_from_cache(scout, league_map)
+.diag_id <- "30736"
+message(sprintf("[DIAG] PRE-dedup_same_team: %d total rows, %d with player_id==%s",
+                nrow(.diag_pre_dedup), sum(as.character(.diag_pre_dedup$player_id) == .diag_id, na.rm = TRUE), .diag_id))
+.diag_pre_mask <- (!is.na(.diag_pre_dedup$season_name) & .diag_pre_dedup$season_name == "2026/2027") &
+  (!is.na(.diag_pre_dedup$.league_label) & grepl("Liga MX", .diag_pre_dedup$.league_label, fixed = TRUE))
+.diag_2627_ligamx_pre <- .diag_pre_dedup[.diag_pre_mask, ]
+message(sprintf("[DIAG] PRE-dedup_same_team: %d rows season_name=='2026/2027' Liga MX", nrow(.diag_2627_ligamx_pre)))
+if (any(as.character(.diag_pre_dedup$player_id) == .diag_id, na.rm = TRUE)) {
+  hit <- .diag_pre_dedup[as.character(.diag_pre_dedup$player_id) == .diag_id, ]
+  print(hit[, intersect(c("player_id", "player_name", "team_name", "season_name", ".league_label", "player_season_minutes"), names(hit))])
+} else {
+  message("[DIAG] PRE-dedup_same_team: player_id 30736 NOT FOUND -- lost in join_scout_data.R / scout_joined.rds itself, before app.R even runs dedup_same_team().")
+}
+rm(.diag_pre_dedup, .diag_pre_mask, .diag_2627_ligamx_pre)
+
 raw <- get_all_players_raw_df()
 
 # TEMP DIAGNOSTIC 2026-10-29 -- tracing why Brian Rodríguez (StatsBomb
