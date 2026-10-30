@@ -1138,7 +1138,13 @@ build_crosswalk_v4 <- function(sb_df, sc_df, league_name,
 # =============================================================================
 
 shared_leagues <- list(
-  "Liga MX"               = list(sb = scout_data$jugs_ligamx,   sc = fis_data$liga_mx_full),
+  # jugs_ligamx_by_season (not the collapsed jugs_ligamx) -- Liga MX is the
+  # only league with two bind_rows'd seasons in dashboard_scout.R, and the
+  # collapsed version keeps only one row per player across BOTH seasons
+  # (picking whichever has more minutes), which silently drops most 26/27
+  # rows here since 25/26 is a full season and 26/27 isn't yet. See the
+  # comment above jugs_ligamx_by_season's definition in dashboard_scout.R.
+  "Liga MX"               = list(sb = scout_data$jugs_ligamx_by_season, sc = fis_data$liga_mx_full),
   "Argentina"             = list(sb = scout_data$jugs_arg,       sc = fis_data$arg_fisico),
   "Brasil – Série A"      = list(sb = scout_data$jugs_brasil,    sc = fis_data$bra_fisico),
   "Colombia"              = list(sb = scout_data$jugs_colombia,  sc = fis_data$col_fisico),

@@ -651,6 +651,17 @@ jugs_ligamx <- jugs_ligamx |>
 
 jugs_ligamx <- safe_join_goles(jugs_ligamx, goles_ligamx)
 
+# Keep the per-season rows (both 25/26 and 26/27) for the StatsBomb<->
+# SkillCorner join in join_scout_data.R, which needs one row per
+# player PER SEASON to match season-specific SC data (season dropdown).
+# This must be captured before the collapse below, which deliberately
+# keeps only one row per player across both seasons for everything else
+# in this file. Still dedupe true within-season duplicates (the original
+# problem the collapse below was written to solve), just scoped per season
+# instead of across both.
+jugs_ligamx_by_season <- jugs_ligamx |>
+  dplyr::slice_max(player_season_minutes, n = 1, by = c(player_name, season_name), with_ties = FALSE)
+
 # A player active in both pulled seasons (25/26 and 26/27) now has two rows
 # here instead of one. Several summarise(.by=...) blocks below pass columns
 # straight through unaggregated (fine with one row per group, fatal with
@@ -3706,6 +3717,7 @@ if (!dir.exists("data")) dir.create("data", recursive = TRUE)
 # Put *only* what the app needs into a named list (avoid huge intermediate objs)
 scout_data <- list(
   jugs_ligamx       = jugs_ligamx,
+  jugs_ligamx_by_season = jugs_ligamx_by_season,
   jugs_ccl          = jugs_ccl,
   jugs_arg          = jugs_arg,
   jugs_brasil       = jugs_brasil,
