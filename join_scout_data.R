@@ -1291,6 +1291,27 @@ join_sb_sc_fixed <- function(sb_df, sc_df, crosswalk, league_name) {
     NA_character_
   }
 
+  # TEMP DIAGNOSTIC 2026-10-30 -- Liga MX 2026/2027 confirmed losing ~57%
+  # of players (476 StatsBomb rows in -> 207 out of get_all_players_raw_df())
+  # somewhere in this function specifically (bisected via
+  # sync_season_rows_to_mongo.R's pre/post dedup_same_team() checkpoints).
+  # Traces Brian Rodríguez (sb_player_id 30736, sc_player_id 25463) plus
+  # aggregate counts through every stage of this function for Liga MX only.
+  .diag <- identical(league_name, "Liga MX")
+  if (.diag) {
+    message(sprintf("[DIAG-JOIN] sb_df: %d rows, %d unique player_id, %d with season_name=='2026/2027'",
+                    nrow(sb_df), dplyr::n_distinct(sb_df$player_id),
+                    sum(sb_df$season_name == "2026/2027", na.rm = TRUE)))
+    message(sprintf("[DIAG-JOIN] sb_df: %d rows with player_id=='30736'", sum(as.character(sb_df$player_id) == "30736", na.rm = TRUE)))
+    message(sprintf("[DIAG-JOIN] sc_slim: %d rows, %d unique player_id", nrow(sc_slim), dplyr::n_distinct(sc_slim$player_id)))
+    message(sprintf("[DIAG-JOIN] sc_slim: %d rows with player_id=='25463'", sum(sc_slim$player_id == "25463", na.rm = TRUE)))
+    if (any(sc_slim$player_id == "25463", na.rm = TRUE)) {
+      print(sc_slim[sc_slim$player_id == "25463", intersect(c("player_id", sc_season_id_col, ".sc_season_name"), names(sc_slim))])
+    }
+    message(sprintf("[DIAG-JOIN] cw (Liga MX crosswalk): %d rows, sb_player_id=='30736' present: %s",
+                    nrow(cw), any(cw$sb_player_id == "30736")))
+  }
+
   # Most sc_player_ids only ever have one row (a single season pulled), in
   # which case there's nothing to disambiguate. Only players with more than
   # one sc row for the same sc_player_id (currently: Liga MX players with
@@ -1303,6 +1324,11 @@ join_sb_sc_fixed <- function(sb_df, sc_df, crosswalk, league_name) {
     filter(n > 1) |>
     pull(player_id)
 
+  if (.diag) {
+    message(sprintf("[DIAG-JOIN] multi_season_sc_ids: %d total, 25463 in it: %s",
+                    length(multi_season_sc_ids), "25463" %in% multi_season_sc_ids))
+  }
+
   # relationship = "many-to-many" is expected and intentional whenever a
   # matched player has more than one row on each side (multiple SB seasons
   # x multiple SC seasons) -- the season filtering right below resolves it
@@ -1312,6 +1338,15 @@ join_sb_sc_fixed <- function(sb_df, sc_df, crosswalk, league_name) {
     left_join(cw, by = c("player_id" = "sb_player_id")) |>
     left_join(sc_slim, by = c("sc_player_id" = "player_id"), relationship = "many-to-many")
 
+  if (.diag) {
+    message(sprintf("[DIAG-JOIN] after left_joins: %d rows, %d with player_id=='30736'",
+                    nrow(joined), sum(as.character(joined$player_id) == "30736", na.rm = TRUE)))
+    if (any(as.character(joined$player_id) == "30736", na.rm = TRUE)) {
+      print(joined[as.character(joined$player_id) == "30736",
+                   intersect(c("player_id", "season_name", "sc_player_id", ".sc_season_name"), names(joined))])
+    }
+  }
+
   if (length(multi_season_sc_ids) && "season_name" %in% names(joined)) {
     is_ambiguous <- joined$sc_player_id %in% multi_season_sc_ids
     season_ok    <- is.na(joined$.sc_season_name) |
@@ -1320,6 +1355,13 @@ join_sb_sc_fixed <- function(sb_df, sc_df, crosswalk, league_name) {
     # leaving the wrong season's SC numbers attached -- showing no SC data
     # for that season is safer than showing mislabeled data.
     joined <- joined[!is_ambiguous | season_ok, ]
+  }
+
+  if (.diag) {
+    message(sprintf("[DIAG-JOIN] FINAL: %d rows, %d unique player_id, %d with season_name=='2026/2027', %d with player_id=='30736'",
+                    nrow(joined), dplyr::n_distinct(joined$player_id),
+                    sum(joined$season_name == "2026/2027", na.rm = TRUE),
+                    sum(as.character(joined$player_id) == "30736", na.rm = TRUE)))
   }
 
   joined |> select(-any_of(".sc_season_name"))
