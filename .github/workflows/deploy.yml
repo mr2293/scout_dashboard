@@ -158,9 +158,17 @@ jobs:
             )
             rsconnect::deployApp(
               appName     = 'club-america-scouting_dashboard',
-              appFiles    = c('app.R', 'radars.R', 'chatbot.R', 'datascore_v2.R', 'scout_chat_system_prompt.md',
+              appFiles    = c('app.R', 'radars.R', 'chatbot.R', 'scout_chat_system_prompt.md',
+                               # datascore_v2.R's own source() chain (every .R file it transitively
+                               # sources via ame_score_plus.R -- see each file's own source() call for
+                               # the next link) -- all of these must ship or the app fails to boot with
+                               # "cannot open file '<name>.R>'", exit status 1.
+                               'datascore_v2.R', 'ame_score_plus.R', 'ame_score_gate.R',
+                               'confidence_shrinkage.R', 'league_transition_gate.R', 'competition_strength.R',
+                               'base_scores.R', 'capacity_subscores.R', 'load_scout_data.R',
+                               'normalization.R', 'scale_mapping.R',
                                'secrets.R', 'data/scout_joined.rds', 'data/transfermarkt_crosswalk.csv',
-                               'data/competition_strength_tiers.csv',
+                               'data/competition_strength_tiers.csv', 'data/role_eligibility_matchbased.rds',
                                list.files('data/app_cache', full.names = TRUE),
                                list.files('www', full.names = TRUE)),
               forceUpdate = TRUE
