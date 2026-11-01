@@ -162,7 +162,7 @@ jobs:
                                # datascore_v2.R's own source() chain (every .R file it transitively
                                # sources via ame_score_plus.R -- see each file's own source() call for
                                # the next link) -- all of these must ship or the app fails to boot with
-                               # "cannot open file '<name>.R>'", exit status 1.
+                               # a cannot-open-file error, exit status 1.
                                'datascore_v2.R', 'ame_score_plus.R', 'ame_score_gate.R',
                                'confidence_shrinkage.R', 'league_transition_gate.R', 'competition_strength.R',
                                'base_scores.R', 'capacity_subscores.R', 'load_scout_data.R',
