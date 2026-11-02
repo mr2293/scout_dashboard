@@ -104,21 +104,21 @@ SEASON_SYNC_SC_COLS <- c(SEASON_SYNC_SC_COLS, paste0("sc_", SEASON_SYNC_SC_COLS)
 # (confirmed live -- no field on sb_sc_metrics_by_season docs contains
 # "minut"), despite several Next.js features needing it per-season (see
 # PlayerProfileView.jsx's minutes-row, and the Gráficos min-minutes filter
-# investigated the same day). DataScore/DataScoreAmerica/DataScoreAmericaPlus/
-# Perfil are deliberately NOT added here even though Gráficos also wants them
-# per-season -- they don't exist at this granularity anywhere in the
-# pipeline. build_database_master() (app.R) computes them by calling
-# add_datascore()/add_america_fit()/assign_player_profiles() on
-# get_all_players_df(), the career-BLENDED Acumulado table (one row per
-# player, dedup_transfers() weighted-averaged across every season they've
-# ever played) -- there's no per-season equivalent of that scoring step to
-# sync from. Making DataScore/AmeScore truly season-specific would mean
-# teaching datascore_v2.R to compute them against a single season's stats
-# and percentile pool instead of a career blend -- a real change to the
-# scoring methodology itself, not a sync-script column addition. Flagged to
-# the user 2026-10-28 rather than attempted here.
+# investigated the same day).
 SEASON_SYNC_KEY_COLS <- c("player_name", "transfermarkt_id", "season_name", "position_group", "Liga",
                           "player_season_minutes")
+
+# Added 2026-11-01: DataScore/DataScoreAmerica/DataScoreAmericaPlus,
+# computed per (player_id, season_name) by
+# get_datascore_v2_scores_by_season() (datascore_v2.R) instead of
+# career-blended like the rest of this file's columns -- joined onto
+# season_rows below, same (player_id, season_name) key dedup_transfers()
+# already made unique per season. Perfil/Perfil_secundario/Edad are
+# still NOT here -- those remain Acumulado-only, out of scope (see
+# docs/superpowers/specs/2026-11-01-per-season-datascore-design.md).
+SEASON_SYNC_SCORE_COLS <- c("DataScore", "Cobertura_DataScore",
+                            "DataScoreAmerica", "Cobertura_DataScoreAmerica",
+                            "DataScoreAmericaPlus", "DataScoreAmericaPlus_published")
 
 suppressWarnings(suppressMessages({
   library(mongolite)
@@ -194,6 +194,17 @@ season_rows <- lapply(seasons, function(s) {
 message(sprintf("Per-season rows after dedup_transfers() within each season: %d (seasons: %s)",
                 nrow(season_rows), paste(seasons, collapse = ", ")))
 
+message("Computing per-season DataScore/AmeScore/AmeScore+ ...")
+suppressWarnings(suppressMessages({
+  source("datascore_v2.R")
+}))
+scores_by_season <- get_datascore_v2_scores_by_season()
+message(sprintf("get_datascore_v2_scores_by_season(): %d rows, %d distinct player_id",
+                nrow(scores_by_season), dplyr::n_distinct(scores_by_season$player_id)))
+
+season_rows <- season_rows |>
+  dplyr::left_join(scores_by_season, by = c("player_id", "season_name"))
+
 # TEMP DIAGNOSTIC 2026-10-29 (cont.)
 message(sprintf("[DIAG] season_rows: %d with player_id==%s", sum(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE), .diag_id))
 if (any(as.character(season_rows$player_id) == .diag_id, na.rm = TRUE)) {
@@ -232,7 +243,7 @@ synced <- season_rows |>
   dplyr::mutate(transfermarkt_id = suppressWarnings(as.integer(tm_player_id))) |>
   dplyr::filter(!is.na(transfermarkt_id)) |>
   dplyr::distinct(transfermarkt_id, season_name, .keep_all = TRUE) |>
-  dplyr::select(dplyr::any_of(c(SEASON_SYNC_KEY_COLS, SEASON_SYNC_SB_COLS, SEASON_SYNC_SC_COLS))) |>
+  dplyr::select(dplyr::any_of(c(SEASON_SYNC_KEY_COLS, SEASON_SYNC_SB_COLS, SEASON_SYNC_SC_COLS, SEASON_SYNC_SCORE_COLS))) |>
   dplyr::mutate(dplyr::across(where(is.factor), as.character))
 
 message(sprintf(
