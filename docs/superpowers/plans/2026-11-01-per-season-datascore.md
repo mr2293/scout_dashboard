@@ -87,17 +87,19 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
   dat_v2 <- load_scout_data()
   rows <- build_scored_rows(dat_v2, tiers)
 
-  # Same defensive dedup get_datascore_v2_scores() applies before using
-  # `rows` downstream -- a small, known subset of (var_name, player_id)
-  # pairs repeat in the raw data. That function dedupes on (var_name,
-  # player_id) alone because it only needs ONE arbitrary row per pair
-  # (post-transition-gate, a single row already won). Here we need to
-  # keep rows that legitimately differ by season (the same var_name
-  # covers two different pulled seasons for some leagues -- see
-  # load_scout_data.R's header), so the key adds season_name: this still
-  # collapses true accidental duplicates within the same season while
-  # preserving every real season a player appears in.
-  rows <- rows |> dplyr::distinct(var_name, player_id, season_name, .keep_all = TRUE)
+  # A player can have two different var_name rows under the SAME
+  # season_name -- e.g. a mid-season transfer between two leagues that
+  # share the same Aug-May calendar label (confirmed live 2026-11-01:
+  # player 10003 had two separate 2025/2026 rows with different
+  # DataScore). Collapse to exactly one row per (player_id, season_name)
+  # by keeping the higher-minutes one -- same tiebreak
+  # apply_transition_gate() (league_transition_gate.R) already uses for
+  # its own "which row wins" decision ("Ties... broken by minutes
+  # played, most first"), so this stays consistent with precedent
+  # already established in this exact pipeline rather than inventing a
+  # new rule.
+  rows <- rows |>
+    dplyr::slice_max(player_season_minutes, n = 1, by = c(player_id, season_name), with_ties = FALSE)
 
   role_means_ds <- rows |>
     dplyr::filter(!is.na(DataScore_previo)) |>
@@ -579,4 +581,5 @@ Summarize: both repos' commits, the CI run result, the verified Mongo counts fro
 - **Spec coverage:** Task 1 covers spec section 1 (the new scoring function). Task 2 covers section 2 (sync). Task 3 covers section 3 (frontend). Task 4 covers the spec's testing plan step 3 (full CI run + live verification); testing plan steps 1-2 are covered inline in Tasks 1 and 2 respectively (local smoke test, syntax-check). The "Expected behavior (not a bug)" note about early-season shrinkage isn't a task on its own — it's context for Task 4 Step 3's "ballpark, not exact match" expectation, not a code change.
 - **Placeholder scan:** no TBD/TODO; every step has literal code or literal commands, not descriptions of what to do.
 - **Type consistency:** `get_datascore_v2_scores_by_season()`'s return columns (`player_id`, `season_name`, `DataScore`, `Cobertura_DataScore`, `DataScoreAmerica`, `Cobertura_DataScoreAmerica`, `DataScoreAmericaPlus`, `DataScoreAmericaPlus_published`) are the same six field names (plus the two join keys) used consistently in Task 1's Interfaces block, Task 2's join, and Task 2's `SEASON_SYNC_SCORE_COLS` constant — cross-checked against `ca_scouting_dashboard/lib/graficos.js`'s existing `GRAFICOS_METRIC_OPTIONS`/`PUBLISHED_FLAG` definitions, which already expect exactly these names.
-- **Correctness fix found during self-review:** the first draft of Task 1's function reused `rows` from `build_scored_rows()` without the defensive dedup `get_datascore_v2_scores()` applies before using it downstream (a small, known subset of `(var_name, player_id)` pairs repeat in the raw data — see that function's own comment). Missing it would have risked fan-out through the `ame_by_season`/`ds_by_season` joins. Fixed by adding `rows |> dplyr::distinct(var_name, player_id, season_name, .keep_all = TRUE)` right after `rows` is built — keyed on `(var_name, player_id, season_name)` rather than the original's `(var_name, player_id)`, since this function (unlike the Acumulado one) needs to keep rows that legitimately differ only by season. Task 1 Step 4's smoke test explicitly asserts zero duplicate `(player_id, season_name)` pairs in the final output to catch a regression here.
+- **Correctness fix found during self-review:** the first draft of Task 1's function reused `rows` from `build_scored_rows()` without the defensive dedup `get_datascore_v2_scores()` applies before using it downstream (a small, known subset of `(var_name, player_id)` pairs repeat in the raw data — see that function's own comment). Missing it would have risked fan-out through the `ame_by_season`/`ds_by_season` joins. Task 1 Step 4's smoke test explicitly asserts zero duplicate `(player_id, season_name)` pairs in the final output to catch a regression here.
+- **Correctness fix found during execution (Task 1's implementer, confirmed via the smoke test):** the original fix above (`dplyr::distinct(var_name, player_id, season_name, .keep_all = TRUE)`) was itself insufficient — a player can have two different `var_name` rows under the SAME `season_name` (a mid-season transfer between two leagues sharing the same Aug-May calendar), which that key doesn't collapse. 2,990 duplicate `(player_id, season_name)` pairs surfaced in the real smoke-test run. Ruling: resolve by keeping the higher-`player_season_minutes` row per `(player_id, season_name)` via `dplyr::slice_max(player_season_minutes, n = 1, by = c(player_id, season_name), with_ties = FALSE)` — same tiebreak `apply_transition_gate()` already uses elsewhere in this pipeline. See the ledger for the full ruling and its cost-if-wrong.
