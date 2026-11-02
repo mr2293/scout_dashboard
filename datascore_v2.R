@@ -185,16 +185,10 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
   dat_v2 <- load_scout_data()
   rows <- build_scored_rows(dat_v2, tiers)
 
-  # Ensure one row per (player_id, season_name) by keeping the row with
-  # the most minutes played -- same tiebreak apply_transition_gate()
-  # (league_transition_gate.R) already uses elsewhere in this pipeline
-  # ("Ties... broken by minutes played, most first"). This handles the
-  # edge case where a player transferred mid-season between two leagues
-  # with the same season_name (e.g., Aug-May calendar), so raw rows has
-  # multiple var_name values for one (player_id, season_name).
-  rows <- rows |>
-    dplyr::slice_max(player_season_minutes, n = 1, by = c(player_id, season_name), with_ties = FALSE)
-
+  # Compute role-mean baselines from the full `rows` table BEFORE dedup,
+  # same as get_datascore_v2_scores() does. This ensures per-season scores
+  # shrink toward the same global baseline as Acumulado (the binding
+  # constraint in the design spec), not a dedup-narrowed pool.
   role_means_ds <- rows |>
     dplyr::filter(!is.na(DataScore_previo)) |>
     dplyr::group_by(role_group_matchbased) |>
@@ -206,6 +200,16 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
     dplyr::group_by(role_group_matchbased) |>
     dplyr::summarise(mean_ame = mean(AmeScore_Base), .groups = "drop") |>
     tibble::deframe()
+
+  # Ensure one row per (player_id, season_name) by keeping the row with
+  # the most minutes played -- same tiebreak apply_transition_gate()
+  # (league_transition_gate.R) already uses elsewhere in this pipeline
+  # ("Ties... broken by minutes played, most first"). This handles the
+  # edge case where a player transferred mid-season between two leagues
+  # with the same season_name (e.g., Aug-May calendar), so raw rows has
+  # multiple var_name values for one (player_id, season_name).
+  rows <- rows |>
+    dplyr::slice_max(player_season_minutes, n = 1, by = c(player_id, season_name), with_ties = FALSE)
 
   # DataScore: rename each row's own columns to what
   # apply_confidence_shrinkage() expects (source_role/source_minutes/
