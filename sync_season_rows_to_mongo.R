@@ -202,6 +202,10 @@ scores_by_season <- get_datascore_v2_scores_by_season()
 message(sprintf("get_datascore_v2_scores_by_season(): %d rows, %d distinct player_id",
                 nrow(scores_by_season), dplyr::n_distinct(scores_by_season$player_id)))
 
+stopifnot(
+  "SEASON_SYNC_SCORE_COLS already present on season_rows -- left_join would silently produce .x/.y duplicates" =
+    !any(SEASON_SYNC_SCORE_COLS %in% names(season_rows))
+)
 season_rows <- season_rows |>
   dplyr::left_join(scores_by_season, by = c("player_id", "season_name"))
 

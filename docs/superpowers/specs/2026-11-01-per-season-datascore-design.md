@@ -41,9 +41,15 @@ The DataScore v2 pipeline already computes everything at
 `(player_id, var_name)` granularity internally — `var_name` identifies
 a specific league pull, and after `load_scout_data()`'s
 `inner_join(league_pairs, by = c("competition_id", "season_id"))`,
-each row also carries its own `season_id`/`season_name` distinctly
-(the same `var_name`, e.g. `jugs_ligamx`, covers two different pulled
-seasons). `build_scored_rows(dat, tiers)` scores every one of those
+each row also carries its own `season_id`/`season_name` distinctly.
+(`var_name` here is the `safe_matchesvector()` call variable that
+`league_pairs` is built from in `load_scout_data()` — e.g.
+`ligamx_2526`/`ligamx_2627`, `champions_2526`/`champions_2627` — which
+`dashboard_scout.R` already suffixes per season. This is a distinct set
+of variables from the `jugs_*` `safe_player_season()` pulls, which
+*do* `bind_rows()` two seasons under one shared name; those never feed
+`var_name` in the scoring pipeline, so they don't affect this
+design.) `build_scored_rows(dat, tiers)` scores every one of those
 rows individually. The existing `get_datascore_v2_scores()` only
 *looks* career-level because `apply_transition_gate()` collapses that
 per-row table down to one "current" row per player right before
@@ -133,14 +139,25 @@ score fields to a new `SEASON_SYNC_SCORE_COLS` constant alongside the
 existing `SEASON_SYNC_SB_COLS`/`SEASON_SYNC_SC_COLS`, included in the
 final `dplyr::select(dplyr::any_of(c(...)))`.
 
-Join-key safety: a player can only collide on `(player_id,
-season_name)` if it's genuinely the same calendar context (e.g. a
-mid-season team transfer), which `dedup_transfers()` already blends
-into one row per `(player_id, season_name)` upstream of this point —
-confirmed by `page.jsx`'s existing season-calendar logic, which
-depends on domestic-league seasons (`"2025/2026"` slash format) and
-continental-cup calendars (`"2026"` bare-year format) never sharing a
-season_name string. No new dedup needed.
+Join-key safety: a player CAN collide on `(player_id, season_name)`,
+and does in production — Task 1's implementation hit 2,990 duplicate
+`(player_id, season_name)` pairs in the full fixture. The real cause
+isn't a calendar-format coincidence: `dashboard_scout.R` maps multiple
+different leagues/competitions to the *same* `season_id` for a given
+year. For example, `season_id = 355` is shared by `arg_2026`,
+`brasil_2026`, `colombia_2026`, `ecuador_2026`, `chile_2026`,
+`paraguay_2026`, `uruguay_2026`, `mls_2026`, and `ccl_2026` alike —
+all bare-year `"2026"` format, all resolving to the same
+`season_name` string. A player who appears in two competitions
+sharing a `season_id` in the same year (a genuine mid-season
+cross-league transfer, or dual registration) collides at
+`(player_id, season_name)` regardless of slash-format vs. bare-year
+format; `dedup_transfers()` only dedupes same-team splits, not this.
+Fixed in `get_datascore_v2_scores_by_season()` by resolving to one row
+per `(player_id, season_name)` via `dplyr::slice_max(player_season_minutes, ...)`
+— i.e. keeping the higher-`player_season_minutes` row, the same
+tiebreak `apply_transition_gate()` (`league_transition_gate.R`) already
+uses for its own "which row wins" decision.
 
 ### 3. Frontend — `ca_scouting_dashboard`
 
@@ -163,6 +180,21 @@ low-sample players elsewhere in the pipeline — it loosens naturally as
 the season accumulates more minutes, not something this design needs
 to special-case.
 
+Note also an asymmetry this design inherits rather than introduces:
+`DataScore` gets per-season confidence shrinkage (pulling toward the
+role mean in proportion to how many minutes a player has *that
+season*), but `AmeScore`/`DataScoreAmerica` only gets a gate/ceiling
+(`apply_ame_score_gate()`) with no equivalent minutes-based shrinkage.
+This asymmetry already exists in the Acumulado pipeline, but it's far
+more visible per-season, since a 2026/2027 row can rest on just 2-3
+matches' worth of minutes, whereas Acumulado's gate-selected row is
+usually a near-complete season. Practically, this means a low-minutes
+player's per-season AmeScore can land at a more extreme value than
+their (shrunk) DataScore would suggest — sampling noise more than
+signal. Making AmeScore's per-season shrinkage symmetric with
+DataScore's is a methodology decision for a human to make; this
+implementation does not change that behavior.
+
 ## Testing plan
 
 1. Run `get_datascore_v2_scores_by_season()` locally against the
@@ -184,3 +216,11 @@ to special-case.
 - Whether `GraficosView.jsx`'s warning copy needs a smaller tweak (it
   currently names all three scores in one sentence; once scores exist
   per season, only the Perfil/Edad half of that message remains true).
+- `SourceLeague`/`SourceSeason` fields on
+  `get_datascore_v2_scores_by_season()`'s output, mirroring what
+  `get_datascore_v2_scores()`'s Acumulado output already has, so a
+  future reader can tell which specific league/competition stint a
+  per-season score came from when a player has a same-`season_name`
+  collision resolved by the minutes tiebreak. Deferred as a follow-up
+  enhancement (observability, not correctness) — not implemented in
+  this round, since it would require another full pipeline run.

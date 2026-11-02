@@ -274,3 +274,33 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
   .datascore_v2_by_season_cache <<- result
   result
 }
+
+if (sys.nframe() == 0) {
+  result <- get_datascore_v2_scores_by_season()
+
+  message(sprintf(
+    "\n=== get_datascore_v2_scores_by_season(): %d rows, %d distinct player_id, %d distinct season_name ===",
+    nrow(result), dplyr::n_distinct(result$player_id), dplyr::n_distinct(result$season_name)
+  ))
+
+  # The invariant that broke during implementation (2,990 duplicate pairs
+  # from two leagues sharing a season_id/season_name) -- catch it here
+  # immediately, the same way the sibling files' harnesses catch their
+  # own invariants.
+  n_dupes <- result |>
+    dplyr::count(player_id, season_name) |>
+    dplyr::filter(n > 1) |>
+    nrow()
+  stopifnot("duplicate (player_id, season_name) pairs found" = n_dupes == 0)
+
+  message(sprintf(
+    "\n=== DataScore: n_valid=%d/%d  range=[%.1f,%.1f] ===",
+    sum(!is.na(result$DataScore)), nrow(result),
+    min(result$DataScore, na.rm = TRUE), max(result$DataScore, na.rm = TRUE)
+  ))
+  message(sprintf(
+    "=== DataScoreAmerica: n_valid=%d/%d  range=[%.1f,%.1f] ===",
+    sum(!is.na(result$DataScoreAmerica)), nrow(result),
+    min(result$DataScoreAmerica, na.rm = TRUE), max(result$DataScoreAmerica, na.rm = TRUE)
+  ))
+}
