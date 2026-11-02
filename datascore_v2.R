@@ -143,3 +143,130 @@ get_datascore_v2_scores <- function(force_refresh = FALSE) {
   .datascore_v2_cache <<- result
   result
 }
+
+# ============================================================
+# get_datascore_v2_scores_by_season()
+#
+# Sibling to get_datascore_v2_scores() above -- NOT a modification of
+# it, and does not call it. Returns DataScore/DataScoreAmerica/
+# DataScoreAmericaPlus at (player_id, season_name) granularity instead
+# of career-blended Acumulado.
+#
+# The per-row scoring this needs already exists inside
+# get_datascore_v2_scores() as the intermediate `rows` table --
+# build_scored_rows() scores every (player_id, league, season) row
+# individually; get_datascore_v2_scores() only looks career-level
+# because apply_transition_gate() collapses `rows` to one row per
+# player right before confidence shrinkage / the AmeScore gate run.
+# This function reuses `rows` directly and skips that collapse.
+#
+# Role-mean baselines (role_means_ds/role_means_ame) are recomputed
+# here with the EXACT SAME expression get_datascore_v2_scores() uses --
+# same global pool, so a player's per-season score and their Acumulado
+# score shrink toward the same reference point. Deliberately not
+# cached/shared between the two functions: each is a 3-line
+# group_by/summarise over `rows`, cheaper than adding a shared-state
+# dependency between two functions that must otherwise stay independent
+# (see the "Acumulado must stay untouched" constraint in the design
+# spec, docs/superpowers/specs/2026-11-01-per-season-datascore-design.md).
+#
+# apply_ame_score_gate() is called directly on the full `rows` table
+# here -- the exact same call ame_score_gate.R's own validation harness
+# (its `if (sys.nframe() == 0)` block) already makes; this just reuses
+# that already-exercised pattern instead of introducing a new one.
+# ============================================================
+
+.datascore_v2_by_season_cache <- NULL
+
+get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
+  if (!force_refresh && !is.null(.datascore_v2_by_season_cache)) return(.datascore_v2_by_season_cache)
+
+  tiers <- read.csv("data/competition_strength_tiers.csv", stringsAsFactors = FALSE)
+  dat_v2 <- load_scout_data()
+  rows <- build_scored_rows(dat_v2, tiers)
+
+  # Ensure one row per (player_id, season_name) by keeping the row with
+  # the most minutes played -- same tiebreak apply_transition_gate()
+  # (league_transition_gate.R) already uses elsewhere in this pipeline
+  # ("Ties... broken by minutes played, most first"). This handles the
+  # edge case where a player transferred mid-season between two leagues
+  # with the same season_name (e.g., Aug-May calendar), so raw rows has
+  # multiple var_name values for one (player_id, season_name).
+  rows <- rows |>
+    dplyr::slice_max(player_season_minutes, n = 1, by = c(player_id, season_name), with_ties = FALSE)
+
+  role_means_ds <- rows |>
+    dplyr::filter(!is.na(DataScore_previo)) |>
+    dplyr::group_by(role_group_matchbased) |>
+    dplyr::summarise(mean_ds = mean(DataScore_previo), .groups = "drop") |>
+    tibble::deframe()
+
+  role_means_ame <- rows |>
+    dplyr::filter(!is.na(AmeScore_Base)) |>
+    dplyr::group_by(role_group_matchbased) |>
+    dplyr::summarise(mean_ame = mean(AmeScore_Base), .groups = "drop") |>
+    tibble::deframe()
+
+  # DataScore: rename each row's own columns to what
+  # apply_confidence_shrinkage() expects (source_role/source_minutes/
+  # source_coverage/DataScore_shown), instead of routing through
+  # apply_transition_gate()'s one-row-per-player collapse. Every
+  # (player_id, league, season) row gets shrunk independently.
+  ds_by_season <- rows |>
+    dplyr::filter(!is.na(DataScore_previo)) |>
+    dplyr::transmute(
+      player_id, var_name, season_name,
+      source_role     = role_group_matchbased,
+      source_minutes  = player_season_minutes,
+      source_coverage = DataScore_Base_cobertura,
+      DataScore_shown = DataScore_previo
+    ) |>
+    apply_confidence_shrinkage(role_means_ds) |>
+    dplyr::transmute(
+      player_id, var_name, season_name,
+      DataScore = round(scale_datascore(DataScore_final), 1),
+      Cobertura_DataScore = round(C * 100, 1)
+    )
+
+  # AmeScore: apply_ame_score_gate() directly on every row of `rows` --
+  # no join needed, AmeScore_Base/GATE_CAPACITY already live on `rows`
+  # itself (unlike get_datascore_v2_scores(), which has to re-join them
+  # back on after the transition gate already dropped them).
+  ame_gate <- apply_ame_score_gate(
+    rows$AmeScore_Base, rows[[GATE_CAPACITY]],
+    rows$role_group_matchbased, role_means_ame
+  )
+  ame_by_season <- dplyr::bind_cols(
+    rows |> dplyr::select(player_id, var_name, season_name, AmeScore_Base_cobertura),
+    ame_gate
+  ) |>
+    dplyr::transmute(
+      player_id, var_name, season_name,
+      DataScoreAmerica = round(scale_amescore(AmeScore_final), 1),
+      Cobertura_DataScoreAmerica = AmeScore_Base_cobertura
+    )
+
+  # AmeScore+: compute_amescore_plus_all_roles() is already keyed by
+  # (var_name, player_id) and never collapses on its own -- used as-is.
+  amescore_plus <- compute_amescore_plus_all_roles(dat_v2) |>
+    dplyr::distinct(var_name, player_id, .keep_all = TRUE) |>
+    dplyr::transmute(
+      var_name, player_id,
+      DataScoreAmericaPlus = ifelse(
+        AmeScorePlus_published,
+        round(scale_amescore(AmeScorePlus_final), 1),
+        NA_real_
+      ),
+      DataScoreAmericaPlus_published = AmeScorePlus_published
+    )
+
+  result <- ds_by_season |>
+    dplyr::left_join(ame_by_season, by = c("player_id", "var_name", "season_name")) |>
+    dplyr::left_join(amescore_plus, by = c("player_id", "var_name")) |>
+    dplyr::select(player_id, season_name, DataScore, Cobertura_DataScore,
+                  DataScoreAmerica, Cobertura_DataScoreAmerica,
+                  DataScoreAmericaPlus, DataScoreAmericaPlus_published)
+
+  .datascore_v2_by_season_cache <<- result
+  result
+}
