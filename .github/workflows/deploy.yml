@@ -7,7 +7,14 @@ on:
 
 jobs:
   update-and-deploy:
-    runs-on: ubuntu-latest
+    # Pinned off ubuntu-latest: that image moved to Ubuntu 24.04 (GCC 15),
+    # which broke source-compiling the `later` package -- its bundled
+    # tinycthread.h redefines pthread_once_t, now conflicting with glibc's
+    # own typedef under this GCC. ubuntu-22.04 keeps the older toolchain
+    # this renv lockfile was last known to compile against (success through
+    # 2026-11-02; first failure 2026-11-03 coincides with runner image churn,
+    # not any change in this repo).
+    runs-on: ubuntu-22.04
 
     env:
       DATA_DIR: ${{ github.workspace }}/data
