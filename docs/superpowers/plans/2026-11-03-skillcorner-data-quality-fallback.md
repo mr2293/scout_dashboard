@@ -653,7 +653,18 @@ with:
       dat <- dat |>
         dplyr::select(-dplyr::any_of(override_cols)) |>
         dplyr::left_join(
-          sc_fallback |> dplyr::mutate(player_id = as.character(player_id)),
+          # player_name dropped here -- sc_fallback carries its own
+          # (dplyr::first(player_name) across whichever candidate rows
+          # blended), which collides with dat's own player_name column
+          # (present in both sides, not part of `by`) and gets suffixed
+          # to player_name.x/player_name.y by dplyr's default behavior,
+          # silently breaking every downstream consumer that filters/
+          # groups on bare player_name (dozens of them, confirmed via
+          # grep -- found by review, not caught by a smoke test that
+          # only checked row count and the new columns' presence).
+          # dat's own player_name (StatsBomb-sourced, already correct)
+          # stays authoritative.
+          sc_fallback |> dplyr::select(-player_name) |> dplyr::mutate(player_id = as.character(player_id)),
           by = "player_id"
         )
     } else {
