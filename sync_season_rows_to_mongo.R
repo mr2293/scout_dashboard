@@ -80,6 +80,18 @@ SEASON_SYNC_SC_COLS <- c(
   "hsr_distance_per_60_bip", "sprint_distance_per_60_bip", "sprint_count_per_60_bip",
   "hsr_count_per_60_bip", "highaccel_count_per_60_bip", "highdecel_count_per_60_bip",
   "meters_per_minute_tip", "meters_per_minute_otip",
+  # Added 2026-11-03: PHYSICAL_VARS (lib/positionMetrics.js) switched its
+  # SkillCorner player-profile table from P60-BIP metrics to their P90
+  # equivalents, plus a new HI Distancia (90') column -- this per-season
+  # collection needs the same P90 columns the Acumulado collection
+  # (sync_to_mongo.R, which mirrors the full row) already has, or the
+  # season-specific SkillCorner table (app/api/players/[id]/season-profile/
+  # route.js) goes blank the moment a specific season is picked. The
+  # P60-BIP columns above stay too -- SKILLCORNER_RADAR_VARS still reads
+  # them.
+  "total_distance_per_90", "running_distance_per_90", "hsr_distance_per_90",
+  "sprint_distance_per_90", "sprint_count_per_90", "hsr_count_per_90",
+  "highaccel_count_per_90", "highdecel_count_per_90", "hi_distance_per_90",
   # Added 2026-10-28 for the SkillCorner radar (SKILLCORNER_RADAR_VARS,
   # lib/positionMetrics.js) -- the only 2 of its 10 metrics PHYSICAL_VARS
   # above didn't already cover. hi_distance_per_60_bip swapped for
