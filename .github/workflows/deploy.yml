@@ -37,7 +37,7 @@ jobs:
       - name: Run physical.ipynb (physical metrics)
         run: |
           jupyter nbconvert --to notebook --execute --inplace \
-            --ExecutePreprocessor.timeout=600 \
+            --ExecutePreprocessor.timeout=2400 \
             notebooks/physical.ipynb
         env:
           SC_USERNAME: ${{ secrets.SC_USERNAME }}
