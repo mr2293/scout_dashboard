@@ -2417,7 +2417,7 @@ get_all_players_df <- function() {
       dat <- dat |>
         dplyr::select(-dplyr::any_of(override_cols)) |>
         dplyr::left_join(
-          sc_fallback |> dplyr::mutate(player_id = as.character(player_id)),
+          sc_fallback |> dplyr::select(-player_name) |> dplyr::mutate(player_id = as.character(player_id)),
           by = "player_id"
         )
     } else {
