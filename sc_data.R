@@ -15,6 +15,7 @@ library(purrr)
 library(lubridate)
 library(scales)
 library(fmsb)
+source("sc_physical_acumulado_fallback.R")
 
 # Canonical Liga MX season label for the physical/off-ball-runs pull method
 # (season_id -> label). Passes/pressures no longer need an R-side
