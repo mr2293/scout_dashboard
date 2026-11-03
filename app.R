@@ -46,6 +46,13 @@ source("chatbot.R", local = TRUE)
 # not committed yet. See datascore_v2.R's header and the
 # datascore-v2-overhaul project memory for status.
 source("datascore_v2.R")
+# get_sc_physical_acumulado_fallback() -- used by get_all_players_df() below
+# to overwrite Acumulado's SkillCorner physical columns with the
+# sample-size-fallback-aware blend. Sourced directly (not via sc_data.R,
+# which also defines it but drags in a much heavier, unrelated pipeline --
+# StatsBombR/soccermatics/devtools and several standalone data reads) --
+# this file only defines functions and has no top-level side effects.
+source("sc_physical_acumulado_fallback.R")
 
 options(scipen = 999)
 
@@ -2392,6 +2399,31 @@ get_all_players_df <- function() {
     dat <- all_players_df_from_cache(scout, league_map) |>
       dedup_same_team() |>
       dedup_transfers()
+
+    # SkillCorner physical columns for Acumulado get OVERWRITTEN here with
+    # the sample-size-fallback-aware blend (sc_physical_acumulado_fallback.R)
+    # instead of whatever dedup_transfers() computed from the full-career
+    # season rows above -- dedup_transfers() itself is untouched; this is a
+    # layer applied after it runs, scoped to just the physical columns. A
+    # player with no row in the fallback blend (no SkillCorner coverage at
+    # all) keeps whatever dedup_transfers() already had for those columns
+    # (typically NA) and both new quality columns stay NA, not a warning --
+    # "no data" and "a warning about thin data" are different states.
+    sc_fallback <- get_sc_physical_acumulado_fallback()
+    if (nrow(sc_fallback)) {
+      override_cols <- setdiff(names(sc_fallback), c("player_id", "player_name",
+                                                        "sc_physical_quality_warning",
+                                                        "sc_physical_quality_reason"))
+      dat <- dat |>
+        dplyr::select(-dplyr::any_of(override_cols)) |>
+        dplyr::left_join(
+          sc_fallback |> dplyr::mutate(player_id = as.character(player_id)),
+          by = "player_id"
+        )
+    } else {
+      dat$sc_physical_quality_warning <- NA
+      dat$sc_physical_quality_reason <- NA_character_
+    }
 
     # % of minutes played vs. the most-used player in the same league --
     # computed once here (rather than separately per tab) so "Base de
