@@ -684,6 +684,15 @@ assign_player_profiles <- function(dat) {
     )
     out[[grp]]$Gap_perfil <- out[[grp]]$Score_perfil - out[[grp]]$Score_perfil_secundario
     out[[grp]]$Cobertura_perfil <- main_coverage * 100
+    out[[grp]]$PerfilGroup <- grp
+    # Lista de listas (no vector con nombres) -- as.list() por fila evita
+    # el riesgo de que dplyr::bind_rows()/mongolite serialicen un vector
+    # con nombres de forma inconsistente entre perfiles de distintos
+    # grupos (cada grupo tiene sus propios nombres de columna en `scores`,
+    # distintos de grupo a grupo). NA se preserva tal cual -- se traduce a
+    # null en JSON, que el radar del frontend interpreta como "sin datos"
+    # (ver spec).
+    out[[grp]]$PerfilScores <- lapply(seq_len(nrow(scores)), function(i) as.list(scores[i, ]))
   }
 
   dplyr::bind_rows(out)
