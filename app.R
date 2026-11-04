@@ -692,7 +692,8 @@ assign_player_profiles <- function(dat) {
     # distintos de grupo a grupo). NA se preserva tal cual -- se traduce a
     # null en JSON, que el radar del frontend interpreta como "sin datos"
     # (ver spec).
-    out[[grp]]$PerfilScores <- lapply(seq_len(nrow(scores)), function(i) as.list(scores[i, ]))
+    out[[grp]]$PerfilScores <- lapply(seq_len(nrow(scores)), function(i)
+      lapply(as.list(scores[i, ]), function(x) jsonlite::unbox(if (is.na(x)) NA else x)))
   }
 
   dplyr::bind_rows(out)
