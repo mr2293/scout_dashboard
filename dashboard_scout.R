@@ -396,6 +396,7 @@ usl_championship <- c(usl_championship_2024, usl_championship_2025, usl_champion
 # libertadores_lineups <- cleanlineups(libertadores_lineups)
 
 jugs_ligamx <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 73),
   safe_player_season(username, password, season_id = 318, competition_id = 73),
   # 351 (2026/2027) only -- 318 (2025/2026) has shown no truncation
   # evidence across repeated runs, see safe_player_season_max_rows()'s
@@ -403,164 +404,204 @@ jugs_ligamx <- bind_rows(
   safe_player_season_max_rows(username, password, season_id = 351, competition_id = 73)
 )
 jugs_ccl <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 101),
   safe_player_season(username, password, season_id = 316, competition_id = 101),
   safe_player_season(username, password, season_id = 355, competition_id = 101)
 )
 jugs_arg <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 81),
   safe_player_season(username, password, season_id = 316, competition_id = 81),
   safe_player_season(username, password, season_id = 355, competition_id = 81)
 )
 jugs_brasil <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 71),
   safe_player_season(username, password, season_id = 316, competition_id = 71),
   safe_player_season(username, password, season_id = 355, competition_id = 71)
 )
 jugs_colombia <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 74),
   safe_player_season(username, password, season_id = 316, competition_id = 74),
   safe_player_season(username, password, season_id = 355, competition_id = 74)
 )
 jugs_ecuador <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 105),
   safe_player_season(username, password, season_id = 316, competition_id = 105),
   safe_player_season(username, password, season_id = 355, competition_id = 105)
 )
 jugs_chile <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 103),
   safe_player_season(username, password, season_id = 316, competition_id = 103),
   safe_player_season(username, password, season_id = 355, competition_id = 103)
 )
 jugs_paraguay <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 247),
   safe_player_season(username, password, season_id = 316, competition_id = 247),
   safe_player_season(username, password, season_id = 355, competition_id = 247)
 )
 jugs_uruguay <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 111),
   safe_player_season(username, password, season_id = 316, competition_id = 111),
   safe_player_season(username, password, season_id = 355, competition_id = 111)
 )
 jugs_mls <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 44),
   safe_player_season(username, password, season_id = 316, competition_id = 44),
   safe_player_season(username, password, season_id = 355, competition_id = 44)
 )
 jugs_premier <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 2),
   safe_player_season(username, password, season_id = 318, competition_id = 2),
   safe_player_season(username, password, season_id = 351, competition_id = 2)
 )
 jugs_championship <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 3),
   safe_player_season(username, password, season_id = 318, competition_id = 3),
   safe_player_season(username, password, season_id = 351, competition_id = 3)
 )
 jugs_laliga <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 11),
   safe_player_season(username, password, season_id = 318, competition_id = 11),
   safe_player_season(username, password, season_id = 351, competition_id = 11)
 )
 jugs_laliga_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 42),
   safe_player_season(username, password, season_id = 318, competition_id = 42),
   safe_player_season(username, password, season_id = 351, competition_id = 42)
 )
 jugs_serie_a <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 12),
   safe_player_season(username, password, season_id = 318, competition_id = 12),
   safe_player_season(username, password, season_id = 351, competition_id = 12)
 )
 jugs_serie_b <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 84),
   safe_player_season(username, password, season_id = 318, competition_id = 84),
   safe_player_season(username, password, season_id = 351, competition_id = 84)
 )
 jugs_bundesliga <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 9),
   safe_player_season(username, password, season_id = 318, competition_id = 9),
   safe_player_season(username, password, season_id = 351, competition_id = 9)
 )
 jugs_bundesliga_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 10),
   safe_player_season(username, password, season_id = 318, competition_id = 10),
   safe_player_season(username, password, season_id = 351, competition_id = 10)
 )
 jugs_ligue_1 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 7),
   safe_player_season(username, password, season_id = 318, competition_id = 7),
   safe_player_season(username, password, season_id = 351, competition_id = 7)
 )
 jugs_eredivisie <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 6),
   safe_player_season(username, password, season_id = 318, competition_id = 6),
   safe_player_season(username, password, season_id = 351, competition_id = 6)
 )
 jugs_belgica <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 46),
   safe_player_season(username, password, season_id = 318, competition_id = 46),
   safe_player_season(username, password, season_id = 351, competition_id = 46)
 )
 jugs_portugal <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 13),
   safe_player_season(username, password, season_id = 318, competition_id = 13),
   safe_player_season(username, password, season_id = 351, competition_id = 13)
 )
 jugs_turquia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 85),
   safe_player_season(username, password, season_id = 318, competition_id = 85),
   safe_player_season(username, password, season_id = 351, competition_id = 85)
 )
 jugs_escocia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 51),
   safe_player_season(username, password, season_id = 318, competition_id = 51),
   safe_player_season(username, password, season_id = 351, competition_id = 51)
 )
 jugs_champions <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 16),
   safe_player_season(username, password, season_id = 318, competition_id = 16),
   safe_player_season(username, password, season_id = 351, competition_id = 16)
 )
 jugs_libertadores <- safe_player_season(username, password, season_id = 315, competition_id = 102)
 jugs_uel <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 35),
   safe_player_season(username, password, season_id = 318, competition_id = 35),
   safe_player_season(username, password, season_id = 351, competition_id = 35)
 )
 
 jugs_australia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 93),
   safe_player_season(username, password, season_id = 318, competition_id = 93),
   safe_player_season(username, password, season_id = 351, competition_id = 93)
 )
 jugs_chequia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 76),
   safe_player_season(username, password, season_id = 318, competition_id = 76),
   safe_player_season(username, password, season_id = 351, competition_id = 76)
 )
 jugs_efl_1 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 4),
   safe_player_season(username, password, season_id = 318, competition_id = 4),
   safe_player_season(username, password, season_id = 351, competition_id = 4)
 )
 jugs_efl_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 5),
   safe_player_season(username, password, season_id = 318, competition_id = 5),
   safe_player_season(username, password, season_id = 351, competition_id = 5)
 )
 jugs_ligue_2 <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 8),
   safe_player_season(username, password, season_id = 318, competition_id = 8),
   safe_player_season(username, password, season_id = 351, competition_id = 8)
 )
 jugs_polonia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 38),
   safe_player_season(username, password, season_id = 318, competition_id = 38),
   safe_player_season(username, password, season_id = 351, competition_id = 38)
 )
 jugs_rusia <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 128),
   safe_player_season(username, password, season_id = 318, competition_id = 128),
   safe_player_season(username, password, season_id = 351, competition_id = 128)
 )
 jugs_suecia_allsvenskan <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 75),
   safe_player_season(username, password, season_id = 318, competition_id = 75),
   safe_player_season(username, password, season_id = 351, competition_id = 75)
 )
 jugs_suecia_superettan <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 249),
   safe_player_season(username, password, season_id = 318, competition_id = 249),
   safe_player_season(username, password, season_id = 351, competition_id = 249)
 )
 jugs_suiza_super_league <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 80),
   safe_player_season(username, password, season_id = 318, competition_id = 80),
   safe_player_season(username, password, season_id = 351, competition_id = 80)
 )
 jugs_suiza_challenger <- bind_rows(
+  safe_player_season(username, password, season_id = 317, competition_id = 177),
   safe_player_season(username, password, season_id = 318, competition_id = 177),
   safe_player_season(username, password, season_id = 351, competition_id = 177)
 )
 jugs_noruega <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 88),
   safe_player_season(username, password, season_id = 316, competition_id = 88),
   safe_player_season(username, password, season_id = 355, competition_id = 88)
 )
 jugs_china <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 104),
   safe_player_season(username, password, season_id = 316, competition_id = 104),
   safe_player_season(username, password, season_id = 355, competition_id = 104)
 )
 jugs_peru <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 97),
   safe_player_season(username, password, season_id = 316, competition_id = 97),
   safe_player_season(username, password, season_id = 355, competition_id = 97)
 )
 jugs_usl_championship <- bind_rows(
+  safe_player_season(username, password, season_id = 282, competition_id = 89),
   safe_player_season(username, password, season_id = 316, competition_id = 89),
   safe_player_season(username, password, season_id = 355, competition_id = 89)
 )
