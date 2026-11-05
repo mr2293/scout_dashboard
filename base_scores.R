@@ -292,12 +292,17 @@ score_delantero_by_perfil <- function(dat, role_idx, perfil) {
     if (!length(idx)) next
     sub <- normalized[idx, ]
     def <- DELANTERO_PERFIL_DEFS[[p]]
+    sub_role_idx <- role_idx[idx]
 
     caps <- sub |> dplyr::select(var_name, player_id, player_name, .orig_pos)
     for (cap in names(def$caps)) caps[[cap]] <- capacity_subscore(sub, def$caps[[cap]])$score
 
     ds <- combine_capacities(caps, def$ds)
     ame <- combine_capacities(caps, def$ame)
+
+    raw_values <- dat[sub_role_idx, names(sub)[names(sub) %in% names(dat)], drop = FALSE]
+    ds_breakdown <- build_score_breakdown(sub, raw_values, caps, def$caps, def$ds)
+    ame_breakdown <- build_score_breakdown(sub, raw_values, caps, def$caps, def$ame)
 
     result[[p]] <- caps |>
       dplyr::mutate(
@@ -307,6 +312,8 @@ score_delantero_by_perfil <- function(dat, role_idx, perfil) {
         AmeScore_Base = round(ame$score, 1),
         AmeScore_Base_cobertura = round(ame$coverage * 100, 1)
       )
+    result[[p]]$DataScoreBreakdown <- ds_breakdown
+    result[[p]]$AmeScoreBreakdown <- ame_breakdown
   }
   dplyr::bind_rows(result) |> dplyr::arrange(.orig_pos) |> dplyr::select(-.orig_pos)
 }

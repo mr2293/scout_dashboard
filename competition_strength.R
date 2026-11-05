@@ -127,6 +127,8 @@ build_scored_rows <- function(dat, tiers) {
       capacities <- scored |> dplyr::select(-DataScore_Base, -DataScore_Base_cobertura, -AmeScore_Base, -AmeScore_Base_cobertura)
       ds <- list(score = scored$DataScore_Base, coverage = scored$DataScore_Base_cobertura / 100)
       ame <- list(score = scored$AmeScore_Base, coverage = scored$AmeScore_Base_cobertura / 100)
+      ds_breakdown <- scored$DataScoreBreakdown
+      ame_breakdown <- scored$AmeScoreBreakdown
     } else {
       def <- ROLE_SCORE_DEFS[[role]]
       metrics <- unique(unlist(lapply(def$caps, names)))
