@@ -477,6 +477,54 @@ capacity_subscore <- function(normalized_pct, weights, min_coverage = MIN_SUBSCO
   list(score = score, coverage = coverage)
 }
 
+# Retains what capacity_subscore()/combine_capacities() already compute
+# internally and normally discard -- every metric's raw value/percentile/
+# weight, grouped by capacity, for ONE score's own capacity-level
+# weighting (score_weights = def$ds or def$ame -- the same capacities,
+# different weights per score). Nothing new is computed here.
+#
+# metric_source: named character vector, metric key -> "event"|"physical"
+# (default "event" for any key not listed) -- lets AmeScore+'s physically
+# enriched capacities tag their physical-sourced metrics distinctly from
+# event-sourced ones within the same capacity (see ame_score_plus.R).
+#
+# jsonlite::unbox() wraps every scalar from the start -- NOT an
+# afterthought. A bare as.list()-only list-column serialized through the
+# REAL mongolite insert path (not jsonlite::toJSON() directly) turned NA
+# into the JSON string "NA" and every scalar into a 1-element array (see
+# sc_physical_acumulado_fallback.R's fix, 2026-11-05) -- building the
+# unboxed shape here from the start avoids repeating that bug.
+build_score_breakdown <- function(normalized, raw_values, capacities, caps_defs, score_weights, metric_source = character(0)) {
+  cap_names <- intersect(names(score_weights), names(caps_defs))
+  n <- nrow(capacities)
+
+  lapply(seq_len(n), function(i) {
+    lapply(cap_names, function(cap) {
+      metric_weights <- caps_defs[[cap]]
+      metric_keys <- names(metric_weights)
+      metrics <- lapply(metric_keys, function(m) {
+        val <- if (m %in% names(raw_values)) suppressWarnings(as.numeric(raw_values[[m]][i])) else NA_real_
+        pct <- if (m %in% names(normalized)) suppressWarnings(as.numeric(normalized[[m]][i])) else NA_real_
+        src <- if (m %in% names(metric_source)) unname(metric_source[m]) else "event"
+        list(
+          key = jsonlite::unbox(m),
+          value = jsonlite::unbox(if (is.na(val)) NA else val),
+          percentile = jsonlite::unbox(if (is.na(pct)) NA else pct),
+          weight = jsonlite::unbox(unname(metric_weights[m])),
+          source = jsonlite::unbox(src)
+        )
+      })
+      cap_score <- suppressWarnings(as.numeric(capacities[[cap]][i]))
+      list(
+        category = jsonlite::unbox(cap),
+        capacityScore = jsonlite::unbox(if (is.na(cap_score)) NA else cap_score),
+        capacityWeight = jsonlite::unbox(unname(score_weights[cap])),
+        metrics = metrics
+      )
+    })
+  })
+}
+
 # ============================================================
 # Validation harness -- only runs when executed directly.
 # ============================================================

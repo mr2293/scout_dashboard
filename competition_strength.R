@@ -114,6 +114,8 @@ apply_competition_strength <- function(var_name, data_score_base, tiers,
 build_scored_rows <- function(dat, tiers) {
   all_results <- list()
   for (role in names(ROLE_SCORE_DEFS)) {
+    ds_breakdown <- NULL
+    ame_breakdown <- NULL
     role_idx <- which(dat$role_group_matchbased == role)
 
     if (role == "Delantero") {
@@ -142,6 +144,10 @@ build_scored_rows <- function(dat, tiers) {
 
       ds <- combine_capacities(capacities, def$ds)
       ame <- combine_capacities(capacities, def$ame)
+
+      raw_values <- dat[role_idx, metrics, drop = FALSE]
+      ds_breakdown <- build_score_breakdown(normalized, raw_values, capacities, def$caps, def$ds)
+      ame_breakdown <- build_score_breakdown(normalized, raw_values, capacities, def$caps, def$ame)
     }
     cs <- apply_competition_strength(capacities$var_name, ds$score, tiers)
 
@@ -169,6 +175,8 @@ build_scored_rows <- function(dat, tiers) {
         player_season_minutes = suppressWarnings(as.numeric(dat$player_season_minutes[role_idx])),
         player_season_appearances = suppressWarnings(as.numeric(dat$player_season_appearances[role_idx]))
       )
+    all_results[[role]]$DataScoreBreakdown <- ds_breakdown
+    all_results[[role]]$AmeScoreBreakdown <- ame_breakdown
   }
   dplyr::bind_rows(all_results)
 }
