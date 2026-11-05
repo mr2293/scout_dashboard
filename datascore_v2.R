@@ -216,6 +216,10 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
   # source_coverage/DataScore_shown), instead of routing through
   # apply_transition_gate()'s one-row-per-player collapse. Every
   # (player_id, league, season) row gets shrunk independently.
+  ds_breakdown_lookup <- rows |>
+    dplyr::filter(!is.na(DataScore_previo)) |>
+    dplyr::select(player_id, var_name, season_name, DataScoreBreakdown)
+
   ds_by_season <- rows |>
     dplyr::filter(!is.na(DataScore_previo)) |>
     dplyr::transmute(
@@ -230,7 +234,8 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
       player_id, var_name, season_name,
       DataScore = round(scale_datascore(DataScore_final), 1),
       Cobertura_DataScore = round(C * 100, 1)
-    )
+    ) |>
+    dplyr::left_join(ds_breakdown_lookup, by = c("player_id", "var_name", "season_name"))
 
   # AmeScore: apply_ame_score_gate() directly on every row of `rows` --
   # no join needed, AmeScore_Base/GATE_CAPACITY already live on `rows`
@@ -241,13 +246,14 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
     rows$role_group_matchbased, role_means_ame
   )
   ame_by_season <- dplyr::bind_cols(
-    rows |> dplyr::select(player_id, var_name, season_name, AmeScore_Base_cobertura),
+    rows |> dplyr::select(player_id, var_name, season_name, AmeScore_Base_cobertura, AmeScoreBreakdown),
     ame_gate
   ) |>
     dplyr::transmute(
       player_id, var_name, season_name,
       DataScoreAmerica = round(scale_amescore(AmeScore_final), 1),
-      Cobertura_DataScoreAmerica = AmeScore_Base_cobertura
+      Cobertura_DataScoreAmerica = AmeScore_Base_cobertura,
+      AmeScoreBreakdown
     )
 
   # AmeScore+: compute_amescore_plus_all_roles() is already keyed by
@@ -261,15 +267,16 @@ get_datascore_v2_scores_by_season <- function(force_refresh = FALSE) {
         round(scale_amescore(AmeScorePlus_final), 1),
         NA_real_
       ),
-      DataScoreAmericaPlus_published = AmeScorePlus_published
+      DataScoreAmericaPlus_published = AmeScorePlus_published,
+      AmeScorePlusBreakdown
     )
 
   result <- ds_by_season |>
     dplyr::left_join(ame_by_season, by = c("player_id", "var_name", "season_name")) |>
     dplyr::left_join(amescore_plus, by = c("player_id", "var_name")) |>
-    dplyr::select(player_id, season_name, DataScore, Cobertura_DataScore,
-                  DataScoreAmerica, Cobertura_DataScoreAmerica,
-                  DataScoreAmericaPlus, DataScoreAmericaPlus_published)
+    dplyr::select(player_id, season_name, DataScore, Cobertura_DataScore, DataScoreBreakdown,
+                  DataScoreAmerica, Cobertura_DataScoreAmerica, AmeScoreBreakdown,
+                  DataScoreAmericaPlus, DataScoreAmericaPlus_published, AmeScorePlusBreakdown)
 
   .datascore_v2_by_season_cache <<- result
   result

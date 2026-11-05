@@ -128,9 +128,9 @@ SEASON_SYNC_KEY_COLS <- c("player_name", "transfermarkt_id", "season_name", "pos
 # already made unique per season. Perfil/Perfil_secundario/Edad are
 # still NOT here -- those remain Acumulado-only, out of scope (see
 # docs/superpowers/specs/2026-11-01-per-season-datascore-design.md).
-SEASON_SYNC_SCORE_COLS <- c("DataScore", "Cobertura_DataScore",
-                            "DataScoreAmerica", "Cobertura_DataScoreAmerica",
-                            "DataScoreAmericaPlus", "DataScoreAmericaPlus_published")
+SEASON_SYNC_SCORE_COLS <- c("DataScore", "Cobertura_DataScore", "DataScoreBreakdown",
+                            "DataScoreAmerica", "Cobertura_DataScoreAmerica", "AmeScoreBreakdown",
+                            "DataScoreAmericaPlus", "DataScoreAmericaPlus_published", "AmeScorePlusBreakdown")
 
 suppressWarnings(suppressMessages({
   library(mongolite)
