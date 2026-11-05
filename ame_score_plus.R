@@ -185,10 +185,11 @@ apply_physical_enrichment <- function(role, dat, role_idx, exposure_90s, capacit
   enrich <- enrichment_map[[role]]
   if (is.null(enrich)) {
     capacities_events$physical_available <- FALSE
-    return(capacities_events)
+    return(list(capacities = capacities_events, normalized_phys = capacities_events |> dplyr::select(var_name, player_id, player_name)))
   }
 
   physical_available <- rep(FALSE, nrow(capacities_events))
+  normalized_phys_all <- capacities_events |> dplyr::select(var_name, player_id, player_name)
 
   for (cap in names(enrich)) {
     rho <- enrich[[cap]]$rho
@@ -199,6 +200,10 @@ apply_physical_enrichment <- function(role, dat, role_idx, exposure_90s, capacit
     normalized_phys <- capacities_events |> dplyr::select(var_name, player_id, player_name)
     for (m in phys_metrics) {
       normalized_phys[[m]] <- normalize_metric(dat[[m]][role_idx], dat$role_group_matchbased[role_idx], exposure_90s, m)
+      # Acumula en la combinada -- distinto cap puede reusar el mismo
+      # metric físico (p.ej. psv99 en más de una capacidad), así que solo
+      # se agrega la columna si todavía no está.
+      if (!(m %in% names(normalized_phys_all))) normalized_phys_all[[m]] <- normalized_phys[[m]]
     }
     subscore_fisico <- capacity_subscore(normalized_phys, metric_weights[phys_metrics])$score
 
@@ -215,7 +220,7 @@ apply_physical_enrichment <- function(role, dat, role_idx, exposure_90s, capacit
   }
 
   capacities_events$physical_available <- physical_available
-  capacities_events
+  list(capacities = capacities_events, normalized_phys = normalized_phys_all)
 }
 
 # ---- compute_amescore_plus_all_roles() -----------------------------------
@@ -245,11 +250,46 @@ compute_amescore_plus_all_roles <- function(dat) {
     capacities <- normalized |> dplyr::select(var_name, player_id, player_name)
     for (cap in names(def$caps)) capacities[[cap]] <- capacity_subscore(normalized, def$caps[[cap]])$score
 
-    capacities_plus <- apply_physical_enrichment(role, dat, role_idx, dat$exposure_90s[role_idx], capacities)
+    enrich_result <- apply_physical_enrichment(role, dat, role_idx, dat$exposure_90s[role_idx], capacities)
+    capacities_plus <- enrich_result$capacities
 
     ame_plus <- combine_capacities(capacities_plus, def$ame)
     techo_rol <- mean(combine_capacities(capacities, def$ame)$score, na.rm = TRUE)
     gate <- apply_ame_score_gate(ame_plus$score, capacities_plus[[GATE_CAPACITY]], rep(role, nrow(capacities_plus)), c(setNames(techo_rol, role)))
+
+    # Breakdown de AmeScore+: percentiles/valores EVENT ya están en
+    # `normalized`; los FÍSICOS están en enrich_result$normalized_phys
+    # (una columna por métrica física usada por CUALQUIER capacidad
+    # enriquecida de este rol). metric_source marca cuáles son físicas --
+    # todo lo demás queda "event" por default en build_score_breakdown().
+    enrich_map <- PHYSICAL_ENRICHMENT[[role]]
+    metric_source <- character(0)
+    if (!is.null(enrich_map)) {
+      for (cap in names(enrich_map)) {
+        phys_metrics <- names(enrich_map[[cap]]$metrics)
+        metric_source[phys_metrics] <- "physical"
+      }
+    }
+    # def_caps_plus: cada capacidad enriquecida suma sus métricas físicas
+    # a sus métricas de evento (una sola lista de pesos por capacidad,
+    # para que build_score_breakdown() las muestre juntas bajo esa
+    # categoría) -- los pesos de cada grupo siguen siendo los suyos
+    # propios (de def$caps o de enrich_map[[cap]]$metrics), no se
+    # re-derivan a un peso único "rho-ajustado".
+    def_caps_plus <- def$caps
+    if (!is.null(enrich_map)) {
+      for (cap in names(enrich_map)) {
+        if (cap %in% names(def_caps_plus)) {
+          def_caps_plus[[cap]] <- c(def_caps_plus[[cap]], enrich_map[[cap]]$metrics)
+        }
+      }
+    }
+    normalized_combined <- dplyr::left_join(normalized, enrich_result$normalized_phys, by = c("var_name", "player_id", "player_name"))
+    raw_metrics_plus <- unique(c(names(normalized), names(enrich_result$normalized_phys)))
+    raw_metrics_plus <- setdiff(raw_metrics_plus, c("var_name", "player_id", "player_name"))
+    raw_metrics_plus <- intersect(raw_metrics_plus, names(dat))
+    raw_values_plus <- dat[role_idx, raw_metrics_plus, drop = FALSE]
+    ameplus_breakdown <- build_score_breakdown(normalized_combined, raw_values_plus, capacities_plus, def_caps_plus, def$ame, metric_source)
 
     result <- capacities_plus |>
       dplyr::select(var_name, player_id, player_name, physical_available) |>
@@ -260,6 +300,7 @@ compute_amescore_plus_all_roles <- function(dat) {
         AmeScorePlus_final = ifelse(physical_available, gate$AmeScore_final, NA_real_),
         AmeScorePlus_published = physical_available & !is.na(gate$AmeScore_final)
       )
+    result$AmeScorePlusBreakdown <- ameplus_breakdown
     all_results[[role]] <- result
 
     message(sprintf(
@@ -295,11 +336,35 @@ compute_amescore_plus_all_roles <- function(dat) {
     capacities <- sub |> dplyr::select(var_name, player_id, player_name, .orig_pos)
     for (cap in names(def$caps)) capacities[[cap]] <- capacity_subscore(sub, def$caps[[cap]])$score
 
-    capacities_plus <- apply_physical_enrichment(p, dat, sub_role_idx, dat$exposure_90s[sub_role_idx], capacities, DELANTERO_PERFIL_PHYSICAL_ENRICHMENT)
+    enrich_result <- apply_physical_enrichment(p, dat, sub_role_idx, dat$exposure_90s[sub_role_idx], capacities, DELANTERO_PERFIL_PHYSICAL_ENRICHMENT)
+    capacities_plus <- enrich_result$capacities
 
     ame_plus <- combine_capacities(capacities_plus, def$ame)
     techo_perfil <- mean(combine_capacities(capacities, def$ame)$score, na.rm = TRUE)
     gate <- apply_ame_score_gate(ame_plus$score, capacities_plus[[GATE_CAPACITY]], rep(p, nrow(capacities_plus)), c(setNames(techo_perfil, p)))
+
+    enrich_map <- DELANTERO_PERFIL_PHYSICAL_ENRICHMENT[[p]]
+    metric_source <- character(0)
+    if (!is.null(enrich_map)) {
+      for (cap in names(enrich_map)) {
+        phys_metrics <- names(enrich_map[[cap]]$metrics)
+        metric_source[phys_metrics] <- "physical"
+      }
+    }
+    def_caps_plus <- def$caps
+    if (!is.null(enrich_map)) {
+      for (cap in names(enrich_map)) {
+        if (cap %in% names(def_caps_plus)) {
+          def_caps_plus[[cap]] <- c(def_caps_plus[[cap]], enrich_map[[cap]]$metrics)
+        }
+      }
+    }
+    normalized_combined <- dplyr::left_join(sub, enrich_result$normalized_phys, by = c("var_name", "player_id", "player_name"))
+    raw_metrics_plus <- unique(c(names(sub), names(enrich_result$normalized_phys)))
+    raw_metrics_plus <- setdiff(raw_metrics_plus, c("var_name", "player_id", "player_name", "perfil", ".orig_pos"))
+    raw_metrics_plus <- intersect(raw_metrics_plus, names(dat))
+    raw_values_plus <- dat[sub_role_idx, raw_metrics_plus, drop = FALSE]
+    ameplus_breakdown <- build_score_breakdown(normalized_combined, raw_values_plus, capacities_plus, def_caps_plus, def$ame, metric_source)
 
     delantero_results[[p]] <- capacities_plus |>
       dplyr::select(var_name, player_id, player_name, physical_available) |>
@@ -310,6 +375,7 @@ compute_amescore_plus_all_roles <- function(dat) {
         AmeScorePlus_final = ifelse(physical_available, gate$AmeScore_final, NA_real_),
         AmeScorePlus_published = physical_available & !is.na(gate$AmeScore_final)
       )
+    delantero_results[[p]]$AmeScorePlusBreakdown <- ameplus_breakdown
   }
   delantero_results <- dplyr::bind_rows(delantero_results)
   all_results[["Delantero"]] <- delantero_results
