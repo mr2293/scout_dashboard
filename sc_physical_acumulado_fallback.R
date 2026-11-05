@@ -126,8 +126,46 @@ SC_PHYSICAL_LEAGUE_STEMS <- c(
   dplyr::bind_rows(purrr::compact(purrr::map(paths, .read_physical_candidate)))
 }
 
+#' Translates this function's output from SkillCorner's own player_id
+#' (what the raw physical CSVs are keyed by) to StatsBomb's player_id
+#' (what every other column in `dat`/app.R is keyed by) -- WITHOUT this,
+#' the override in app.R (get_all_players_df()) joins SkillCorner ids
+#' directly against StatsBomb ids, which essentially never match the
+#' same real player, silently wiping every player's physical columns to
+#' NA instead of filling them in. Uses the same crosswalk
+#' join_scout_data.R already builds (build_crosswalk_v4(), saved as
+#' data/crosswalk_final.rds) -- never re-derive name/team matching here.
+#' A player whose SkillCorner id has no crosswalk entry (never matched
+#' to a StatsBomb identity) is dropped, same as every other SC-side
+#' table in this pipeline that depends on that crosswalk.
+.translate_sc_ids_to_sb <- function(df) {
+  if (!nrow(df)) return(df)
+  cw_path <- "data/crosswalk_final.rds"
+  if (!file.exists(cw_path)) {
+    stop("data/crosswalk_final.rds not found -- get_sc_physical_acumulado_fallback() ",
+         "requires the SB<->SC crosswalk (join_scout_data.R) to translate player ids. ",
+         "If running this file standalone/locally, run join_scout_data.R first.")
+  }
+  cw <- readRDS(cw_path) |>
+    dplyr::transmute(
+      player_id = as.character(sc_player_id),
+      sb_player_id = as.character(sb_player_id)
+    ) |>
+    dplyr::filter(!is.na(player_id), !is.na(sb_player_id)) |>
+    dplyr::distinct(player_id, .keep_all = TRUE)
+
+  df |>
+    dplyr::mutate(player_id = as.character(player_id)) |>
+    dplyr::inner_join(cw, by = "player_id") |>
+    dplyr::select(-player_id) |>
+    dplyr::rename(player_id = sb_player_id) |>
+    dplyr::distinct(player_id, .keep_all = TRUE)
+}
+
 #' Builds the Acumulado-only SkillCorner physical row per player, with
-#' the sample-size fallback ladder applied. One row per player_id.
+#' the sample-size fallback ladder applied. One row per player_id
+#' (StatsBomb's player_id, post-crosswalk-translation -- see
+#' .translate_sc_ids_to_sb() -- NOT SkillCorner's own raw id).
 get_sc_physical_acumulado_fallback <- function() {
   df_default  <- .read_physical_candidate_all_leagues("_physical_standardized.csv")
   df_extended <- .read_physical_candidate_all_leagues("_physical_extended_seasons.csv")
@@ -138,7 +176,7 @@ get_sc_physical_acumulado_fallback <- function() {
 
   player_ids <- unique(df_default$player_id)
 
-  purrr::map_dfr(player_ids, function(pid) {
+  result <- purrr::map_dfr(player_ids, function(pid) {
     one <- function(df) {
       if (!nrow(df)) return(NULL)
       sub <- df[df$player_id == pid, , drop = FALSE]
@@ -173,6 +211,8 @@ get_sc_physical_acumulado_fallback <- function() {
     reason <- if (isTRUE(blend$count_match[1] >= 5)) "lower_threshold" else "insufficient_sample"
     dplyr::mutate(blend, sc_physical_quality_warning = TRUE, sc_physical_quality_reason = reason)
   })
+
+  .translate_sc_ids_to_sb(result)
 }
 
 # ============================================================
